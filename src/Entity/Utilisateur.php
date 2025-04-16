@@ -30,7 +30,7 @@ class Utilisateur
     #[ORM\Column(name: "mot_de_passe", length: 255)]
     private ?string $mot_de_passe = null;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 50, nullable: true)]
     private ?string $telephone = null;
 
     #[ORM\Column(name: "date_creation", type: Types::DATETIME_MUTABLE)]

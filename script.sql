@@ -36,7 +36,7 @@ CREATE TABLE UE
 (
     code        VARCHAR(50) PRIMARY KEY,
     nom         VARCHAR(100) NOT NULL,
-    description VARCHAR(50),
+    description VARCHAR(255),
     semestre    VARCHAR(50) NOT NULL,
     image       VARCHAR(255) NOT NULL
 );
