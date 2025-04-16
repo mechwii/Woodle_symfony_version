@@ -1,10 +1,9 @@
-
 DROP TABLE IF EXISTS Epingle CASCADE;
 DROP TABLE IF EXISTS Est_affecte CASCADE;
 DROP TABLE IF EXISTS Note CASCADE;
 DROP TABLE IF EXISTS Possede CASCADE;
 DROP TABLE IF EXISTS Notification CASCADE;
-DROP TABLE IF EXISTS Post CASCADE;
+DROP TABLE IF EXISTS Publication CASCADE;
 DROP TABLE IF EXISTS Section CASCADE;
 DROP TABLE IF EXISTS Priorite CASCADE;
 DROP TABLE IF EXISTS Controle CASCADE;
@@ -28,7 +27,7 @@ CREATE TABLE Utilisateur(
 
 CREATE TABLE Role(
    id_role SERIAL PRIMARY KEY,
-   nom_role VARCHAR(255)
+   nom VARCHAR(255)
 );
 
 CREATE TABLE UE(
@@ -58,7 +57,7 @@ CREATE TABLE Controle(
 
 CREATE TABLE Priorite(
    id_priorite SERIAL PRIMARY KEY,
-   nom_niveau VARCHAR(50)
+   nom VARCHAR(50)
 );
 
 CREATE TABLE Section(
@@ -68,8 +67,8 @@ CREATE TABLE Section(
    FOREIGN KEY(code) REFERENCES UE(code)
 );
 
-CREATE TABLE Post(
-   id_post SERIAL PRIMARY KEY,
+CREATE TABLE Publication(
+   id_publication SERIAL PRIMARY KEY,
    titre VARCHAR(50),
    description VARCHAR(50),
    contenu VARCHAR(50),
@@ -92,13 +91,13 @@ CREATE TABLE Notification(
    date_notif DATE,
    url_destination VARCHAR(255),
    id_type_notification INT NOT NULL,
-   id_utilisateur INT NOT NULL,
-   id_utilisateur_1 INT NOT NULL,
+   id_utilisateur_expediteur INT NOT NULL,
+   id_utilisateur_destinataire INT NOT NULL,
    code VARCHAR(50) NOT NULL,
    id_priorite INT NOT NULL,
    FOREIGN KEY(id_type_notification) REFERENCES Type_notification(id_type_notification),
-   FOREIGN KEY(id_utilisateur) REFERENCES Utilisateur(id_utilisateur),
-   FOREIGN KEY(id_utilisateur_1) REFERENCES Utilisateur(id_utilisateur),
+   FOREIGN KEY(id_utilisateur_expediteur) REFERENCES Utilisateur(id_utilisateur),
+   FOREIGN KEY(id_utilisateur_destinataire) REFERENCES Utilisateur(id_utilisateur),
    FOREIGN KEY(code) REFERENCES UE(code),
    FOREIGN KEY(id_priorite) REFERENCES Priorite(id_priorite)
 );
@@ -114,6 +113,7 @@ CREATE TABLE Possede(
 CREATE TABLE Note(
    id_utilisateur INT,
    id_controle INT,
+   resultat INT,
    PRIMARY KEY(id_utilisateur, id_controle),
    FOREIGN KEY(id_utilisateur) REFERENCES Utilisateur(id_utilisateur),
    FOREIGN KEY(id_controle) REFERENCES Controle(id_controle)
@@ -131,11 +131,11 @@ CREATE TABLE Est_affecte(
 
 CREATE TABLE Epingle(
    id_utilisateur INT,
-   id_post INT,
+   id_publication INT,
    date_epingle DATE,
-   PRIMARY KEY(id_utilisateur, id_post),
+   PRIMARY KEY(id_utilisateur, id_publication),
    FOREIGN KEY(id_utilisateur) REFERENCES Utilisateur(id_utilisateur),
-   FOREIGN KEY(id_post) REFERENCES Post(id_post)
+   FOREIGN KEY(id_publication) REFERENCES Publication(id_publication)
 );
 
 -- INSERT 
@@ -154,7 +154,7 @@ INSERT INTO Utilisateur (nom, prenom, email, mot_de_passe, telephone, date_creat
 ('Kaya', 'Mehmet', 'mehmet.kaya@example.com', 'kayaM2024', '+33634567891', '2024-03-15', '2024-03-15', 'avatar13.jpg'),
 ('Yilmaz', 'Ayse', 'ayse.yilmaz@example.com', 'yilmazA456!', '+33645678902', '2024-03-20', '2024-03-20', 'avatar14.jpg');
 
-INSERT INTO Role (nom_role) VALUES
+INSERT INTO Role (nom) VALUES
 ('ROLE_ADMINISTRATEUR'),
 ('ROLE_PROFESSEUR'),
 ('ROLE_ELEVE');
@@ -193,7 +193,7 @@ INSERT INTO Type_notification (nom) VALUES
 ('Ajout d''un fichier'),
 ('Suppression d''un fichier');
 
-INSERT INTO Priorite (nom_niveau) VALUES
+INSERT INTO Priorite (nom) VALUES
 ('Normale'),
 ('Élevée'),
 ('Ultra-élevée');
