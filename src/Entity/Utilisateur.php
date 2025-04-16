@@ -55,9 +55,31 @@ class Utilisateur
     )]
     private Collection $roles;
 
+    /**
+     * @var Collection<int, EstAffecte>
+     */
+    #[ORM\OneToMany(targetEntity: EstAffecte::class, mappedBy: 'utilisateur_id')]
+    private Collection $estAffectes;
+
+    /**
+     * @var Collection<int, Epingle>
+     */
+    #[ORM\OneToMany(targetEntity: Epingle::class, mappedBy: 'utilisateur_id')]
+    private Collection $epingles;
+
+    /**
+     * @var Collection<int, Notification>
+     *
+    #[ORM\OneToMany(targetEntity: Notification::class, mappedBy: 'utilisateur_expediteur_id')]
+    private Collection $notifications;
+     * */
+
     public function __construct()
     {
         $this->roles = new ArrayCollection();
+        //$this->notifications = new ArrayCollection();
+        $this->estAffectes = new ArrayCollection();
+        $this->epingles = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -181,6 +203,96 @@ class Utilisateur
     public function removeRole(Role $role): static
     {
         $this->roles->removeElement($role);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Notification>
+     *
+    public function getNotifications(): Collection
+    {
+        return $this->notifications;
+    }
+
+    public function addNotification(Notification $notification): static
+    {
+        if (!$this->notifications->contains($notification)) {
+            $this->notifications->add($notification);
+            $notification->setUtilisateurExpediteurId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNotification(Notification $notification): static
+    {
+        if ($this->notifications->removeElement($notification)) {
+            // set the owning side to null (unless already changed)
+            if ($notification->getUtilisateurExpediteurId() === $this) {
+                $notification->setUtilisateurExpediteurId(null);
+            }
+        }
+
+        return $this;
+    }*/
+
+    /**
+     * @return Collection<int, EstAffecte>
+     */
+    public function getEstAffectes(): Collection
+    {
+        return $this->estAffectes;
+    }
+
+    public function addEstAffecte(EstAffecte $estAffecte): static
+    {
+        if (!$this->estAffectes->contains($estAffecte)) {
+            $this->estAffectes->add($estAffecte);
+            $estAffecte->setUtilisateurId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEstAffecte(EstAffecte $estAffecte): static
+    {
+        if ($this->estAffectes->removeElement($estAffecte)) {
+            // set the owning side to null (unless already changed)
+            if ($estAffecte->getUtilisateurId() === $this) {
+                $estAffecte->setUtilisateurId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Epingle>
+     */
+    public function getEpingles(): Collection
+    {
+        return $this->epingles;
+    }
+
+    public function addEpingle(Epingle $epingle): static
+    {
+        if (!$this->epingles->contains($epingle)) {
+            $this->epingles->add($epingle);
+            $epingle->setUtilisateurId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEpingle(Epingle $epingle): static
+    {
+        if ($this->epingles->removeElement($epingle)) {
+            // set the owning side to null (unless already changed)
+            if ($epingle->getUtilisateurId() === $this) {
+                $epingle->setUtilisateurId(null);
+            }
+        }
 
         return $this;
     }

@@ -57,8 +57,8 @@ CREATE TABLE Controle
 (
     id_controle SERIAL PRIMARY KEY,
     nom         VARCHAR(50) NOT NULL,
-    code        VARCHAR(50),
-    FOREIGN KEY (code) REFERENCES UE (code)
+    code_id        VARCHAR(50),
+    FOREIGN KEY (code_id) REFERENCES UE (code)
 );
 
 CREATE TABLE Priorite
@@ -71,8 +71,8 @@ CREATE TABLE Section
 (
     id_section SERIAL PRIMARY KEY,
     nom        VARCHAR(50) NOT NULL,
-    code       VARCHAR(50),
-    FOREIGN KEY (code) REFERENCES UE (code)
+    code_id       VARCHAR(50),
+    FOREIGN KEY (code_id) REFERENCES UE (code)
 );
 
 CREATE TABLE Publication
@@ -83,15 +83,15 @@ CREATE TABLE Publication
     contenu             VARCHAR(50) NOT NULL,
     derniere_modif      TIMESTAMP,
     ordre               INT,
-    visible             BOOLEAN,
+    visible             BOOLEAN NOT NULL,
     section_id          INT,
     utilisateur_id      INT,
     type_publication_id INT,
-    code                VARCHAR(50),
+    code_id             VARCHAR(50),
     FOREIGN KEY (section_id) REFERENCES Section (id_section),
     FOREIGN KEY (utilisateur_id) REFERENCES Utilisateur (id_utilisateur),
     FOREIGN KEY (type_publication_id) REFERENCES Type_publication (id_type_publication),
-    FOREIGN KEY (code) REFERENCES UE (code)
+    FOREIGN KEY (code_id) REFERENCES UE (code)
 );
 
 CREATE TABLE Notification
@@ -103,12 +103,12 @@ CREATE TABLE Notification
     type_notification_id        INT,
     utilisateur_expediteur_id   INT NOT NULL,
     utilisateur_destinataire_id INT NOT NULL,
-    code                        VARCHAR(50) NOT NULL,
+    code_id                       VARCHAR(50) NOT NULL,
     priorite_id                 INT,
     FOREIGN KEY (type_notification_id) REFERENCES Type_notification (id_type_notification),
     FOREIGN KEY (utilisateur_expediteur_id) REFERENCES Utilisateur (id_utilisateur),
     FOREIGN KEY (utilisateur_destinataire_id) REFERENCES Utilisateur (id_utilisateur),
-    FOREIGN KEY (code) REFERENCES UE (code),
+    FOREIGN KEY (code_id) REFERENCES UE (code),
     FOREIGN KEY (priorite_id) REFERENCES Priorite (id_priorite)
 );
 
@@ -134,12 +134,12 @@ CREATE TABLE Note
 CREATE TABLE Est_affecte
 (
     utilisateur_id   INT,
-    code             VARCHAR(50),
+    code_id             VARCHAR(50),
     favori           BOOLEAN,
     date_inscription TIMESTAMP,
-    PRIMARY KEY (utilisateur_id, code),
+    PRIMARY KEY (utilisateur_id, code_id),
     FOREIGN KEY (utilisateur_id) REFERENCES Utilisateur (id_utilisateur),
-    FOREIGN KEY (code) REFERENCES UE (code)
+    FOREIGN KEY (code_id) REFERENCES UE (code)
 );
 
 CREATE TABLE Epingle
