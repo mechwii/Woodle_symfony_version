@@ -40,125 +40,22 @@
         </div>
         <hr>
         <div class="liste_ue">
-            <div class="ue favorite-false">
-                <img src="{{ asset('images/banner_ue_placeholder.jpg') }}" alt="">
+            {% for ue in data %}
+            <div class="ue favorite-{{ ue.favorite }}">
+                <img src="{{ asset('images/ue/banner_ue_placeholder.jpg') }}" alt="">
                 <div class="infos">
-                    <h5>arztz't - Développement web</h5>
+                    <h5>{{ ue.code }} - Développement web</h5>
                     <span class="responsable">Responsable :  ABBAS-TURKI</span>
                     <div class="more">
                         <div class="lessons">
                             <i class="lni lni-notebook-1"></i>
                             <span>12 Lessons</span>
                         </div>
-                        <i class="fa-solid fa-heart"></i>
+                        <i  class="lni lni-heart"></i>
                     </div>
                 </div>
             </div>
-
-            <div class="ue favorite-false">
-                <img src="{{ asset('images/banner_ue_placeholder.jpg') }}" alt="">
-                <div class="infos">
-                    <h5>WE4A - Développement erhhehhh</h5>
-                    <span class="responsable">Responsable :  ABBAS-TURKI</span>
-                    <div class="more">
-                        <div class="lessons">
-                            <i class="lni lni-notebook-1"></i>
-                            <span>12 Lessons</span>
-                        </div>
-                        <i class="fa-solid fa-heart"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="ue favorite-true">
-                <img src="{{ asset('images/banner_ue_placeholder.jpg') }}" alt="">
-                <div class="infos">
-                    <h5>WE4A - Développement web</h5>
-                    <span class="responsable">Responsable :  ABBAS-TURKI</span>
-                    <div class="more">
-                        <div class="lessons">
-                            <i class="lni lni-notebook-1"></i>
-                            <span>12 Lessons</span>
-                        </div>
-                        <i class="fa-solid fa-heart"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="ue favorite-true">
-                <img src="{{ asset('images/banner_ue_placeholder.jpg') }}" alt="">
-                <div class="infos">
-                    <h5>WE4A - htrsjsr web</h5>
-                    <span class="responsable">Responsable :  ABBAS-TURKI</span>
-                    <div class="more">
-                        <div class="lessons">
-                            <i class="lni lni-notebook-1"></i>
-                            <span>12 Lessons</span>
-                        </div>
-                        <i class="fa-solid fa-heart"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="ue favorite-true">
-                <img src="{{ asset('images/banner_ue_placeholder.jpg') }}" alt="">
-                <div class="infos">
-                    <h5>WE4A - rhtrhtrh web</h5>
-                    <span class="responsable">Responsable :  ABBAS-TURKI</span>
-                    <div class="more">
-                        <div class="lessons">
-                            <i class="lni lni-notebook-1"></i>
-                            <span>12 Lessons</span>
-                        </div>
-                        <i class="fa-solid fa-heart"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="ue favorite-true">
-                <img src="{{ asset('images/banner_ue_placeholder.jpg') }}" alt="">
-                <div class="infos">
-                    <h5>WE4A - zfzefzef web</h5>
-                    <span class="responsable">Responsable :  ABBAS-TURKI</span>
-                    <div class="more">
-                        <div class="lessons">
-                            <i class="lni lni-notebook-1"></i>
-                            <span>12 Lessons</span>
-                        </div>
-                        <i class="fa-solid fa-heart"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="ue favorite-true">
-                <img src="{{ asset('images/banner_ue_placeholder.jpg') }}" alt="">
-                <div class="infos">
-                    <h5>WE4A - zf web</h5>
-                    <span class="responsable">Responsable :  ABBAS-TURKI</span>
-                    <div class="more">
-                        <div class="lessons">
-                            <i class="lni lni-notebook-1"></i>
-                            <span>12 Lessons</span>
-                        </div>
-                        <i class="fa-solid fa-heart"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="ue favorite-true">
-                <img src="{{ asset('images/banner_ue_placeholder.jpg') }}" alt="">
-                <div class="infos">
-                    <h5>WE4A - efefez web</h5>
-                    <span class="responsable">Responsable :  ABBAS-TURKI</span>
-                    <div class="more">
-                        <div class="lessons">
-                            <i class="lni lni-notebook-1"></i>
-                            <span>12 Lessons</span>
-                        </div>
-                        <i class="fa-solid fa-heart"></i>
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
         </div>
         <div class="carousel-dots">
             <div class="dot active-dot" data-page="0"></div>
