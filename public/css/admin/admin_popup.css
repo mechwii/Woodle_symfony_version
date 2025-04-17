@@ -1,0 +1,121 @@
+#overlay {
+    /*display: none !important;*/
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+}
+
+.popup {
+    padding: 20px;
+    width: 60%;
+    height: 80%;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.mini-popup {
+    padding: 20px;
+    width: 30%;
+    height: 30vh;
+    background: white;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.close-popup {
+    margin-bottom: 5px;
+    width: 100%;
+    text-align: end;
+}
+
+.close-popup {
+    cursor: pointer;
+}
+
+.mini-popup-content{
+    display: flex;
+    flex-direction: column;
+    gap : 30px;
+
+}
+
+.mini-picture-place{
+    display: flex;
+    justify-content: center;
+}
+
+#picture-popup{
+    justify-content: center;
+    width: 85px;
+    height: 85px;
+    border-radius: 100px;
+}
+.bouton-container{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    gap:10px;
+}
+
+.bouton{
+    padding: 10px 20px;
+    border-radius: 20px;
+    transition: scale 0.3s ease-in-out;
+}
+
+.bouton:hover{
+    cursor: pointer;
+}
+
+.but-cancel:hover{
+    scale: 110%;
+}
+
+.but-delete:hover{
+    scale: 110%;
+}
+
+.but-cancel{
+    background-color: #d3d3d3;
+}
+
+.but-delete{
+    background-color: #EF233C;
+    color: #FFFFFF;
+}
+
+@media only screen
+and (max-width : 1300px) {
+    .mini-popup {
+
+        width: 45%;
+    }
+}
+
+@media only screen
+and (max-width : 800px) {
+    .mini-popup {
+
+        height: 50%;
+    }
+
+}
+
+
+@media only screen
+and (max-width : 600px) {
+    .mini-popup {
+
+        width: 80%;
+    }
+
+}

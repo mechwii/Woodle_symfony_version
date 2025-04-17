@@ -5,6 +5,8 @@
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_popup.css') }}">
+
 {% endblock %}
 
 {% block javascripts %}
@@ -83,7 +85,7 @@
             <div id="user-content" class="card-container">
 
             {% for user in allUtilisateur %}
-                <div class="card-box">
+                <div id="{{ "user-"~user.id}}" class="card-box">
                     <div class="card-left">
                         <img id="user-picture" src="{{ 'images/profil/' ~ user.image }}" alt="Photo de profil admin">
                         <div class="card-content">
@@ -100,7 +102,7 @@
                     </div>
                     <div class="card-action">
                         <i onclick="editUser()" class="lni lni-pencil-1 edit-icon edit"></i>
-                        <i onclick="deleteUser()" class="lni lni-trash-3 edit-icon delete"></i>
+                        <i onclick="supprimerUtilisateur('{{ user.id|e('js') }}','{{ user.nom|e('js') }}', '{{ user.prenom|e('js') }}', '{{ user.image|e('js') }}')" class="lni lni-trash-3 edit-icon delete"></i>
                     </div>
                 </div>
             {% endfor %}
@@ -141,8 +143,17 @@
         {# Le code de ces classes sera dans admin.js plusieurs solutions s'offraient à nous
         mais on a préféré simplifier le code#}
         <div id="overlay" class="hidden">
-            <div class="popup">
+{#
+            <div class="popup hidden">
+                <p class="close-popup" onclick="closePopup()">X</p>
             </div>
+
+            <div class="mini-popup hidden">
+                <p class="close-popup" onclick="closePopup()">X</p>
+            </div>
+#}
+
+
         </div>
     </div>
 

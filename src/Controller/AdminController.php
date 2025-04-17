@@ -89,4 +89,18 @@ final class AdminController extends AbstractController
             'roles' => $roles
         ]);
     }
+
+    #[Route('/admin/delete-user/{id}', name: 'admin_delete_user', methods: ['DELETE'])]
+    public function deleteUser(int $id, EntityManagerInterface $BDDManager): Response
+    {
+        $utilisateur = $BDDManager->getRepository(Utilisateur::class)->find($id);
+
+        if(!$utilisateur){
+            return $this->json(['success' => false, 'message' => 'Utilisateur introuvable'], Response::HTTP_NOT_FOUND);
+        }
+
+        $BDDManager->remove($utilisateur);
+        $BDDManager->flush();
+        return $this->json(['success' => true], Response::HTTP_OK);
+    }
 }
