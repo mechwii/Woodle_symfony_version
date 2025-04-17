@@ -1,19 +1,173 @@
 {% extends 'professeur/base_professeur.html.twig' %}
 
-{% block title %}Hello ProfesseurController!{% endblock %}
+{% block title %}Choix des UE | Professeur{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/choix_ue/choix_ue.css') }}">
+{% endblock %}
 
 {% block content %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    {# Ici on fait la bannière de la page, c'est quand on se connecte a notre photo de profil et notre role dans le site#}
+    <div class="banner">
+        <img src="{{ asset('images/mhammed.jpeg') }}" alt="">
+        <div class="text">
+            <span class="bienvenue">Bienvenue sur votre espace M'hammed !</span>
+            <span class="role">Vous êtes professeur</span>
+        </div>
+    </div>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/home/rimelmir/Development/Web/Symfony/Woodle_V2/Woodle/src/Controller/ProfesseurController.php</code></li>
-        <li>Your template at <code>/home/rimelmir/Development/Web/Symfony/Woodle_V2/Woodle/templates/professeur/index.html.twig</code></li>
-    </ul>
-</div>
+    {# Section Actualité de la page #}
+    <div class="actualites">
+        <h3>Actualités</h3>
+        <ul>
+            <li class="affectation"><i class="lni lni-books-2"></i><p><b>M.Baka</b> vous a affecté à l’UE <b>SY44</b></p></li>
+            <li class="fichier"><i class="lni lni-file-multiple"></i><p><b>M.Quoicoubeh</b> a ajouté un nouveau fichier “TP1.pdf” dans WE4A</p></li>
+            <li class="message"><i class="lni lni-comment-1"></i><p><b>M.LOMBARD</b> a posté un message  <b>« Changement salle »</b> dans <b>WE4A</b></p></li>
+        </ul>
+        <button id="afficherPlus">Afficher plus</button>
+    </div>
+    {# Section cours de la page #}
+    <div class="cours">
+        <h2>Mes cours</h2>
+        <div class="nav-wrapper">
+            <ul class="selection_cours">
+                <li class="active">Tous</li>
+                <li>Derniers cours consultés</li>
+                <li>Favoris</li>
+            </ul>
+            <span class="underline"></span> <!-- La barre animée -->
+        </div>
+        <hr>
+        <div class="liste_ue">
+            <div class="ue favorite-false">
+                <img src="{{ asset('images/banner_ue_placeholder.jpg') }}" alt="">
+                <div class="infos">
+                    <h5>arztz't - Développement web</h5>
+                    <span class="responsable">Responsable :  ABBAS-TURKI</span>
+                    <div class="more">
+                        <div class="lessons">
+                            <i class="lni lni-notebook-1"></i>
+                            <span>12 Lessons</span>
+                        </div>
+                        <i class="fa-solid fa-heart"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ue favorite-false">
+                <img src="{{ asset('images/banner_ue_placeholder.jpg') }}" alt="">
+                <div class="infos">
+                    <h5>WE4A - Développement erhhehhh</h5>
+                    <span class="responsable">Responsable :  ABBAS-TURKI</span>
+                    <div class="more">
+                        <div class="lessons">
+                            <i class="lni lni-notebook-1"></i>
+                            <span>12 Lessons</span>
+                        </div>
+                        <i class="fa-solid fa-heart"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ue favorite-true">
+                <img src="{{ asset('images/banner_ue_placeholder.jpg') }}" alt="">
+                <div class="infos">
+                    <h5>WE4A - Développement web</h5>
+                    <span class="responsable">Responsable :  ABBAS-TURKI</span>
+                    <div class="more">
+                        <div class="lessons">
+                            <i class="lni lni-notebook-1"></i>
+                            <span>12 Lessons</span>
+                        </div>
+                        <i class="fa-solid fa-heart"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ue favorite-true">
+                <img src="{{ asset('images/banner_ue_placeholder.jpg') }}" alt="">
+                <div class="infos">
+                    <h5>WE4A - htrsjsr web</h5>
+                    <span class="responsable">Responsable :  ABBAS-TURKI</span>
+                    <div class="more">
+                        <div class="lessons">
+                            <i class="lni lni-notebook-1"></i>
+                            <span>12 Lessons</span>
+                        </div>
+                        <i class="fa-solid fa-heart"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ue favorite-true">
+                <img src="{{ asset('images/banner_ue_placeholder.jpg') }}" alt="">
+                <div class="infos">
+                    <h5>WE4A - rhtrhtrh web</h5>
+                    <span class="responsable">Responsable :  ABBAS-TURKI</span>
+                    <div class="more">
+                        <div class="lessons">
+                            <i class="lni lni-notebook-1"></i>
+                            <span>12 Lessons</span>
+                        </div>
+                        <i class="fa-solid fa-heart"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ue favorite-true">
+                <img src="{{ asset('images/banner_ue_placeholder.jpg') }}" alt="">
+                <div class="infos">
+                    <h5>WE4A - zfzefzef web</h5>
+                    <span class="responsable">Responsable :  ABBAS-TURKI</span>
+                    <div class="more">
+                        <div class="lessons">
+                            <i class="lni lni-notebook-1"></i>
+                            <span>12 Lessons</span>
+                        </div>
+                        <i class="fa-solid fa-heart"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ue favorite-true">
+                <img src="{{ asset('images/banner_ue_placeholder.jpg') }}" alt="">
+                <div class="infos">
+                    <h5>WE4A - zf web</h5>
+                    <span class="responsable">Responsable :  ABBAS-TURKI</span>
+                    <div class="more">
+                        <div class="lessons">
+                            <i class="lni lni-notebook-1"></i>
+                            <span>12 Lessons</span>
+                        </div>
+                        <i class="fa-solid fa-heart"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ue favorite-true">
+                <img src="{{ asset('images/banner_ue_placeholder.jpg') }}" alt="">
+                <div class="infos">
+                    <h5>WE4A - efefez web</h5>
+                    <span class="responsable">Responsable :  ABBAS-TURKI</span>
+                    <div class="more">
+                        <div class="lessons">
+                            <i class="lni lni-notebook-1"></i>
+                            <span>12 Lessons</span>
+                        </div>
+                        <i class="fa-solid fa-heart"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-dots">
+            <div class="dot active-dot" data-page="0"></div>
+            <div class="dot" data-page="1"></div>
+        </div>
+    </div>
+
+    {% block javascripts %}
+        {{ parent() }}
+        <script src="{{ asset('js/choix_ue/choix_ue.js') }}"></script>
+    {% endblock %}
 {% endblock %}

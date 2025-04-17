@@ -30,3 +30,238 @@ div.container > div.banner > div.text > span.bienvenue {
 div.container> div.banner > div.text > span.role {
     font-size: 16px;
 }
+
+/* Mise en page de la partie actualités */
+
+div.container > div.actualites {
+    -webkit-box-shadow: 0px 0px 30px 5px rgba(0,0,0,0.08);
+    box-shadow: 0px 0px 30px 5px rgba(0,0,0,0.08);
+    border-radius: 15px;
+    padding: 2em;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 5em;
+}
+
+div.container > div.actualites > h3 {
+    font-size: 28px;
+    margin-bottom: 1em;
+}
+
+div.container > div.actualites > ul {
+    list-style-type: none;
+}
+
+div.container > div.actualites > ul > li {
+    display: flex;
+    margin-bottom: 1.25em;
+    align-items: center;
+    transition-duration: 200ms;
+    cursor: pointer;
+    padding: 0.5em;
+    border-radius: 10px;
+}
+
+div.container > div.actualites > ul > li:hover {
+    background-color: #dedede;
+    transition-duration: 200ms;
+}
+
+div.container > div.actualites > ul > li.affectation > i {
+    color: white;
+    background-color: #EF233C;
+    border-radius: 100px;
+    padding: 0.5em;
+    font-size: 32px;
+    margin-right: 0.6em;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+div.container > div.actualites > ul > li.fichier > i {
+    color: white;
+    background-color: #2B2D42;
+    border-radius: 12px;
+    padding: 0.5em;
+    font-size: 32px;
+    margin-right: 0.6em;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+div.container > div.actualites > ul > li.message > i {
+    color: white;
+    background-color: gray;
+    border-radius: 12px;
+    padding: 0.5em;
+    font-size: 32px;
+    margin-right: 0.6em;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+div.container > div.actualites button {
+    background-color: transparent;
+    border: 0;
+    color: #EF233C;
+    font-family: "Sora", sans-serif;
+    align-self: center;
+    cursor: pointer;
+}
+
+div.container > div.actualites button:hover {
+    color: #971727;
+}
+
+/* Mise en page de la section cours */
+.nav-wrapper {
+    position: relative;
+    width: fit-content;
+}
+
+.underline {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    height: 4px;
+    width: 0;
+    background-color: #EF233C;
+    transition: all 0.3s ease;
+}
+
+
+div.container div.cours > h2 {
+    font-size: 32px;
+    margin-bottom: 0.5em;
+}
+
+div.container div.cours ul.selection_cours {
+    list-style-type: none;
+    display: flex;
+    margin-bottom: 0.5em;
+}
+
+div.container div.cours ul.selection_cours > li {
+    margin-right: 2em;
+    font-weight: 300;
+    cursor: pointer;
+}
+
+div.container div.cours ul.selection_cours > li.active {
+    font-weight: bold;
+}
+
+div.container div.cours > hr {
+    margin-top: -5px;
+    margin-bottom: 1em;
+    height: 1px;
+    background-color: #686868;
+    border: none;
+}
+
+div.container div.cours > div.liste_ue {
+    display: flex;
+    flex-wrap: wrap;
+
+}
+
+div.container div.cours div.ue {
+    -webkit-box-shadow: 0px 0px 30px 5px rgba(0,0,0,0.08);
+    box-shadow: 0px 0px 30px 5px rgba(0,0,0,0.08);
+    border-radius: 18px;
+    width: 48%;
+    display: flex;
+    padding: 1em;
+    margin-bottom: 1em;
+    margin-right: 1em;
+    height: 180px;
+    transition-duration: 200ms;
+    cursor: pointer;
+}
+
+div.container div.cours div.ue:hover {
+    background-color: #dedede;
+    transition-duration: 500ms;
+}
+
+div.container div.cours div.ue > img {
+    width: 30%;
+    border-radius: 18px;
+    margin-right: 1em;
+    object-fit: cover;
+}
+
+div.container div.cours div.ue > div.infos {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+}
+
+div.container div.cours div.ue > div.infos > h5 {
+    font-weight: 300;
+    font-size: 19px;
+    margin-bottom: 0.5em;
+}
+
+div.container div.cours div.ue > div.infos > .responsable {
+    font-weight: 300;
+    font-size: 15px;
+    color: #4d4d4d;
+}
+
+
+div.container div.cours div.ue > div.infos .more {
+    display: flex;
+    font-size: 13px;
+    margin-top: 1em;
+    margin-top: auto;
+}
+
+div.container div.cours div.ue > div.infos .more i {
+    margin-left: auto;
+    font-size: 22px;
+}
+
+div.container div.cours div.ue.favorite-true > div.infos .more > i {
+    color: red;
+}
+
+div.container div.cours div.ue.favorite-false > div.infos .more > i {
+    color: white;
+    text-shadow: 0 0 3px #000;
+}
+
+div.lessons {
+    align-items: center;
+    display: flex;
+}
+
+div.carousel-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1em;
+    margin-top: 2em;
+    margin-bottom: 5em;
+}
+
+div.dot {
+    background-color: gray;
+    width: 10px;
+    height: 10px;
+    border-radius: 10px;
+}
+
+div.active-dot {
+    background-color: black;
+}
