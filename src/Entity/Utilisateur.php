@@ -6,11 +6,14 @@ use App\Repository\UtilisateurRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
 #[ORM\Table(name: "utilisateur")]
-class Utilisateur
+class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\Column(name: "id_utilisateur", type: "integer")]
@@ -28,7 +31,7 @@ class Utilisateur
     private ?string $email = null;
 
     #[ORM\Column(name: "mot_de_passe", length: 255)]
-    private ?string $mot_de_passe = null;
+    private ?string $password = null;
 
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $telephone = null;
@@ -123,14 +126,15 @@ class Utilisateur
         return $this;
     }
 
-    public function getMotDePasse(): ?string
+
+    public function getPassword(): ?string
     {
-        return $this->mot_de_passe;
+        return $this->password;
     }
 
-    public function setMotDePasse(string $mot_de_passe): static
+    public function setPassword(string $password): static
     {
-        $this->mot_de_passe = $mot_de_passe;
+        $this->password = $password;
 
         return $this;
     }
@@ -182,14 +186,36 @@ class Utilisateur
 
         return $this;
     }
+    // Méthode pour se connecter
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
+    }
 
     /**
      * @return Collection<int, Role>
      */
-    public function getRoles(): Collection
+    /*public function getRoles(): Collection
     {
         return $this->roles;
+    }*/
+
+    public function getRoles(): array
+    {
+        $roles = [];
+
+        foreach ($this->roles as $role) {
+            $roles[] = $role->getNom();
+        }
+        // $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
     }
+
+    public function eraseCredentials(): void
+    {
+    }
+
 
     public function addRole(Role $role): static
     {

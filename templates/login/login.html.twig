@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Se connecter{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/login/login.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // console.log('Test js');
+    </script>
+    <script src="{{ asset('js/login.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+{#    {% if error %}
+        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}#}
+
+    {% if app.user %}
+        <div class="mb-3">
+            You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+        </div>
+    {% endif %}
+    <div class="container-login">
+        <div class="website_logo">
+            <img src="{{ asset('images/Logo_Woodle.svg') }}" alt="Logo de Woodle">
+            <h1 class="website_name">Woodle</h1>
+        </div>
+        <div class="connexion">
+            <h3>Connexion</h3>
+
+            {% if error %}
+                <p class="error">Email/Mot de passe incorrect veuillez réssayer</p>
+            {% endif %}
+            <form method="post" class="formulaire_connexion">
+                <div class="form">
+                    <input type="email" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="email" required autofocus>
+                </div>
+                <div class="form_password">
+                    <svg id="togglePassword" xmlns="http://www.w3.org/2000/svg" class="svg_icon bi-eye-fill" viewBox="0 0 16 16">
+                        <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"></path>
+                        <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path>
+                    </svg>
+                    <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
+                </div>
+                <input type="hidden" name="_csrf_token"
+                       value="{{ csrf_token('authenticate') }}"
+                >
+
+                <div class="rester_connecte">
+                    <input type="checkbox" value="lsRememberMe" id="rememberMe">
+                    <label for="rememberMe">Se souvenir de moi</label>
+                </div>
+                <div class="form-end">
+                    <input class="bouton_connexion" type="submit" value="Se connecter" />
+                </div>
+            </form>
+            <a class="forgot_password" href="">Mot de passe oublié ?</a>
+        </div>
+        <div class="bottom_text">
+            <p>On a déjà</p>
+            <h5 id="text" class="text_swap"></h5>
+        </div>
+    </div>
+{% endblock %}
