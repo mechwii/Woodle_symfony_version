@@ -2,7 +2,18 @@
 
 {% block title %}Choix des UE | Professeur{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/choix_ue/choix_ue.css') }}">
+{% endblock %}
+
 {% block body %}
-    <h1>Choix des Unités d'Enseignement</h1>
-    <p>Bienvenue dans l'espace Professeur !</p>
+    {# Ici on fait la bannière de la page, c'est quand on se connecte a notre photo de profil et notre role dans le site#}
+    <div class="banner">
+        <img src="{{ asset('images/mhammed.jpeg') }}" alt="">
+        <div class="text">
+            <span class="bienvenue">Bienvenue sur votre espace M'hammed !</span>
+            <span class="role">Vous êtes professeur</span>
+        </div>
+    </div>
 {% endblock %}
