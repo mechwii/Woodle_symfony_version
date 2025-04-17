@@ -319,3 +319,5 @@ VALUES (2, 'IA41', FALSE, '2025-04-10 16:00:00');
 
 INSERT INTO Est_affecte (utilisateur_id, code_id, favori, date_inscription)
 VALUES (2, 'RE4E', TRUE, '2025-04-09 12:05:00');
+
+UPDATE Utilisateur set image='mhammed.jpeg';
