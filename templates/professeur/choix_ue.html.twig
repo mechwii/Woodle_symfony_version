@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'professeur/base_professeur.html.twig' %}
 
 {% block title %}Choix des UE | Professeur{% endblock %}
 
@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ asset('css/choix_ue/choix_ue.css') }}">
 {% endblock %}
 
-{% block body %}
+{% block content %}
     {# Ici on fait la bannière de la page, c'est quand on se connecte a notre photo de profil et notre role dans le site#}
     <div class="banner">
         <img src="{{ asset('images/mhammed.jpeg') }}" alt="">
