@@ -1,19 +1,58 @@
 .top-page {
-    /*display: flex;
-    justify-content: end;
-    width: 100%;*/
     right: 0;
     position: fixed;
     top: 0;
     display: flex;
-    padding: 2vh 2vw;
+    padding: 1vh 1vw;
     font-size: 15px;
     align-items: center;
     gap: 2vw;
     background-color: #fff;
-    z-index: 5;
+    z-index: 15;
 }
 
+.top-page-out {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    padding: 1vh 1vw;
+    font-size: 15px;
+    align-items: center;
+    gap: 2vw;
+    background-color: #fff;
+    z-index: 15;
+}
+
+.left-admin-part{
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    gap : 6px;
+}
+
+.left-admin-part:hover{
+    cursor: pointer;
+    color : #EF233C
+}
+
+.left-admin-part i{
+    font-size: 30px;
+}
+
+.right-admin-part{
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    gap : 20px;
+
+}
+
+a{
+    text-decoration: none;
+    color: #000000;
+}
 
 #admin-picture {
     width: 60px;
@@ -26,7 +65,7 @@
 }
 
 #profile-menu {
-    display: block;
+    display: none;
     position: absolute;
     top: 70px;
     right: 1vw;
@@ -34,6 +73,7 @@
     border-radius: 5px;
     box-shadow: 0px 0px 30px 5px rgba(0, 0, 0, 0.08);
     z-index: 10;
+    width: 170px;
 }
 
 #profile-menu p {
@@ -75,4 +115,27 @@
 #additional-roles:hover {
     background-color: #cdcdcd;
     cursor: pointer;
+}
+
+@media only screen
+and (max-width : 1300px) {
+
+
+}
+
+@media only screen
+and (max-width : 800px) {
+
+}
+
+@media only screen
+and (max-width : 600px) {
+    #return-text{
+        display: none;
+    }
+
+    .left-admin-part i{
+        font-size: 37px;
+    }
+
 }

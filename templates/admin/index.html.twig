@@ -1,20 +1,142 @@
 {% extends 'admin/base_admin.html.twig' %}
 
-{% block title %}Hello AdminController!{% endblock %}
+{% block title %}Espace Adminisatrateur{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/admin/admin.js') }}"></script>
+{% endblock %}
 
 {% block content %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <div class="welcome-section">
+        <img id="photo-welcome" src="{{ asset('images/profil/' ~ utilisateur.image) }}" alt="Photo de profil de welcome">
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/home/rimelmir/Development/Web/Symfony/Woodle_V2/Woodle/src/Controller/AdminController.php</code></li>
-        <li>Your template at <code>/home/rimelmir/Development/Web/Symfony/Woodle_V2/Woodle/templates/admin/index.html.twig</code></li>
-    </ul>
+        <div class="welcome-content">
+            <h1>Bienvenue sur votre espace <span>Elmir</span></h1>
+            <p>Vous être administrateur</p>
+        </div>
+
+    </div>
+
+<div class="statistiques">
+    {% for stat in statistiques %}
+        <div class="statistiques-section">
+            <div class="top-statistiques-section">
+                <h4>{{ stat.nom }}</h4>
+                <i class="{{ "svg-icon " ~ stat.icons }}"></i>
+
+            </div>
+            <h5>{{ stat.nombre }}</h5>
+
+        </div>
+    {% endfor %}
+
+
 </div>
-{% endblock %}
+
+    <div class="dashboard">
+        <div class="dashboard-select" id="dashboard-selects">
+            <h4 class="center-dashboard-content" onclick="SelectUser()">
+                Utilisateurs</h4>
+            <h4 class="center-dashboard-content" onclick="SelectUE()"> Unités d'enseignements</h4>
+            <span id="categorie-selected"></span>
+        </div>
+
+        <div class="dashboard-filter">
+            <div class="search-section">
+                <i class="loop lni lni-search-1"></i>
+
+                <input type="text" class="stylized-input" placeholder="Rechercher...">
+
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-button button">
+                    <i class="lni lni-menu-hamburger-1"></i>
+                    <p>Filtrer</p>
+                </div>
+
+                <div class="filter-button button">
+                    <i class="lni lni-emoji-smile-tongue"></i>
+                    <p>Trier</p>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="add-section" class="add-section" onclick="handleAjout()">
+                    <span class="add-button button">
+                        <i class="add-icon lni lni-plus"></i>
+                        <p>Ajouter</p>
+                    </span>
+        </div>
+
+        <div id="dashboard-content" class="dashboard-content">
+            <div id="user-content" class="card-container">
+
+            {% for user in allUtilisateur %}
+                <div class="card-box">
+                    <div class="card-left">
+                        <img id="user-picture" src="{{ 'images/profil/' ~ user.image }}" alt="Photo de profil admin">
+                        <div class="card-content">
+                            <h4>{{ user.prenom }} {{ user.nom }}</h4>
+                            {# Comme c'est un tableau je sépare les valeurs avec des -, et je change pour l'aspect visuel  #}
+                            <h4 class="card-text">
+                                {{
+                                user.roles
+                                |map(r => r == 'ROLE_ELEVE' ? 'Élève' : (r == 'ROLE_ADMINISTRATEUR' ? 'Administrateur' : (r == 'ROLE_PROFESSEUR' ? 'Professeur' : r)))
+                                |join(' - ')
+                                }}
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="card-action">
+                        <i onclick="editUser()" class="lni lni-pencil-1 edit-icon edit"></i>
+                        <i onclick="deleteUser()" class="lni lni-trash-3 edit-icon delete"></i>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+
+            <div id="ue-content" class="card-container">
+                {% for unite in ue %}
+                <div class="card-box">
+                    <div class="card-left">
+                        <img id="ue-picture" src="{{"./images/ue/" ~ unite.image}}" alt="Photo de profil admin">
+                        <div class="card-content">
+                            <h4>{{ unite.nom }}</h4>
+                            <h4 class="card-text">Responsable : A mettre</h4>
+                            <div class="ue-stat">
+
+                                <div class="ue-stat-icons">
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                    <p>20</p>
+                                </div>
+
+                                <div class="ue-stat-icons">
+                                    <i class="fa-solid fa-user"></i>
+                                    <p>7</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-action">
+                        <i onclick="editUser()" class="lni lni-pencil-1 edit-icon edit"></i>
+                        <i onclick="deleteUser()" class="lni lni-trash-3 edit-icon delete"></i>
+                    </div>
+                </div>
+                {% endfor %}
+        </div>
+
+    </div>
+    </div>
+
+
+
+    {% endblock %}
