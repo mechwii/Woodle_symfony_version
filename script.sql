@@ -303,3 +303,19 @@ VALUES
         'Semestre 2',
         'banner-bd4j.jpg'
     );
+
+
+INSERT INTO Est_affecte (utilisateur_id, code_id, favori, date_inscription)
+VALUES (2, 'BD4J', TRUE, '2025-04-15 08:30:00');
+
+INSERT INTO Est_affecte (utilisateur_id, code_id, favori, date_inscription)
+VALUES (2, 'ML6I', FALSE, '2025-04-14 10:45:00');
+
+INSERT INTO Est_affecte (utilisateur_id, code_id, favori, date_inscription)
+VALUES (2, 'GD2H', TRUE, '2025-04-12 14:20:00');
+
+INSERT INTO Est_affecte (utilisateur_id, code_id, favori, date_inscription)
+VALUES (2, 'IA41', FALSE, '2025-04-10 16:00:00');
+
+INSERT INTO Est_affecte (utilisateur_id, code_id, favori, date_inscription)
+VALUES (2, 'RE4E', TRUE, '2025-04-09 12:05:00');
