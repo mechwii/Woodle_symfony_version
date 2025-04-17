@@ -51,8 +51,8 @@ CREATE TABLE UE
     description VARCHAR(255),
     semestre    VARCHAR(50) NOT NULL,
     image       VARCHAR(255) NOT NULL,
-    responsable_id INT NOT NULL,
-    FOREIGN KEY (responsable_id) REFERENCES Utilisateur(id_utilisateur)
+    responsable_id INT,
+    FOREIGN KEY (responsable_id) REFERENCES Utilisateur(id_utilisateur) ON DELETE SET NULL
 );
 
 CREATE TABLE Controle
@@ -60,7 +60,7 @@ CREATE TABLE Controle
     id_controle SERIAL PRIMARY KEY,
     nom         VARCHAR(50) NOT NULL,
     code_id        VARCHAR(50),
-    FOREIGN KEY (code_id) REFERENCES UE (code)
+    FOREIGN KEY (code_id) REFERENCES UE (code) ON DELETE CASCADE
 );
 
 CREATE TABLE Priorite
@@ -74,7 +74,7 @@ CREATE TABLE Section
     id_section SERIAL PRIMARY KEY,
     nom        VARCHAR(50) NOT NULL,
     code_id       VARCHAR(50),
-    FOREIGN KEY (code_id) REFERENCES UE (code)
+    FOREIGN KEY (code_id) REFERENCES UE (code) ON DELETE CASCADE
 );
 
 CREATE TABLE Publication
@@ -91,9 +91,9 @@ CREATE TABLE Publication
     type_publication_id INT,
     code_id             VARCHAR(50),
     FOREIGN KEY (section_id) REFERENCES Section (id_section),
-    FOREIGN KEY (utilisateur_id) REFERENCES Utilisateur (id_utilisateur),
+    FOREIGN KEY (utilisateur_id) REFERENCES Utilisateur (id_utilisateur) ON DELETE SET NULL,
     FOREIGN KEY (type_publication_id) REFERENCES Type_publication (id_type_publication),
-    FOREIGN KEY (code_id) REFERENCES UE (code)
+    FOREIGN KEY (code_id) REFERENCES UE (code) ON DELETE CASCADE
 );
 
 CREATE TABLE Notification
@@ -103,14 +103,14 @@ CREATE TABLE Notification
     date_notif                  TIMESTAMP NOT NULL,
     url_destination             VARCHAR(255) NOT NULL,
     type_notification_id        INT,
-    utilisateur_expediteur_id   INT NOT NULL,
+    utilisateur_expediteur_id   INT,
     utilisateur_destinataire_id INT NOT NULL,
     code_id                       VARCHAR(50) NOT NULL,
     priorite_id                 INT,
     FOREIGN KEY (type_notification_id) REFERENCES Type_notification (id_type_notification),
-    FOREIGN KEY (utilisateur_expediteur_id) REFERENCES Utilisateur (id_utilisateur),
-    FOREIGN KEY (utilisateur_destinataire_id) REFERENCES Utilisateur (id_utilisateur),
-    FOREIGN KEY (code_id) REFERENCES UE (code),
+    FOREIGN KEY (utilisateur_expediteur_id) REFERENCES Utilisateur (id_utilisateur) ON DELETE SET NULL,
+    FOREIGN KEY (utilisateur_destinataire_id) REFERENCES Utilisateur (id_utilisateur) ON DELETE CASCADE,
+    FOREIGN KEY (code_id) REFERENCES UE (code) ON DELETE CASCADE ,
     FOREIGN KEY (priorite_id) REFERENCES Priorite (id_priorite)
 );
 
@@ -119,7 +119,7 @@ CREATE TABLE Possede
     utilisateur_id INT,
     role_id        INT,
     PRIMARY KEY (utilisateur_id, role_id),
-    FOREIGN KEY (utilisateur_id) REFERENCES Utilisateur (id_utilisateur),
+    FOREIGN KEY (utilisateur_id) REFERENCES Utilisateur (id_utilisateur) ON DELETE CASCADE,
     FOREIGN KEY (role_id) REFERENCES Role (id_role)
 );
 
@@ -129,19 +129,19 @@ CREATE TABLE Note
     controle_id    INT,
     resultat       INT NOT NULL,
     PRIMARY KEY (utilisateur_id, controle_id),
-    FOREIGN KEY (utilisateur_id) REFERENCES Utilisateur (id_utilisateur),
+    FOREIGN KEY (utilisateur_id) REFERENCES Utilisateur (id_utilisateur) ON DELETE CASCADE ,
     FOREIGN KEY (controle_id) REFERENCES Controle (id_controle)
 );
 
 CREATE TABLE Est_affecte
 (
-    utilisateur_id   INT,
-    code_id             VARCHAR(50),
+    utilisateur_id   INT NOT NULL ,
+    code_id          VARCHAR(50) NOT NULL,
     favori           BOOLEAN,
     date_inscription TIMESTAMP,
     PRIMARY KEY (utilisateur_id, code_id),
-    FOREIGN KEY (utilisateur_id) REFERENCES Utilisateur (id_utilisateur),
-    FOREIGN KEY (code_id) REFERENCES UE (code)
+    FOREIGN KEY (utilisateur_id) REFERENCES Utilisateur (id_utilisateur) ON DELETE CASCADE ,
+    FOREIGN KEY (code_id) REFERENCES UE (code) ON DELETE CASCADE
 );
 
 CREATE TABLE Epingle
@@ -150,7 +150,7 @@ CREATE TABLE Epingle
     publication_id INT,
     date_epingle   TIMESTAMP,
     PRIMARY KEY (utilisateur_id, publication_id),
-    FOREIGN KEY (utilisateur_id) REFERENCES Utilisateur (id_utilisateur),
+    FOREIGN KEY (utilisateur_id) REFERENCES Utilisateur (id_utilisateur) ON DELETE SET NULL,
     FOREIGN KEY (publication_id) REFERENCES Publication (id_publication)
 );
 

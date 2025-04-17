@@ -37,6 +37,13 @@ function ajouterUser(){
 
 function ajouterUE(){
     console.log('UE')
+}
+
+function supprimerUtilisateur(){
+
+}
+
+function supprimerUE(){
 
 }
 

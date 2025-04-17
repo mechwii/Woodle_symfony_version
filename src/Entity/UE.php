@@ -46,7 +46,7 @@ class UE
     private Collection $estAffectes;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(name: "responsable_id", referencedColumnName: "id_utilisateur", nullable: false)]
+    #[ORM\JoinColumn(name: "responsable_id", referencedColumnName: "id_utilisateur", onDelete: "SET NULL")]
     private ?Utilisateur $responsable_id = null;
 
     /**

@@ -11,7 +11,7 @@ class Note
     // Pour cette classe ajouter inversed etc dans controle et utilisateur
     #[ORM\Id]
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(name: "utilisateur_id", referencedColumnName: "id_utilisateur", nullable: false)]
+    #[ORM\JoinColumn(name: "utilisateur_id", referencedColumnName: "id_utilisateur", nullable: false, onDelete: "CASCADE")]
     private ?Utilisateur $utilisateur_id = null;
 
     #[ORM\Id]

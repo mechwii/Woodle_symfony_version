@@ -12,12 +12,12 @@ class EstAffecte
 
     #[ORM\Id]
     #[ORM\ManyToOne(inversedBy: 'estAffectes')]
-    #[ORM\JoinColumn(name: "utilisateur_id", referencedColumnName: "id_utilisateur", nullable: false)]
+    #[ORM\JoinColumn(name: "utilisateur_id", referencedColumnName: "id_utilisateur", nullable: false, onDelete: 'CASCADE')]
     private ?Utilisateur $utilisateur_id = null;
 
     #[ORM\Id]
     #[ORM\ManyToOne(inversedBy: 'estAffectes')]
-    #[ORM\JoinColumn(name: "code_id", referencedColumnName: "code", nullable: false)]
+    #[ORM\JoinColumn(name: "code_id", referencedColumnName: "code", nullable: false, onDelete: 'CASCADE')]
     private ?UE $code_id = null;
 
     #[ORM\Column(nullable: true)]

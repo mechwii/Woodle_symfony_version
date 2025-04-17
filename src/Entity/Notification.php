@@ -30,17 +30,17 @@ class Notification
 
     // (inversedBy: 'notifications')
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(name: "utilisateur_expediteur_id", referencedColumnName: "id_utilisateur",  nullable: false)]
+    #[ORM\JoinColumn(name: "utilisateur_expediteur_id", referencedColumnName: "id_utilisateur",  onDelete: 'SET NULL')] // On souhaite conserver la notif même si l'expediteur n'est plus la
     private ?Utilisateur $utilisateur_expediteur_id = null;
 
     // (inversedBy: 'notifications')
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(name: "utilisateur_destinataire_id", referencedColumnName: "id_utilisateur",  nullable: false)]
+    #[ORM\JoinColumn(name: "utilisateur_destinataire_id", referencedColumnName: "id_utilisateur",  nullable: false, onDelete: 'CASCADE')]
     private ?Utilisateur $utilisateur_destinataire_id = null;
 
     // (inversedBy: 'notifications')
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(name: "code_id", referencedColumnName: "code",  nullable: false)]
+    #[ORM\JoinColumn(name: "code_id", referencedColumnName: "code",  nullable: false, onDelete: 'CASCADE')]
     private ?UE $code_id = null;
 
     // (inversedBy: 'notifications')

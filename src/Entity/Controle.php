@@ -19,7 +19,7 @@ class Controle
 
     // targetEntity: UE::class,
     #[ORM\ManyToOne(inversedBy: 'controles')]
-    #[ORM\JoinColumn(name: "code_id", referencedColumnName: "code")]
+    #[ORM\JoinColumn(name: "code_id", referencedColumnName: "code", onDelete: 'CASCADE')]
     private ?UE $code = null;
 
     public function getId(): ?int

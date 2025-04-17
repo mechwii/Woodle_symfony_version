@@ -53,7 +53,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     // Dans l'autre classe donc Role on devra laisser comme c'est justee précisé le mapped qui inque le côté inverse
     #[ORM\JoinTable(
         name: 'possede',
-        joinColumns: [new ORM\JoinColumn(name: 'utilisateur_id', referencedColumnName: 'id_utilisateur')],
+        joinColumns: [new ORM\JoinColumn(name: 'utilisateur_id', referencedColumnName: 'id_utilisateur', onDelete: 'CASCADE')],
         inverseJoinColumns: [new ORM\JoinColumn(name: 'role_id', referencedColumnName: 'id_role')]
     )]
     private Collection $roles;

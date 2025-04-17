@@ -39,7 +39,7 @@ class Publication
     private ?Section $section_id = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(name: "utilisateur_id", referencedColumnName: "id_utilisateur")]
+    #[ORM\JoinColumn(name: "utilisateur_id", referencedColumnName: "id_utilisateur", onDelete: "SET NULL")]
     private ?Utilisateur $utilisateur_id = null;
 
     #[ORM\ManyToOne]
@@ -48,7 +48,7 @@ class Publication
 
     // (inversedBy: 'publications')
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(name: "code_id", referencedColumnName: "code")]
+    #[ORM\JoinColumn(name: "code_id", referencedColumnName: "code", onDelete: 'CASCADE')]
     private ?UE $code_id = null;
 
     /**

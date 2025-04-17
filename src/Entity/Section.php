@@ -17,7 +17,7 @@ class Section
     private ?string $nom = null;
 
     #[ORM\ManyToOne(inversedBy: 'sections')]
-    #[ORM\JoinColumn(name: "code_id", referencedColumnName: "code")]
+    #[ORM\JoinColumn(name: "code_id", referencedColumnName: "code", onDelete: "CASCADE")]
     private ?UE $code_id = null;
 
     public function getId(): ?int
