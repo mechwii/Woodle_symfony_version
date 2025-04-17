@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\EstAffecte;
+use App\Entity\Utilisateur;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -40,4 +41,18 @@ class EstAffecteRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    // src/Repository/EstAffecteRepository.php
+
+    public function findUeOfUser(int id): array
+    {
+        return $this->createQueryBuilder('liaison')
+            ->join('liaison.code_id', 'ue') // On joint la relation vers UE
+            ->addSelect('ue')               // On sélectionne UE explicitement
+            ->where('liaison.utilisateur_id = :utilisateur')
+            ->setParameter('utilisateur', $utilisateur)
+            ->getQuery()
+            ->getResult();
+    }
+
 }

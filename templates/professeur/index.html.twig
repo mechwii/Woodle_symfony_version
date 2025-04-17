@@ -10,10 +10,10 @@
 {% block content %}
     {# Ici on fait la bannière de la page, c'est quand on se connecte a notre photo de profil et notre role dans le site#}
     <div class="banner">
-        <img src="{{ asset('images/mhammed.jpeg') }}" alt="">
+        <img src="{{ asset('images/profil/mhammed.jpeg') }}" alt="">
         <div class="text">
-            <span class="bienvenue">Bienvenue sur votre espace M'hammed !</span>
-            <span class="role">Vous êtes professeur</span>
+            <span class="bienvenue">Bienvenue sur votre espace {{ user.prenom }} {{ user.nom }} !</span>
+            <span class="role">Vous êtes {{ user.roles|join(', ') }}</span>
         </div>
     </div>
 
@@ -51,15 +51,15 @@
                             <i class="lni lni-notebook-1"></i>
                             <span>12 Lessons</span>
                         </div>
-                        <i  class="lni lni-heart"></i>
+                        <i class="lni lni-heart"></i>
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
         <div class="carousel-dots">
-            <div class="dot active-dot" data-page="0"></div>
-            <div class="dot" data-page="1"></div>
+            <div class="dot active-dot" data-page="0">1</div>
+            <div class="dot" data-page="1">2</div>
         </div>
     </div>
 

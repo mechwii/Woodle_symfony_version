@@ -38,50 +38,59 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
 });
 
-// Logique d'affichage des pages en dessous :
+// ici on va gerer laffichage des ue dans la partie "mes cours"
 document.addEventListener("DOMContentLoaded", () => {
+    // on recupere les boutons qui permettent de filtrer
     const filtres = document.querySelectorAll(".selection_cours li");
-    const cours = document.querySelectorAll(".liste_ue .ue");
-
-    filtres.forEach((filtre, index) => {
-        filtre.addEventListener("click", () => {
-
-            // Logique de filtrage
-            if (filtre.textContent.trim().toLowerCase() === "favoris") {
-                cours.forEach(ue => {
-                    ue.style.display = ue.classList.contains("favorite-true") ? "flex" : "none";
-                });
-            } else {
-                // Affiche tout pour "Tous" ou autre filtre
-                cours.forEach(ue => ue.style.display = "flex");
-            }
-        });
-    });
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-    const filtres = document.querySelectorAll(".selection_cours li");
-    const dots = document.querySelectorAll(".carousel-dots .dot");
+    // on recupere le container des numeros de page pour naviguer entre les UE
+    const dotsContainer = document.querySelector(".carousel-dots");
+    // on recupere le container des cours
     const coursContainer = document.querySelector(".liste_ue");
+    // ici on recupere tous les cours
     let allCours = Array.from(coursContainer.querySelectorAll(".ue"));
+    // ici on initialise currentCours avec tous les cours car quand on arrive sur la page on affiche dabord tous les cours
     let currentCours = allCours;
+    // ici petite variable pour dire cb de cours on affiche
+    const coursParPage = 6;
 
-    const updateAffichage = (coursToShow) => {
-        // Affiche les 4 premiers seulement
-        allCours.forEach(c => c.style.display = "none");
-        coursToShow.forEach((ue, index) => {
-            ue.style.display = (index < 4) ? "flex" : "none";
-        });
+    // Fonction pour calculer cb de pages seront crées en bas
+    const createDots = (nbPages) => {
+        dotsContainer.innerHTML = ""; // dabord on reset pour que ce soit vide
+        // ensuite boucle for qui va compter le nombre de pages quon a recu en parametre
+        // et on va toutes les compter pour faire le nombre de boutons de page en bas
+        for (let i = 0; i < nbPages; i++) {
+            // ici on crée lelement dot c le numero de page, et on lui donne la classe dot et active-dot si c le tout premier car on commence toujours a la page 1
+            const dot = document.createElement("div");
+            dot.classList.add("dot");
+            if (i === 0) dot.classList.add("active-dot");
+            // on lui donne un data-page qui correspond a son numero
+            dot.dataset.page = i;
+            // et ici vu quon commence a 0 on fait +1 pour avoir le nombre au dessus car les humains comptnetn a partir de 1 et pas 0
+            dot.textContent = i + 1;
+            // on met chaque num de page dans le container des pages.
+            dotsContainer.appendChild(dot);
+
+            // a chaque click on met a jour le style du bouton de changement de page
+            dot.addEventListener("click", () => {
+                updateDots(i);
+            });
+        }
     };
 
+    // fonction de mise a jour des nums de page au niveau visuel
+    // on prend en parametre le numero de data-page
     const updateDots = (page) => {
+        const dots = dotsContainer.querySelectorAll(".dot");
+        // on enleve la classe .active-dot pour reset à 0
         dots.forEach(dot => dot.classList.remove("active-dot"));
-        dots[page].classList.add("active-dot");
+        // on rajoute alors la classe active-dot seulement au dot qui correspond à la page obtenu en parametre
+        if (dots[page]) dots[page].classList.add("active-dot");
+        // ici on calcule lintervalle delements a afficher (les cours) si on affiche 6 elements par page
+        const start = page * coursParPage; // ex : si la page en param est 0 alors 0*6 = 0 = start
+        const end = start + coursParPage; // ex : 0 + 6 = 6 = end, // pour la page 1 ce sera 6 et 12 etc...
+        allCours.forEach(c => c.style.display = "none"); // on cache tous les cours pour repartir de 0
 
-        // Affiche les 4 cours correspondant à la page
-        const start = page * 6;
-        const end = start + 6;
-        allCours.forEach(c => c.style.display = "none");
+        // on affiche que les cours par page correspondante, ex pour page 0 ceux qui ont lindex=data-page 0 à 5
         currentCours.forEach((ue, index) => {
             if (index >= start && index < end) ue.style.display = "flex";
         });
@@ -90,29 +99,30 @@ document.addEventListener("DOMContentLoaded", () => {
     // Filtres
     filtres.forEach((filtre) => {
         filtre.addEventListener("click", () => {
+            // on reset le style à défaut pour tous
             filtres.forEach(f => f.classList.remove("active"));
             filtre.classList.add("active");
 
+            // on prend le texte du menu et on afficeh en fonction de son nom les bonnes ue, favoris, recemment consultés ou tous.
             const type = filtre.textContent.trim().toLowerCase();
             if (type === "favoris") {
                 currentCours = allCours.filter(c => c.classList.contains("favorite-true"));
+            } else if (type === "derniers cours consultés") {
+                currentCours = allCours.filter(c => c.classList.contains("recent-true"));
             } else {
                 currentCours = allCours;
             }
 
-            // Réinitialise la pagination
+            // on calucle le nombre de pages en tout en arrondissant ou supérieur si c 2,3 par exemple alors ce sera 3 pages.
+            const nbPages = Math.ceil(currentCours.length / coursParPage);
+            createDots(nbPages);
             updateDots(0);
         });
     });
 
-    // Dots (pagination)
-    dots.forEach(dot => {
-        dot.addEventListener("click", () => {
-            const page = parseInt(dot.dataset.page);
-            updateDots(page);
-        });
-    });
-
-    // Initialisation
+    // on initialise au début
+    const nbPagesInitial = Math.ceil(currentCours.length / coursParPage);
+    createDots(nbPagesInitial);
     updateDots(0);
 });
+

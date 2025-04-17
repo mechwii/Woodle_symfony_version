@@ -224,3 +224,82 @@ VALUES ('Normale'),
        ('Élevée'),
        ('Ultra-élevée');
 
+
+INSERT INTO UE (
+    code,
+    nom,
+    description,
+    semestre,
+    image
+)
+VALUES
+    (
+        'WE4A',
+        'Développement Web - PHP',
+        'Nous apprenons les bases du développement web en passant par HTML, CSS, Javascript ainsi que PHP',
+        'Semestre 2',
+        'banner-we4a.jpg'
+    ),
+    (
+        'SY43',
+        'Développement Mobile - Android',
+        'Introduction au développement mobile sur Android avec Java et Kotlin',
+        'Semestre 2',
+        'banner-sy43.jpg'
+    ),
+    (
+        'SI40',
+        'Bases de données - SQL',
+        'Apprentissage des bases de données, de la modélisation à l''utilisation de SQL pour interagir avec les données',
+        'Semestre 2',
+        'banner-si40.jpg'
+    ),
+    (
+        'RS40',
+        'Sécurité Informatique',
+        'Introduction à la sécurité informatique et aux techniques pour protéger les systèmes et réseaux',
+        'Semestre 2',
+        'banner-rs40.jpg'
+    ),
+    (
+        'UX3E',
+        'UX/UI Design',
+        'Introduction aux concepts de design d''interface et d''expérience utilisateur, avec une approche pratique des outils comme Figma et Sketch',
+        'Semestre 1',
+        'banner-ux3e.jpg'
+    ),
+    (
+        'RE4E',
+        'Réseaux et Télécommunications',
+        'Les concepts fondamentaux des réseaux informatiques et des télécommunications, avec un focus sur les protocoles réseau et l''architecture',
+        'Semestre 1',
+        'banner-re4e.jpg'
+    ),
+    (
+        'IA41',
+        'Intelligence Artificielle - Introduction',
+        'Ce cours explore les bases de l’intelligence artificielle, y compris l’apprentissage supervisé et non supervisé, les réseaux neuronaux, etc.',
+        'Semestre 1',
+        'banner-ia41.jpg'
+    ),
+    (
+        'GD2H',
+        'Gestion de Projet Informatique',
+        'Les principes de la gestion de projet informatique, de la planification à la gestion des risques et des ressources',
+        'Semestre 2',
+        'banner-gd2h.jpg'
+    ),
+    (
+        'ML6I',
+        'Apprentissage Automatique (Machine Learning)',
+        'Introduction à l’apprentissage automatique, avec une étude des modèles de régression, de classification et des réseaux neuronaux',
+        'Semestre 1',
+        'banner-ml6i.jpg'
+    ),
+    (
+        'BD4J',
+        'Blockchain et Cryptomonnaies',
+        'Un cours sur les principes de la blockchain, de la cryptomonnaie, ainsi que des applications modernes de cette technologie',
+        'Semestre 2',
+        'banner-bd4j.jpg'
+    );
