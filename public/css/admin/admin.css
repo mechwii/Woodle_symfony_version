@@ -76,55 +76,6 @@
     display: none!important;
 }
 
-/* Responsive */
-
-@media only screen and (max-width: 1200px) {
-    .statistiques-section {
-        width: 45%;
-    }
-}
-
-@media only screen and (max-width: 800px) {
-    .welcome-section {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-
-
-
-    .statistiques-section {
-        width: 100%;
-    }
-}
-
-@media only screen and (max-width: 500px) {
-    .welcome-content h1 {
-        font-size: 1.2rem;
-    }
-
-    #photo-welcome {
-        width: 80px;
-    }
-
-    .statistiques-section {
-        width: 100%;
-        padding: 2vh 4vw;
-    }
-
-    .svg-icon {
-        font-size: 40px;
-    }
-
-    .top-statistiques-section h4 {
-        font-size: 1rem;
-    }
-
-    .statistiques-section h5 {
-        font-size: 0.9rem;
-    }
-}
-
 .dashboard {
     display: flex;
     flex-direction: column;
@@ -141,6 +92,7 @@
     background-color: #F6F6F6;
     justify-content: space-between;
     border-radius: 10px;
+    /*width: 80%;*/
     width: 60%;
     padding: 1.3vh 1vw;
     user-select: none;
@@ -193,8 +145,6 @@
     border: none;
     padding: 17px 80px;
     border-radius: 10px;
-
-
 }
 
 .loop {
@@ -271,11 +221,12 @@
     display: flex;
     justify-content: space-between;
     padding-right: 50px;
+
     align-items: center;
     background-color: #fff;
     border-radius: 5px;
     box-shadow: 0px 0px 30px 5px rgba(0, 0, 0, 0.08);
-    margin: 15px 0;
+    margin: 20px 0;
     z-index: 10;
     transition: scale 0.2s ease-in-out;
 }
@@ -354,4 +305,170 @@
     width: 220px;
     object-fit: cover;
     border-radius: 10px;
+}
+
+/* Responsive */
+
+@media only screen and (max-width: 1200px) {
+    .statistiques-section {
+        width: 45%;
+    }
+
+    .stylized-input{
+        font-size: 15px;
+        padding: 13px 60px;
+    }
+
+    .edit-icon{
+        font-size: 17px;
+    }
+
+    .center-dashboard-content{
+        font-size: 15px;
+    }
+
+    #user-picture {
+        height: 90px;
+    }
+
+    #ue-picture {
+        height: 130px;
+        width: 200px;
+    }
+
+    .card-box{
+        padding-right: 30px;
+    }
+
+    .button {
+        padding: 8px 20px;
+        width: 160px;
+        font-size: 15px;
+
+    }
+
+    .loop{
+        margin: 10px 15px;
+        font-size: 15px;
+    }
+}
+
+@media only screen and (max-width: 800px) {
+    .welcome-section {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .filter-section{
+        width: 43%;
+    }
+
+    .dashboard-select{
+     width: 80%;
+    }
+
+    #user-picture {
+        height: 70px;
+    }
+
+    #ue-picture {
+        height: 100px;
+        width: 170px;
+    }
+
+
+
+    .card-box{
+        padding-right: 10px;
+    }
+
+    .edit-icon{
+        font-size: 14px;
+        padding: 6px;
+    }
+
+    .statistiques-section {
+        width: 100%;
+    }
+
+    .center-dashboard-content{
+        font-size: 13px;
+    }
+
+    .card-content{
+        font-size: 17px;
+
+    }
+
+    .stylized-input{
+        font-size: 13px;
+        padding: 10px 50px;
+    }
+
+    .button {
+        padding: 8px 18px;
+        width: 130px;
+    }
+
+
+}
+
+@media only screen and (max-width: 500px) {
+    .welcome-content h1 {
+        font-size: 1.2rem;
+    }
+
+    #photo-welcome {
+        width: 80px;
+    }
+
+    .statistiques-section {
+        width: 100%;
+        padding: 2vh 4vw;
+    }
+
+    .svg-icon {
+        font-size: 40px;
+    }
+
+    .card-content{
+        font-size: 12px;
+    }
+
+    .top-statistiques-section h4 {
+        font-size: 1rem;
+    }
+
+    .statistiques-section h5 {
+        font-size: 0.9rem;
+    }
+
+    .stylized-input{
+        font-size: 10px;
+        padding: 10px 22px;
+    }
+
+    .button {
+        padding: 8px 10px;
+        font-size: 10px;
+        width: 75px;
+    }
+
+    .center-dashboard-content{
+        font-size: 10px;
+    }
+
+    #ue-picture {
+        height: 90px;
+        width: 140px;
+    }
+
+
+
+    .loop{
+        margin: 12px 8px;
+        font-size: 10px;
+    }
+
 }
