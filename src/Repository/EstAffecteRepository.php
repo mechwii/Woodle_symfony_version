@@ -44,7 +44,7 @@ class EstAffecteRepository extends ServiceEntityRepository
 
     // src/Repository/EstAffecteRepository.php
 
-    public function findUeOfUser(int id): array
+    /*public function findUeOfUser(int id): array
     {
         return $this->createQueryBuilder('liaison')
             ->join('liaison.code_id', 'ue') // On joint la relation vers UE
@@ -53,6 +53,6 @@ class EstAffecteRepository extends ServiceEntityRepository
             ->setParameter('utilisateur', $utilisateur)
             ->getQuery()
             ->getResult();
-    }
+    }*/
 
 }

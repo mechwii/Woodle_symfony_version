@@ -41,14 +41,13 @@ final class ProfesseurController extends AbstractController
         $user = $this->getUser(); // récupération du prof connecté
 
         $ues = $ueRepository->findAll();
-        $uesAssociees = $estAffecteRepository->trouverUEParUtilisateur($user);
+//        $uesAssociees = $estAffecteRepository->trouverUEParUtilisateur($user);
 
         return $this->render('professeur/index.html.twig', [
             'controller_name' => 'ProfesseurController',
             'data' => $data,
             'user' => $user,
             'ues' => $ues,
-            'uesa' => $uesAssociees,
         ]);
     }
 
