@@ -45,6 +45,10 @@ class UE
     #[ORM\OneToMany(targetEntity: EstAffecte::class, mappedBy: 'code_id')]
     private Collection $estAffectes;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: "responsable_id", referencedColumnName: "id_utilisateur", nullable: false)]
+    private ?Utilisateur $responsable_id = null;
+
     /**
      * @var Collection<int, Notification>
      *
@@ -268,6 +272,18 @@ class UE
                 $estAffecte->setCodeId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getResponsableId(): ?Utilisateur
+    {
+        return $this->responsable_id;
+    }
+
+    public function setResponsableId(?Utilisateur $responsable_id): static
+    {
+        $this->responsable_id = $responsable_id;
 
         return $this;
     }

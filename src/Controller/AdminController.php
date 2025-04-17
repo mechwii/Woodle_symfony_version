@@ -19,8 +19,14 @@ final class AdminController extends AbstractController
             dump($BDDManager->getRepository(UE::class)->find($estAffecte->getCodeId())->getNom());
         }
         */
+        $connection = $BDDManager->getConnection();
 
-        $ue= $BDDManager->getRepository(UE::class)->findAll();
+        // Récupération des UE avec Nom Responsable
+        $sql ='SELECT Ue.code, Ue.nom, Ue.description, Ue.semestre, Ue.image, u.nom as nom_responsable, u.prenom as prenom_responsable  FROM Ue INNER JOIN Utilisateur u ON u.id_utilisateur = UE.responsable_id';
+        $prepareSQL = $connection->prepare($sql);
+        $resultat = $prepareSQL->executeQuery();
+        $ue = $resultat->fetchAllAssociative();
+
         $utilisateur = $this->getUser();
         $roles = $utilisateur->getRoles();
         $statistiques = [[
@@ -42,7 +48,6 @@ final class AdminController extends AbstractController
         // Certains utilisateurs ont plusieurs rôles et plusieurs UE donc il faut ajouter ça à chaque enregistrement
         $AllUtilisateurWithRole= [];
 
-        $connection = $BDDManager->getConnection();
         $sql ='SELECT u.code, u.nom FROM Est_Affecte ea INNER JOIN UE u ON u.code = ea.code_id WHERE ea.utilisateur_id = :id;';
         foreach ($allUtilisateur as $user) {
 
@@ -61,6 +66,7 @@ final class AdminController extends AbstractController
                 'UE' => $ues
             ];
         }
+
         return $this->render('admin/index.html.twig', [
             'controller_name' => 'AdminController',
             'utilisateur' => $utilisateur,
@@ -70,6 +76,7 @@ final class AdminController extends AbstractController
             "ue" => $ue,
         ]);
     }
+
 
     #[Route('/admin/profil', name: 'admin_profil')]
     public function profile(EntityManagerInterface $BDDManager): Response
