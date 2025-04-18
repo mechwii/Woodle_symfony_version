@@ -1,0 +1,215 @@
+{% extends 'professeur/base_professeur.html.twig' %}
+
+{% block title %}Contenu UE | Professeur{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/admin/contenu_ue/contenu_ue.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/contenu_ue/contenu_ue_responsive.css') }}">
+{% endblock %}
+
+{% block content %}
+
+{#    Titre de l'UE pour savoir dans quelle UE on se situe#}
+    <div class="title_ue">
+        <h2>{{ ue.nom }}</h2>
+        <span class="code">{{ ue.id }}</span>
+    </div>
+
+{#    Il me faut une liste des utilisateurs qui apparait quand je clique sur un des btn stats
+dedans il me faut un slider pour switch entre les deux eleves/professeurs
+
+#}
+    <div class="popUpListe">
+        <div class="boutonsSwitchListes">
+            <div class="switch-background-liste"></div>
+            <div class="student">Etudiants</div>
+            <div class="teacher">Professeurs</div>
+        </div>
+
+        <div class="containerListe">
+            <div id="liste-data"
+                 data-eleves='{{ liste_eleves_ue|json_encode|e('html_attr') }}'
+                 data-profs='{{ liste_profs_ue|json_encode|e('html_attr') }}'>
+            </div>
+        </div>
+    </div>
+    <div class="popUpUser">
+        {% for eleve in liste_eleves_ue %}
+            <ul>
+                <li>{{ eleve.prenom }}</li>
+            </ul>
+        {% endfor %}
+    </div>
+
+    <div class="popUpProf">
+        {% for prof in liste_profs_ue %}
+            <ul>
+                <li>{{ prof.prenom }}</li>
+                <li>{{ prof.nom }}</li>
+                <li>{{ prof.email }}</li>
+                <li>{{ prof.image }}</li>
+            </ul>
+        {% endfor %}
+    </div>
+{#    Partie statistiques liée aux statistiques concernant cette UE, on peut cliquer sur les divs pour voir qui sont spécifiquement les professerus et les étudiants #}
+    <div class="statistiques">
+
+        <div class="statistiques-section">
+            <div class="top-statistiques-section eleves">
+                <h4>Nombre d'élèves</h4>
+                <svg class="svg-icon" viewBox="0 0 20 20">
+                    <path
+                            d="M15.573,11.624c0.568-0.478,0.947-1.219,0.947-2.019c0-1.37-1.108-2.569-2.371-2.569s-2.371,1.2-2.371,2.569c0,0.8,0.379,1.542,0.946,2.019c-0.253,0.089-0.496,0.2-0.728,0.332c-0.743-0.898-1.745-1.573-2.891-1.911c0.877-0.61,1.486-1.666,1.486-2.812c0-1.79-1.479-3.359-3.162-3.359S4.269,5.443,4.269,7.233c0,1.146,0.608,2.202,1.486,2.812c-2.454,0.725-4.252,2.998-4.252,5.685c0,0.218,0.178,0.396,0.395,0.396h16.203c0.218,0,0.396-0.178,0.396-0.396C18.497,13.831,17.273,12.216,15.573,11.624 M12.568,9.605c0-0.822,0.689-1.779,1.581-1.779s1.58,0.957,1.58,1.779s-0.688,1.779-1.58,1.779S12.568,10.427,12.568,9.605 M5.06,7.233c0-1.213,1.014-2.569,2.371-2.569c1.358,0,2.371,1.355,2.371,2.569S8.789,9.802,7.431,9.802C6.073,9.802,5.06,8.447,5.06,7.233 M2.309,15.335c0.202-2.649,2.423-4.742,5.122-4.742s4.921,2.093,5.122,4.742H2.309z M13.346,15.335c-0.067-0.997-0.382-1.928-0.882-2.732c0.502-0.271,1.075-0.429,1.686-0.429c1.828,0,3.338,1.385,3.535,3.161H13.346z">
+                    </path>
+                </svg>
+
+            </div>
+            <div class="bottom-stats">
+                <span class="number">{{ nb_eleves_ue }}</span>
+                <i class="fa-solid fa-hand-pointer"></i>
+            </div>
+        </div>
+
+        <div class="statistiques-section">
+            <div class="top-statistiques-section professeurs">
+                <h4>Nombre d'enseignants</h4>
+                <svg class="svg-icon" viewBox="0 0 20 20">
+                    <path
+                            d="M15.573,11.624c0.568-0.478,0.947-1.219,0.947-2.019c0-1.37-1.108-2.569-2.371-2.569s-2.371,1.2-2.371,2.569c0,0.8,0.379,1.542,0.946,2.019c-0.253,0.089-0.496,0.2-0.728,0.332c-0.743-0.898-1.745-1.573-2.891-1.911c0.877-0.61,1.486-1.666,1.486-2.812c0-1.79-1.479-3.359-3.162-3.359S4.269,5.443,4.269,7.233c0,1.146,0.608,2.202,1.486,2.812c-2.454,0.725-4.252,2.998-4.252,5.685c0,0.218,0.178,0.396,0.395,0.396h16.203c0.218,0,0.396-0.178,0.396-0.396C18.497,13.831,17.273,12.216,15.573,11.624 M12.568,9.605c0-0.822,0.689-1.779,1.581-1.779s1.58,0.957,1.58,1.779s-0.688,1.779-1.58,1.779S12.568,10.427,12.568,9.605 M5.06,7.233c0-1.213,1.014-2.569,2.371-2.569c1.358,0,2.371,1.355,2.371,2.569S8.789,9.802,7.431,9.802C6.073,9.802,5.06,8.447,5.06,7.233 M2.309,15.335c0.202-2.649,2.423-4.742,5.122-4.742s4.921,2.093,5.122,4.742H2.309z M13.346,15.335c-0.067-0.997-0.382-1.928-0.882-2.732c0.502-0.271,1.075-0.429,1.686-0.429c1.828,0,3.338,1.385,3.535,3.161H13.346z">
+                    </path>
+                </svg>
+
+            </div>
+            <div class="bottom-stats">
+                <span class="number">{{ nb_profs_ue }}</span>
+                <i class="fa-solid fa-hand-pointer"></i>
+            </div>
+
+        </div>
+    </div>
+
+{#    Les interactions possibles avec les Publications situées plus bas#}
+
+    <div class="interactions">
+        <button class="filter_button">
+            <i class="fa-solid fa-filter"></i>
+            Filtrer
+        </button>
+        <button class="sort_button">
+            <i class="fa-solid fa-arrow-up-wide-short"></i>
+            Trier
+        </button>
+        <button class="add_post">
+            <i class="fa-solid fa-feather"></i>
+            Ecrire une nouvelle publication
+        </button>
+    </div>
+
+{#Partie liste des publications#}
+    <div class="liste_posts">
+        <div class="post info">
+            <div class="top_post">
+                <h5 class="title_post">Début des TD</h5>
+                <span class="date_post">22/02 11:39</span>
+                <div class="interactions_post">
+                    <button class="edit_post"><i class="fa-solid fa-pen"></i></button>
+                    <button class="delete_post"><i class="fa-solid fa-trash"></i></button>
+                </div>
+                <!-- Icône trois points -->
+                <i class="fa-solid fa-ellipsis-h ellipsis_icon"></i>
+
+                <!-- Menu d'options caché par défaut -->
+                <div class="options_menu">
+                    <button class="edit_post">Modifier</button>
+                    <button class="delete_post">Supprimer</button>
+                </div>
+            </div>
+            <p class="text_post">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis facere sed officia. Optio eos atque corrupti, explicabo dolorem nulla id ipsam quasi voluptas dignissimos, sed facere magnam debitis reiciendis similique.</p>
+        </div>
+
+        <div class="post warning">
+            <div class="top_post">
+                <h5 class="title_post">Début des TD</h5>
+                <span class="date_post">22/02 11:39</span>
+                <div class="interactions_post">
+                    <button class="edit_post"><i class="fa-solid fa-pen"></i></button>
+                    <button class="delete_post"><i class="fa-solid fa-trash"></i></button>
+                </div>
+                <!-- Icône trois points -->
+                <i class="fa-solid fa-ellipsis-h ellipsis_icon"></i>
+
+                <!-- Menu d'options caché par défaut -->
+                <div class="options_menu">
+                    <button class="edit_post">Modifier</button>
+                    <button class="delete_post">Supprimer</button>
+                </div>
+            </div>
+            <p class="text_post">Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto, molestias ratione! Laudantium sed velit blanditiis nesciunt perspiciatis eius aspernatur porro ducimus ut quaerat saepe magni itaque, praesentium tempore consectetur temporibus?</p>
+        </div>
+
+        <div class="post calendar">
+            <div class="top_post">
+                <h5 class="title_post">Début des TD</h5>
+                <span class="date_post">22/02 11:39</span>
+                <div class="interactions_post">
+                    <button class="edit_post"><i class="fa-solid fa-pen"></i></button>
+                    <button class="delete_post"><i class="fa-solid fa-trash"></i></button>
+                </div>
+                <!-- Icône trois points -->
+                <i class="fa-solid fa-ellipsis-h ellipsis_icon"></i>
+
+                <!-- Menu d'options caché par défaut -->
+                <div class="options_menu">
+                    <button class="edit_post">Modifier</button>
+                    <button class="delete_post">Supprimer</button>
+                </div>
+            </div>
+            <p class="text_post">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fuga sapiente reprehenderit ad error! Laborum voluptatum nostrum neque delectus ipsam expedita corporis. Sequi ducimus autem maxime delectus alias assumenda numquam temporibus!</p>
+        </div>
+
+        <div class="post file">
+            <div class="top_post">
+                <h5 class="title_post">Début des TD</h5>
+                <span class="date_post">22/02 11:39</span>
+                <div class="interactions_post">
+                    <button class="edit_post"><i class="fa-solid fa-pen"></i></button>
+                    <button class="delete_post"><i class="fa-solid fa-trash"></i></button>
+                </div>
+                <!-- Icône trois points -->
+                <i class="fa-solid fa-ellipsis-h ellipsis_icon"></i>
+
+                <!-- Menu d'options caché par défaut -->
+                <div class="options_menu">
+                    <button class="edit_post">Modifier</button>
+                    <button class="delete_post">Supprimer</button>
+                </div>
+            </div>
+            <div class="download">
+                <i class="fa-solid fa-file-pdf"></i>
+                <span class="nom_fichier">Diapo.pdf</span>
+                <i class="fa-solid fa-download"></i>
+            </div>
+        </div>
+    </div>
+    <div class="popupPublication hidden">
+        <h3>Ecrire une nouvelle publication</h3>
+        <div class="boutonsSwitch">
+            <div class="switch-background"></div>
+            <div class="text">Texte</div>
+            <div class="file">Fichier</div>
+        </div>
+
+        <div class="formulaireContainer">
+            <!-- Le contenu du formulaire s'affichera ici dynamiquement -->
+        </div>
+
+
+    </div>
+    <div class="darkBackground hidden"></div>
+
+    {% block javascripts %}
+        {{ parent() }}
+        <script src="{{ asset('js/contenu_ue/contenu_ue.js') }}"></script>
+    {% endblock %}
+{% endblock %}

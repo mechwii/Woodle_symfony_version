@@ -40,12 +40,12 @@
         </div>
         <hr>
         <div class="liste_ue">
-            {% for ue in data %}
-            <div class="ue favorite-{{ ue.favorite }}">
-                <img src="{{ asset('images/ue/banner_ue_placeholder.jpg') }}" alt="">
+            {% for ue in ues %}
+            <div class="ue favorite-{{ ue.favori ? 'true' : 'false' }}">
+                <img src="{{ asset('images/ue/' ~ ue.image) }}" alt="">
                 <div class="infos">
-                    <h5>{{ ue.code }} - Développement web</h5>
-                    <span class="responsable">Responsable :  ABBAS-TURKI</span>
+                    <h5>{{ ue.code }} - {{ ue.nom }}</h5>
+                    <span class="responsable">Responsable : {{ ue.prenom}}  {{ ue.nom_responsable }}</span>
                     <div class="more">
                         <div class="lessons">
                             <i class="lni lni-notebook-1"></i>

@@ -1,0 +1,77 @@
+/*Mise en place du responsive sur la partie des boutons des publications*/
+
+@media only screen
+and (max-width : 940px) {
+    div.content_contenu_ue > div.statistiques > div.statistiques-section {
+        width: 50%;
+    }
+}
+
+@media only screen
+and (max-width : 750px) {
+    div.interactions {
+        flex-wrap: wrap;
+        gap: 1em;
+    }
+
+    div.download {
+        width: 100% !important;
+    }
+}
+
+@media only screen
+and (max-width : 550px) {
+    div.content_contenu_ue > div.statistiques {
+        flex-direction: column;
+        gap: 1em;
+
+    }
+    div.content_contenu_ue > div.statistiques > div.statistiques-section {
+        width: 100%;
+        margin-right: 0;
+    }
+}
+
+
+.options_menu {
+    display: none;
+    position: absolute;
+    right: 92px;
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.options_menu button {
+    display: block;
+    width: 100%;
+    border: none;
+    background: none;
+    padding: 10px;
+    cursor: pointer;
+    text-align: left;
+    font-family: "Sora", sans-serif;
+
+}
+
+.options_menu button:hover {
+    background: #eee;
+}
+
+.ellipsis_icon {
+    display: none !important;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+@media screen and (max-width: 460px) {
+    .interactions_post {
+        display: none;
+    }
+    .ellipsis_icon {
+        display: block !important;
+        margin-left: auto;
+    }
+}
+

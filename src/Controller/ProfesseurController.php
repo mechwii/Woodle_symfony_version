@@ -10,45 +10,130 @@ use Symfony\Component\Routing\Attribute\Route;
 use App\Repository\UERepository;
 use App\Repository\EstAffecteRepository;
 
+use App\Entity\UE;
+use App\Entity\Utilisateur;
+use Doctrine\ORM\EntityManagerInterface;
+
 final class ProfesseurController extends AbstractController
 {
     // Crééation de la route pour arriver sur la page Choix_UE apres le login
     #[Route('/professeur', name: 'app_professeur')]
-    public function index(UERepository $ueRepository, EstAffecteRepository $estAffecteRepository): Response
+    public function index(EntityManagerInterface $BDDManager): Response
     {
-        $data = [
-            ["code"=>"WE4A", "nom"=>"Développement Web", "responsable"=>"Fabrice Ambert", "nb_lessons"=>12, "favorite"=>true ? "true" : "false"],
-            ["code"=>"APAYA", "nom"=>"Développement Web", "responsable"=>"Fabrice Ambert", "nb_lessons"=>12, "favorite"=>false ? "true" : "false"],
-            ["code"=>"FERG", "nom"=>"Développement Web", "responsable"=>"Fabrice Ambert", "nb_lessons"=>12, "favorite"=>true ? "true" : "false"],
-            ["code"=>"DGFG", "nom"=>"Développement Web", "responsable"=>"Fabrice Ambert", "nb_lessons"=>12, "favorite"=>true ? "true" : "false"],
-            ["code"=>"TYJ", "nom"=>"Développement Web", "responsable"=>"Fabrice Ambert", "nb_lessons"=>12, "favorite"=>true ? "true" : "false"],
-            ["code"=>"TYJT", "nom"=>"Développement Web", "responsable"=>"Fabrice Ambert", "nb_lessons"=>12, "favorite"=>false ? "true" : "false"],
-            ["code"=>"SDFS", "nom"=>"Développement Web", "responsable"=>"Fabrice Ambert", "nb_lessons"=>12, "favorite"=>true ? "true" : "false"],
-            ["code"=>"ERGERH", "nom"=>"Développement Web", "responsable"=>"Fabrice Ambert", "nb_lessons"=>12, "favorite"=>true ? "true" : "false"],
-            ["code"=>"WETHRTH4A", "nom"=>"Développement Web", "responsable"=>"Fabrice Ambert", "nb_lessons"=>12, "favorite"=>true ? "true" : "false"],
-            ["code"=>"RTH", "nom"=>"Développement Web", "responsable"=>"Fabrice Ambert", "nb_lessons"=>12, "favorite"=>false ? "true" : "false"],
-            ["code"=>"EZRF", "nom"=>"Développement Web", "responsable"=>"Fabrice Ambert", "nb_lessons"=>12, "favorite"=>true ? "true" : "false"],
-            ["code"=>"ZR", "nom"=>"Développement Web", "responsable"=>"Fabrice Ambert", "nb_lessons"=>12, "favorite"=>true ? "true" : "false"],
-            ["code"=>"RZER", "nom"=>"Développement Web", "responsable"=>"Fabrice Ambert", "nb_lessons"=>12, "favorite"=>false ? "true" : "false"],
-            ["code"=>"RZ", "nom"=>"Développement Web", "responsable"=>"Fabrice Ambert", "nb_lessons"=>12, "favorite"=>true ? "true" : "false"],
-            ["code"=>"ZRZER", "nom"=>"Développement Web", "responsable"=>"Fabrice Ambert", "nb_lessons"=>12, "favorite"=>true ? "true" : "false"],
-            ["code"=>"HTRH", "nom"=>"Développement Web", "responsable"=>"Fabrice Ambert", "nb_lessons"=>12, "favorite"=>false ? "true" : "false"],
-            ["code"=>"HRHRJ-", "nom"=>"Développement Web", "responsable"=>"Fabrice Ambert", "nb_lessons"=>12, "favorite"=>true ? "true" : "false"],
-            ["code"=>"H-U-U", "nom"=>"Développement Web", "responsable"=>"Fabrice Ambert", "nb_lessons"=>12, "favorite"=>true ? "true" : "false"],
 
-        ];
+        // récupération du prof connecté
+        $user = $this->getUser();
 
-        $user = $this->getUser(); // récupération du prof connecté
+        $connection = $BDDManager->getConnection();
 
-        $ues = $ueRepository->findAll();
-//        $uesAssociees = $estAffecteRepository->trouverUEParUtilisateur($user);
+        $sql = '
+                SELECT ue.code, ue.nom, ue.description, ue.semestre, ue.image,
+                       u.nom AS nom_responsable, u.prenom, est_affecte.favori
+                FROM ue
+                INNER JOIN est_affecte ON est_affecte.code_id = ue.code
+                INNER JOIN utilisateur u ON u.id_utilisateur = est_affecte.utilisateur_id
+                WHERE est_affecte.utilisateur_id = :user_id
+                ';
+
+        $prepareSQL = $connection->prepare($sql);
+        $resultat = $prepareSQL->executeQuery(['user_id' => $user->getId()]);
+
+        $ues = $resultat->fetchAllAssociative();
+
 
         return $this->render('professeur/index.html.twig', [
             'controller_name' => 'ProfesseurController',
-            'data' => $data,
             'user' => $user,
             'ues' => $ues,
         ]);
     }
+
+    #[Route('/professeur/contenu_ue-{codeUe}', name: 'contenu_ue_professeur')]
+    public function contenuUe(string $codeUe, EntityManagerInterface $BDDManager): Response
+    {
+        // Récupération du prof connecté
+        $user = $this->getUser();
+
+        $ue = $BDDManager->getRepository(Ue::class)->findOneBy(['id' => $codeUe]);
+
+        $connection = $BDDManager->getConnection();
+
+        // recuperation du nb deleves dans lue
+        $sql_nb_eleves_dans_ue = '
+                SELECT COUNT(est_affecte.utilisateur_id) AS number
+                FROM ue
+                INNER JOIN est_affecte ON est_affecte.code_id = ue.code
+                INNER JOIN utilisateur ON utilisateur.id_utilisateur = est_affecte.utilisateur_id
+                INNER JOIN possede ON possede.utilisateur_id = utilisateur.id_utilisateur
+                WHERE ue.code = :codeUe AND possede.role_id = 3
+                ';
+
+        $prepareSQL = $connection->prepare($sql_nb_eleves_dans_ue);
+        $resultat = $prepareSQL->executeQuery(['codeUe' => $codeUe]);
+        $nb_eleves_ue = $resultat->fetchOne();
+
+        // recupereation de la liste des eleves
+
+        $sql_liste_eleves_dans_ue = '
+                SELECT utilisateur.nom, utilisateur.prenom, utilisateur.email, utilisateur.image
+                FROM ue
+                INNER JOIN est_affecte ON est_affecte.code_id = ue.code
+                INNER JOIN utilisateur ON utilisateur.id_utilisateur = est_affecte.utilisateur_id
+                INNER JOIN possede ON possede.utilisateur_id = utilisateur.id_utilisateur
+                WHERE ue.code = :codeUe AND possede.role_id = 2
+                ';
+
+        $prepareSQL = $connection->prepare($sql_liste_eleves_dans_ue);
+        $resultat = $prepareSQL->executeQuery(['codeUe' => $codeUe]);
+        $liste_eleves_ue = $resultat->fetchAllAssociative();
+
+        // recuperation du nombre denseignants
+        $sql_nb_profs_dans_ue = '
+                SELECT COUNT(est_affecte.utilisateur_id) AS number
+                FROM ue
+                INNER JOIN est_affecte ON est_affecte.code_id = ue.code
+                INNER JOIN utilisateur ON utilisateur.id_utilisateur = est_affecte.utilisateur_id
+                INNER JOIN possede ON possede.utilisateur_id = utilisateur.id_utilisateur
+                WHERE ue.code = :codeUe AND possede.role_id = 2
+                ';
+
+        $prepareSQL = $connection->prepare($sql_nb_profs_dans_ue);
+        $resultat = $prepareSQL->executeQuery(['codeUe' => $codeUe]);
+        $nb_profs_ue = $resultat->fetchOne();
+
+
+        // recupereation de la liste des enseignants
+
+        $sql_liste_profs_dans_ue = '
+                SELECT utilisateur.nom, utilisateur.prenom, utilisateur.email, utilisateur.image
+                FROM ue
+                INNER JOIN est_affecte ON est_affecte.code_id = ue.code
+                INNER JOIN utilisateur ON utilisateur.id_utilisateur = est_affecte.utilisateur_id
+                INNER JOIN possede ON possede.utilisateur_id = utilisateur.id_utilisateur
+                WHERE ue.code = :codeUe AND possede.role_id = 2
+                ';
+
+        $prepareSQL = $connection->prepare($sql_liste_profs_dans_ue);
+        $resultat = $prepareSQL->executeQuery(['codeUe' => $codeUe]);
+        $liste_profs_ue = $resultat->fetchAllAssociative();
+
+
+        // recuperation de la lsite des postes (les insert avant)
+//        insert section
+        /*insert epingle
+        insert type_publication
+        */
+//        insert publication
+
+        return $this->render('professeur/contenu_ue.html.twig', [
+            'controller_name' => 'ProfesseurController',
+            'ue' => $ue,
+            'nb_eleves_ue' => $nb_eleves_ue,
+            'nb_profs_ue' => $nb_profs_ue,
+            'liste_eleves_ue' => $liste_eleves_ue,
+            'liste_profs_ue' => $liste_profs_ue,
+        ]);
+    }
+
 
 }

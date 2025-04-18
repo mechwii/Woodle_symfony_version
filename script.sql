@@ -334,3 +334,22 @@ INSERT INTO Est_affecte (utilisateur_id, code_id, favori, date_inscription)
 VALUES (2, 'RE4E', TRUE, '2025-04-09 12:05:00');
 
 UPDATE Utilisateur set image='mhammed.jpeg';
+
+INSERT INTO Section (id_section, nom, code_id)
+VALUES
+    (1, 'Cours Magistraux', 'IA41'),
+    (2, 'TP', 'IA41'),
+    (3, 'TD', 'IA41');
+
+INSERT INTO publication (id_publication, titre, description, contenu, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id)
+VALUES
+    (1, 'Salut la team zer', 'Une analyse des ...', 'Contenu détaillé de la publication...', '2025-04-19 10:00:00', 1, TRUE, 1, 2, 1, 'IA41'),
+    (2, 'Apaya', 'Une étude approfondie des.', 'Contenu détaillé de la publication...', '2025-04-19 11:00:00', 2, TRUE, 2, 3, 2, 'IA41'),
+    (3, 'Quoicoubeh', 'Un regard sur l’évolution de.', 'Contenu détaillé de la publication...', '2025-04-19 12:00:00', 3, TRUE, 3, 5, 1, 'IA41');
+
+
+INSERT INTO Epingle (utilisateur_id, publication_id, date_epingle)
+VALUES
+    (2, 1, '2025-04-19 10:30:00'),
+    (3, 2, '2025-04-19 11:30:00'),
+    (5, 3, '2025-04-19 12:30:00');

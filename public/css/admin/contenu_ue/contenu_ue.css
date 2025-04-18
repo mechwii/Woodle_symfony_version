@@ -1,0 +1,632 @@
+/*Style lié au titre de la page*/
+
+div.title_ue > h2{
+    font-size: 32px;
+    font-weight: 800;
+}
+
+div.title_ue > span.code{
+    font-size: 32px;
+    color: #bababa;
+}
+
+/*Style lié à la partie statistique de l'UE*/
+
+div.statistiques {
+    display: flex;
+    align-items: center;
+    margin-top: 3em;
+}
+
+div.statistiques > div.statistiques-section {
+    margin-right: 1em;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    -webkit-box-shadow: 0px 0px 30px 5px rgba(0,0,0,0.08);
+    box-shadow: 0px 0px 30px 5px rgba(0,0,0,0.08);
+    border-radius: 8px;
+    width: 30%;
+    padding: 0.75em;
+}
+
+div.statistiques > div.statistiques-section > h4 {
+    font-size: 17px;
+}
+
+div.statistiques > div.statistiques-section > div.top-statistiques-section {
+    display: flex;
+}
+
+div.statistiques > div.statistiques-section svg {
+    background-color: #EF233C;
+    fill: white;
+    border-radius: 5px;
+    height: 35px;
+    padding: 0.15em;
+    margin-left: auto;
+}
+
+div.statistiques > div.statistiques-section span.number {
+    color: #9F9F9F;
+}
+
+div.statistiques > div.statistiques-section i {
+    margin-left: auto;
+    color: #606060;
+}
+
+div.bottom-stats {
+    display: flex;
+    align-items: center;
+    margin-top: 0.5em;
+}
+
+@keyframes pointerBounce {
+    0%, 100% {
+        transform: rotate(-15deg) scale(1);
+    }
+    50% {
+        transform: rotate(-15deg) scale(1.2);
+    }
+}
+
+.bottom-stats i.fa-hand-pointer {
+    display: inline-block;
+    font-size: 1rem;
+    transform: rotate(-15deg);
+    animation: pointerBounce 1s infinite ease-in-out;
+    cursor: pointer;
+}
+
+/*Mise en page des interactions*/
+
+div.interactions {
+    display: flex;
+    margin-top: 2em;
+}
+
+div.interactions > button {
+    background-color: #F6F6F6;
+    border-radius: 8px;
+    border: 0;
+    padding: 0.5em 1em;
+    font-family: "Sora", sans-serif;
+    font-size: 20px;
+    cursor: pointer;
+}
+div.interactions > button > i{
+    margin-right: 0.5em;
+}
+
+
+div.interactions > button.filter_button {
+    margin-right: 1em;
+}
+
+div.interactions > button.add_post {
+    margin-left: auto;
+    background-color: #EF233C;
+    color: white;
+}
+
+/*Style de la partie liste des publications */
+
+div.liste_posts {
+    display: flex;
+    flex-direction: column;
+    margin-top: 3em;
+}
+
+div.liste_posts > div.post {
+    background-color: #fff;
+    -webkit-box-shadow: 0px 0px 30px 5px rgba(0,0,0,0.08);
+    box-shadow: 0px 0px 30px 5px rgba(0,0,0,0.08);
+    border-radius: 8px;
+    margin-bottom: 2em;
+    padding: 2em;
+}
+
+div.liste_posts > div.post > div.top_post {
+    display: flex;
+    align-items: center;
+}
+
+div.liste_posts > div.post > div.top_post > h5.title_post {
+    font-size: 22px;
+    margin-right: 0.5em;
+}
+
+div.liste_posts > div.post > div.top_post > span.date_post {
+    font-size: 12px;
+}
+
+div.liste_posts > div.post > div.top_post > div.interactions_post {
+    margin-left: auto;
+}
+
+div.liste_posts > div.post > div.top_post > div.interactions_post > button {
+    background-color: transparent;
+    border: 0;
+    margin-left: 1em;
+    font-size: 18px;
+}
+
+div.liste_posts > div.post > p.text_post {
+    font-size: 18px;
+    font-weight: 300;
+    margin-top: 1em;
+}
+
+/*Sur PHPStorm les urls vers les images peuvent indiquer une erreur mais ils sont corrects*/
+div.liste_posts > div.post.calendar {
+    background-image: url('/images/background_post_calendar.png'); /* Image en fond */
+    background-position: right bottom; /* Place l'image en bas à droite */
+    background-repeat: no-repeat; /* Évite la répétition */
+    background-size: 150px auto; /* Ajuste la taille de l'image */
+    background-color: #CFFFD9 !important;
+}
+
+div.liste_posts > div.post.info {
+    background-image: url('/images/background_post_info.png'); /* Image en fond */
+    background-position: right bottom; /* Place l'image en bas à droite */
+    background-repeat: no-repeat; /* Évite la répétition */
+    background-size: 150px auto; /* Ajuste la taille de l'image */
+    background-color: #FEFFCF !important;
+}
+
+div.liste_posts > div.post.warning {
+    background-image: url('/images/background_post_warning.png'); /* Image en fond */
+    background-position: right bottom; /* Place l'image en bas à droite */
+    background-repeat: no-repeat; /* Évite la répétition */
+    background-size: 150px auto; /* Ajuste la taille de l'image */
+    background-color: #FFCFCF !important;
+}
+
+div.liste_posts > div.post.file > div.download{
+    background-color: #F4F4F4;
+    -webkit-box-shadow: 0px 0px 30px 5px rgba(0,0,0,0.1);
+    box-shadow: 0px 0px 30px 5px rgba(0,0,0,0.1);
+    display: flex;
+    width: 50%;
+    height: 80px;
+    border-radius: 8px;
+    align-items: center;
+    padding: 2em;
+}
+
+div.liste_posts > div.post.file > div.download{
+    background-color: #F4F4F4;
+    display: flex;
+    width: 50%;
+    height: 80px;
+    border-radius: 8px;
+    align-items: center;
+    padding: 2em;
+    margin-top: 1em;
+}
+
+div.liste_posts > div.post.file > div.download > i.fa-file-pdf {
+    color: red;
+    font-size: 25px;
+    margin-right: 1em;
+}
+
+div.liste_posts > div.post.file > div.download > i.fa-download {
+    margin-left: auto;
+}
+
+/*Styles des popups*/
+
+
+/* Assombrit l'arrière-plan quand la pop-up est active */
+.popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Contenu de la pop-up */
+.popup-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    max-width: 90%;
+    text-align: center;
+    position: relative;
+    height: auto;
+    max-height: 90vh;
+}
+
+/* Bouton de fermeture */
+.popup-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* Liste des utilisateurs */
+.user-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.user-list li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.user-list li:last-child {
+    border-bottom: none;
+}
+
+/* Bouton de switch */
+.switch-button {
+    margin-top: 15px;
+    padding: 10px;
+    background: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1rem;
+    position: relative;
+}
+
+.switch-button:hover {
+    background: #0056b3;
+}
+
+/* Style général de la pop-up */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    text-align: center;
+    position: relative;
+}
+
+.popup-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* Style du formulaire */
+.popup-form input,
+.popup-form select,
+.popup-form textarea {
+    width: 100%;
+    margin: 10px 0;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.popup-form button {
+    background-color: #EF233C;
+    border: 0;
+    font-family: "Sora", sans-serif;
+    color: #fff;
+    padding: 1em 2em;
+    font-size: 1.15em;
+    border-radius: 8px;
+    cursor: pointer;
+    transition-duration: 300ms;
+    width: 100%;
+}
+
+.popup-form button:hover {
+    background: #902532;
+}
+
+.popup-content-post {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+}
+
+div.popup-form-container > h3 {
+    text-align: left;
+    font-size: 30px;
+    margin-top: 1em;
+}
+
+
+div.popup-form-container input, div.popup-form-container textarea , div.popup-form-container select {
+    font-size: 17px;
+    padding: 10px 10px;
+    width: 100%;
+    outline: none;
+    background: #FFFFFF;
+    color: black;
+    border: 1px solid #CBCBCB;
+    border-radius: 5px;
+    transition: .3s ease;
+    display: flex;
+    align-items: center;
+    font-family: "Sora", sans-serif;
+    resize: none;
+}
+
+div.popup-form-container input:focus, div.popup-form-container textarea:focus{
+    background: #fff;
+    border: 1px solid #db7426;
+    border-radius: 10px;
+}
+
+div.popup-form-container input::placeholder, div.popup-form-container textarea::placeholder, div.popup-form-container select::placeholder {
+    color: #CBCBCB;
+    font-family: "Sora", sans-serif;
+}
+
+
+div.popup-form-container label.file-deposit {
+    cursor: pointer;
+    border: dotted 1px #CBCBCB;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    align-items: center;
+    gap: 1em;
+    padding: 2em 1em;
+    margin-bottom: 1em;
+}
+
+div.popup-form-container label.file-deposit span,  div.popup-form-container label.file-deposit button  {
+    width: 60%;
+}
+
+div.popup-form-container label.file-deposit hr {
+    width: 50%;
+}
+
+div.popup-form-container label.file-deposit p {
+    position: absolute;
+    background-color: #fff;
+    top: 230px;
+    padding: 0.25em;
+}
+
+div.popup-form-container #file-deposit {
+    opacity: 0;
+    position: absolute;
+    z-index: -1;
+}
+
+.liste_users {
+    overflow-y: scroll;
+}
+
+div.switch-buttons {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    background-color: #F6F6F6;
+    justify-content: space-between;
+    border-radius: 10px;
+    width: 60%;
+    padding: 1.3vh 1vw;
+    user-select: none;
+    align-self: center;
+}
+
+
+div.switch-buttons > button {
+    font-weight: 400;
+    z-index: 4;
+    transform: color 0.3s ease;
+    font-family: "Sora", sans-serif;
+    border: 0;
+    height: 100%;
+    background-color: transparent;
+    font-size: 16px;
+}
+
+div.switch-buttons > button.switch-post {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    width: 50%;
+}
+
+div.switch-buttons > button.switch-post.active {
+    color: white;
+}
+
+div.switch-buttons > button.switch-file.active {
+    color: white;
+}
+
+div.switch-buttons > button.switch-file {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    width: 50%;
+
+}
+
+.categorie_select {
+    position: absolute;
+    z-index: 3;
+    width: 50%;
+    height: 100%;
+    background-color: #EF233C;
+    border-radius: 10px;
+    transition: transform 0.3s ease, left 0.3s ease, width 0.3s ease;
+    left: 0;
+    top: 0;
+}
+
+
+#dropzone {
+    position: relative;
+    border: 10px dotted black;
+    border-radius: 20px;
+    color: black;
+    font: bold 24px/200px arial;
+    height: 200px;
+    margin: 30px auto;
+    text-align: center;
+    width: 200px;
+}
+
+#dropzone.hover {
+    border: 10px solid #FE5;
+    color: #FE5;
+}
+
+#dropzone.dropped {
+    background: #222;
+    border: 10px solid #444;
+}
+
+#dropzone div {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+#dropzone img {
+    border-radius: 10px;
+    vertical-align: middle;
+    max-width: 95%;
+    max-height: 95%;
+}
+
+#dropzone [type="file"] {
+    cursor: pointer;
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+/*Style de la popup ecrire une publication*/
+div.popupPublication, div.popUpListe {
+    position: absolute;
+    left: 10%;
+    top: 10%;
+    width: 80%;
+    height: 80%;
+    background-color: white;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+}
+
+div.popupPublication.hidden {
+    display: none;
+}
+
+div.darkBackground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.53);
+    width: 100%;
+    height: 100%;
+}
+
+div.darkBackground.hidden {
+    visibility: hidden;
+}
+
+div.boutonsSwitch {
+    display: flex;
+    position: relative; /* nécessaire pour positionner le carré à l’intérieur */
+    background-color: grey;
+    width: 300px;
+    align-items: center;
+    justify-content: space-evenly;
+    height: 40px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+div.switch-background {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    background-color: red;
+    top: 0;
+    left: 0;
+    border-radius: 8px;
+    transition: left 0.3s ease;
+    z-index: 0; /* derrière les textes */
+}
+
+div.boutonsSwitch > div {
+    flex: 1;
+    text-align: center;
+    z-index: 1; /* au-dessus du carré rouge */
+    cursor: pointer;
+    padding: 10px 0;
+}
+
+    div.boutonsSwitchListes {
+        display: flex;
+        position: relative; /* nécessaire pour positionner le carré à l’intérieur */
+        background-color: grey;
+        width: 300px;
+        align-items: center;
+        justify-content: space-evenly;
+        height: 40px;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+div.switch-background-liste {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    background-color: red;
+    top: 0;
+    left: 0;
+    border-radius: 8px;
+    transition: left 0.3s ease;
+    z-index: 0; /* derrière les textes */
+}
+
+div.boutonsSwitchListes> div {
+    flex: 1;
+    text-align: center;
+    z-index: 1; /* au-dessus du carré rouge */
+    cursor: pointer;
+    padding: 10px 0;
+}
