@@ -6,6 +6,7 @@ use App\Entity\UE;
 use App\Entity\Utilisateur;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -87,6 +88,22 @@ final class AdminController extends AbstractController
             'controller_name' => 'AdminController',
             'utilisateur' => $utilisateur,
             'roles' => $roles
+        ]);
+    }
+    #[Route('/admin/get-user/{id}', name: 'admin_get_user', methods: ['GET'])]
+    public function getUtilisateur(int $id, EntityManagerInterface $BDDManager): JsonResponse
+    {
+        $user = $BDDManager->getRepository(Utilisateur::class)->find($id);
+
+        if (!$user) {
+            return new JsonResponse(['error' => 'Utilisateur non trouvé'], 404);
+        }
+
+        return new JsonResponse([
+            'id' => $user->getId(),
+            'nom' => $user->getNom(),
+            'prenom' => $user->getPrenom(),
+            'image' => $user->getImage(),
         ]);
     }
 

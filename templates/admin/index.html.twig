@@ -12,6 +12,8 @@
 {% block javascripts %}
     {{ parent() }}
     <script src="{{ asset('js/admin/admin.js') }}"></script>
+    <script src="{{ asset('js/admin/popup-manager.js') }}"></script>
+
 {% endblock %}
 
 {% block content %}
@@ -20,7 +22,7 @@
         <img id="photo-welcome" src="{{ asset('images/profil/' ~ utilisateur.image) }}" alt="Photo de profil de welcome">
 
         <div class="welcome-content">
-            <h1>Bienvenue sur votre espace <span>Elmir</span></h1>
+            <h1>Bienvenue sur votre espace <span>{{ utilisateur.nom }}</span></h1>
             <p>Vous être administrateur</p>
         </div>
 
@@ -102,7 +104,7 @@
                     </div>
                     <div class="card-action">
                         <i onclick="editUser()" class="lni lni-pencil-1 edit-icon edit"></i>
-                        <i onclick="supprimerUtilisateur('{{ user.id|e('js') }}','{{ user.nom|e('js') }}', '{{ user.prenom|e('js') }}', '{{ user.image|e('js') }}')" class="lni lni-trash-3 edit-icon delete"></i>
+                        <i onclick="supprimerUtilisateur('{{ user.id|e('js') }}')" class="lni lni-trash-3 edit-icon delete"></i>
                     </div>
                 </div>
             {% endfor %}
@@ -143,7 +145,9 @@
         {# Le code de ces classes sera dans admin.js plusieurs solutions s'offraient à nous
         mais on a préféré simplifier le code#}
         <div id="overlay" class="hidden">
-{#
+            {% include 'admin/popup/_delete_user.html.twig' %}
+
+            {#
             <div class="popup hidden">
                 <p class="close-popup" onclick="closePopup()">X</p>
             </div>

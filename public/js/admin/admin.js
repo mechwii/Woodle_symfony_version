@@ -39,30 +39,29 @@ function ajouterUE(){
     console.log('UE')
 }
 
-function supprimerUtilisateur(id, nom, prenom, image){
-    let element = document.getElementById('overlay');
-    let miniPopup = document.getElementById('mini-popup');
-
-    element.classList.remove('hidden');
-    //miniPopup.classList.remove('hidden');
-    document.getElementById('overlay').innerHTML = `
-    <div class="mini-popup">
-        <p class="close-popup" onclick="closePopup()">X</p>
-        <div class="mini-popup-content">
-                <div class="mini-picture-place">
-            <img id="picture-popup" src="images/profil/${image}" alt="Image de Jean Dupont">
-        </div>
-        <p>Êtes-vous sûr de vouloir supprimer l'utilisateur <strong>${prenom} ${nom}</strong> ?</p>
-        <div class="bouton-container">
-            <p onclick="closePopup()" class="bouton but-cancel">Annuler</p>
-            <p onclick="deleteUser( ${id} )" class="bouton but-delete">Supprimer</p>
-        </div>
-        </div>
-
-    </div>
-    `
+function supprimerUtilisateur(id){
+   // On sait jamais si quelqu'un a modifié, donc je récupère les infos depuis la BDD
+    fetch(`/admin/get-user/${id}`)
+        .then(response => {
+            if(!response.ok){
+                throw new Error('Erreur lors de la récupération des données');
+            }
+            return response.json();
+        })
+        .then(user =>{
+            if(user.error){
+                throw new Error(user.error);
+            }
+            console.log("ok : " + user.toString()) ;
+            window.popupManager.openDeleteUserPopup(id, user.nom, user.prenom, user.image);
+        })
+        .catch(error =>{
+            console.log('Erreur delete user : ' + error)
+            alert("Impossible de récuper les informations de l'utilisateur")
+        })
 }
 
+/*
 function deleteUser(id){
     fetch(`/admin/delete-user/${id}`, {
         method: 'DELETE',
@@ -102,4 +101,4 @@ document.addEventListener('DOMContentLoaded', (event) => {
             closePopup();
         }
     });
-})
+})*/

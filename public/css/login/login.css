@@ -16,8 +16,8 @@ div.website_logo {
 }
 
 div.website_logo > img {
-    width: 150px;
-    height: 150px;
+    width: 100px;
+    height: 100px;
     margin-right: 1em;
 }
 
@@ -76,14 +76,18 @@ div.connexion input::placeholder {
 
 div.connexion .form_password {
     display: flex;
-    align-items: center;
-    margin-bottom: 1em;
+    flex-direction: column;
+    /*align-items: center;*/
+    gap : 10px;
+    margin-bottom: 2em;
 }
 
 div.connexion .form {
     display: flex;
-    align-items: center;
-    margin-bottom: 1em;
+    flex-direction: column;
+    /*align-items: center;*/
+    gap : 10px;
+    margin-bottom: 2em;
 }
 
 div.connexion .form_password svg {
@@ -91,6 +95,7 @@ div.connexion .form_password svg {
     right: 37%;
     fill: #BCBCBC;
     width: 20px;
+    margin-top: 10px;
     height: 20px;
     cursor: pointer;
     transition-duration: 300ms;
@@ -292,6 +297,6 @@ and (max-width : 600px) {
     }
 
     div.connexion .form_password svg {
-        right: 13%;
+        right: 17%;
     }
 }
