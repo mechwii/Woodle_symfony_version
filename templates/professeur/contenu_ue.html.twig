@@ -4,8 +4,8 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/admin/contenu_ue/contenu_ue.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/admin/contenu_ue/contenu_ue_responsive.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/contenu_ue/contenu_ue.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/contenu_ue/contenu_ue_responsive.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -20,43 +20,12 @@
 dedans il me faut un slider pour switch entre les deux eleves/professeurs
 
 #}
-    <div class="popUpListe">
-        <div class="boutonsSwitchListes">
-            <div class="switch-background-liste"></div>
-            <div class="student">Etudiants</div>
-            <div class="teacher">Professeurs</div>
-        </div>
 
-        <div class="containerListe">
-            <div id="liste-data"
-                 data-eleves='{{ liste_eleves_ue|json_encode|e('html_attr') }}'
-                 data-profs='{{ liste_profs_ue|json_encode|e('html_attr') }}'>
-            </div>
-        </div>
-    </div>
-    <div class="popUpUser">
-        {% for eleve in liste_eleves_ue %}
-            <ul>
-                <li>{{ eleve.prenom }}</li>
-            </ul>
-        {% endfor %}
-    </div>
-
-    <div class="popUpProf">
-        {% for prof in liste_profs_ue %}
-            <ul>
-                <li>{{ prof.prenom }}</li>
-                <li>{{ prof.nom }}</li>
-                <li>{{ prof.email }}</li>
-                <li>{{ prof.image }}</li>
-            </ul>
-        {% endfor %}
-    </div>
 {#    Partie statistiques liée aux statistiques concernant cette UE, on peut cliquer sur les divs pour voir qui sont spécifiquement les professerus et les étudiants #}
     <div class="statistiques">
 
-        <div class="statistiques-section">
-            <div class="top-statistiques-section eleves">
+        <div class="statistiques-section eleves">
+            <div class="top-statistiques-section">
                 <h4>Nombre d'élèves</h4>
                 <svg class="svg-icon" viewBox="0 0 20 20">
                     <path
@@ -71,8 +40,8 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
             </div>
         </div>
 
-        <div class="statistiques-section">
-            <div class="top-statistiques-section professeurs">
+        <div class="statistiques-section professeurs">
+            <div class="top-statistiques-section">
                 <h4>Nombre d'enseignants</h4>
                 <svg class="svg-icon" viewBox="0 0 20 20">
                     <path
@@ -192,7 +161,23 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
             </div>
         </div>
     </div>
-    <div class="popupPublication hidden">
+
+    <div class="popUpListe popup hidden">
+        <div class="boutonsSwitchListes">
+            <div class="switch-background-liste"></div>
+            <div class="student">Etudiants</div>
+            <div class="teacher">Professeurs</div>
+        </div>
+
+        <div class="containerListe">
+            <div id="liste-data"
+                 data-eleves='{{ liste_eleves_ue|json_encode|e('html_attr') }}'
+                 data-profs='{{ liste_profs_ue|json_encode|e('html_attr') }}'>
+            </div>
+        </div>
+    </div>
+
+    <div class="popupPublication popup hidden">
         <h3>Ecrire une nouvelle publication</h3>
         <div class="boutonsSwitch">
             <div class="switch-background"></div>

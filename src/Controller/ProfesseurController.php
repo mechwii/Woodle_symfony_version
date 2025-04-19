@@ -80,7 +80,7 @@ final class ProfesseurController extends AbstractController
                 INNER JOIN est_affecte ON est_affecte.code_id = ue.code
                 INNER JOIN utilisateur ON utilisateur.id_utilisateur = est_affecte.utilisateur_id
                 INNER JOIN possede ON possede.utilisateur_id = utilisateur.id_utilisateur
-                WHERE ue.code = :codeUe AND possede.role_id = 2
+                WHERE ue.code = :codeUe AND possede.role_id = 3
                 ';
 
         $prepareSQL = $connection->prepare($sql_liste_eleves_dans_ue);

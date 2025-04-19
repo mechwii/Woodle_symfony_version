@@ -353,3 +353,21 @@ VALUES
     (2, 1, '2025-04-19 10:30:00'),
     (3, 2, '2025-04-19 11:30:00'),
     (5, 3, '2025-04-19 12:30:00');
+
+INSERT INTO Est_affecte (utilisateur_id, code_id, favori, date_inscription)
+VALUES (1, 'IA41', TRUE, '2025-04-09 12:05:00');
+
+INSERT INTO Est_affecte (utilisateur_id, code_id, favori, date_inscription)
+VALUES (3, 'IA41', TRUE, '2025-04-09 12:05:00');
+
+INSERT INTO Est_affecte (utilisateur_id, code_id, favori, date_inscription)
+VALUES (5, 'IA41', TRUE, '2025-04-09 12:05:00');
+
+INSERT INTO Est_affecte (utilisateur_id, code_id, favori, date_inscription)
+VALUES (8, 'IA41', TRUE, '2025-04-09 12:05:00');
+
+INSERT INTO Est_affecte (utilisateur_id, code_id, favori, date_inscription)
+VALUES (9, 'IA41', TRUE, '2025-04-09 12:05:00');
+
+INSERT INTO Est_affecte (utilisateur_id, code_id, favori, date_inscription)
+VALUES (6, 'IA41', TRUE, '2025-04-09 12:05:00');
