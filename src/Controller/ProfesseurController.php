@@ -118,8 +118,29 @@ final class ProfesseurController extends AbstractController
         $liste_profs_ue = $resultat->fetchAllAssociative();
 
 
-        // recuperation de la lsite des postes (les insert avant)
-//        insert section
+        // recuperation de la liste des sections
+        $sql_sections_ue = '
+                SELECT id_section, nom
+                FROM section
+                WHERE code_id = :codeUe
+                ';
+
+        $prepareSQL = $connection->prepare($sql_sections_ue);
+        $resultat = $prepareSQL->executeQuery(['codeUe' => $codeUe]);
+        $sections_ue= $resultat->fetchAllAssociative();
+
+
+        // recuperation de la lsite des postes
+        $sql_liste_publications = '
+                SELECT titre, description, contenu, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id
+                FROM publication
+                WHERE code_id = :codeUe
+                ';
+
+        $prepareSQL = $connection->prepare($sql_liste_publications);
+        $resultat = $prepareSQL->executeQuery(['codeUe' => $codeUe]);
+        $liste_publications= $resultat->fetchAllAssociative();
+
         /*insert epingle
         insert type_publication
         */
@@ -132,6 +153,8 @@ final class ProfesseurController extends AbstractController
             'nb_profs_ue' => $nb_profs_ue,
             'liste_eleves_ue' => $liste_eleves_ue,
             'liste_profs_ue' => $liste_profs_ue,
+            'sections_ue' => $sections_ue,
+            'liste_publications' => $liste_publications,
         ]);
     }
 

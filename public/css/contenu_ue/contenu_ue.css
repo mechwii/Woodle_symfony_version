@@ -489,54 +489,6 @@ div.switch-buttons > button.switch-file {
     top: 0;
 }
 
-
-#dropzone {
-    position: relative;
-    border: 10px dotted black;
-    border-radius: 20px;
-    color: black;
-    font: bold 24px/200px arial;
-    height: 200px;
-    margin: 30px auto;
-    text-align: center;
-    width: 200px;
-}
-
-#dropzone.hover {
-    border: 10px solid #FE5;
-    color: #FE5;
-}
-
-#dropzone.dropped {
-    background: #222;
-    border: 10px solid #444;
-}
-
-#dropzone div {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-}
-
-#dropzone img {
-    border-radius: 10px;
-    vertical-align: middle;
-    max-width: 95%;
-    max-height: 95%;
-}
-
-#dropzone [type="file"] {
-    cursor: pointer;
-    position: absolute;
-    opacity: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-}
-
 /*Style de la popup ecrire une publication*/
 div.popupPublication, div.popUpListe {
     position: absolute;
@@ -565,13 +517,15 @@ div.darkBackground {
 div.boutonsSwitch {
     display: flex;
     position: relative; /* nécessaire pour positionner le carré à l’intérieur */
-    background-color: grey;
+    background-color: #d6d6d6;
     width: 300px;
     align-items: center;
     justify-content: space-evenly;
     height: 40px;
     border-radius: 8px;
     overflow: hidden;
+    margin-top: 1em;
+    margin-bottom: 1em;
 }
 
 div.switch-background {
@@ -689,4 +643,143 @@ div.infos-text span.email {
 
 div.popup {
     z-index: 1000;
+}
+
+div.section h3 {
+    font-size: 36px;
+    margin-top: 2em;
+}
+
+div.section div.liste_posts {
+    margin-left: 3em;
+}
+
+/*Mise en page de la popup publication*/
+
+div.popupPublication {
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2em;
+    justify-content: stretch;
+    height: 85%;
+}
+
+div.popupPublication > div.formulaireContainer {
+    width: 100%;
+}
+
+div.popupPublication > div.formulaireContainer > form{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+
+div.popupPublication > div.formulaireContainer > form > input {
+    height: 50px;
+    border-radius: 8px;
+    font-size: 18px;
+    border: 1px solid #d6d6d6;
+    padding-left: 1em;
+}
+
+div.popupPublication > div.formulaireContainer > form > select {
+    height: 50px;
+    border-radius: 8px;
+    font-size: 18px;
+    border: 1px solid #d6d6d6;
+    padding-left: 1em;
+}
+
+div.popupPublication > div.formulaireContainer > form > textarea {
+    border-radius: 8px;
+    font-size: 18px;
+    border: 1px solid #d6d6d6;
+    padding-left: 1em;
+    padding-top: 0.5em;
+    resize: none;
+}
+
+div.popupPublication > div.formulaireContainer > form > button {
+    height: 50px;
+    border-radius: 8px;
+    font-size: 18px;
+    border: 0px;
+    color: white;
+    background-color: #EF233C;
+}
+
+.drop-zone{
+    height: 250px;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: 500;
+    font-size: 20px;
+    cursor: pointer;
+    color: black;
+    border: 2px dashed #d6d6d6;
+    border-radius: 8px;
+    gap: 1em;
+}
+
+div.separator {
+    width: 100%;
+}
+
+.drop-zone hr {
+    width: 100%;
+    height: 1px;
+    background-color: #d6d6d6;
+    border: none;
+    margin-bottom: -11px;
+}
+
+span.ou {
+    color: #d6d6d6;
+    background-color: #fff;
+    padding: 5px;
+}
+
+div.fake-button {
+    background-color: #EF233C;
+    color: white;
+    border-radius: 8px;
+    padding: 0.75em 2em;
+}
+
+.drop-zone--over {
+    border-style: solid;
+}
+
+.drop-zone__input {
+    display: none;
+}
+
+.drop-zone__thumb {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #cccccc;
+    background-size: cover;
+    position: relative;
+}
+
+.drop-zone__thumb::after {
+    content: attr(data-label);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 5px 0;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.75);
+    font-size: 14px;
+    text-align: center;
 }

@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
         closeAllPopups();
         popup.classList.remove("hidden");
         darkBackground.classList.remove("hidden");
+        boutonText.style.color = "white";
     }
 
     function closeAllPopups() {
@@ -53,18 +54,32 @@ document.addEventListener("DOMContentLoaded", function () {
     function afficherFormulaire(type) {
         if (type === "texte") {
             formulaireContainer.innerHTML = `
-                <h3>Formulaire Texte</h3>
                 <form>
-                    <input type="text" placeholder="Titre" required><br>
-                    <textarea placeholder="Contenu..." rows="4" required></textarea><br>
+                    <input type="text" placeholder="Titre" required>
+                    <select name="types_publication" id="type_publication-select">
+                        <option value="">--Type de publication--</option>
+                        <option value="calendar">Evenement</option>
+                        <option value="warning">Important</option>
+                        <option value="info">Information</option>
+                    </select>
+                    <textarea placeholder="Contenu..." rows="4" required></textarea>
                     <button type="submit">Envoyer</button>
                 </form>`;
         } else {
             formulaireContainer.innerHTML = `
-                <h3>Formulaire Fichier</h3>
                 <form>
                     <input type="text" placeholder="Nom du fichier" required><br>
-                    <input type="file" required><br>
+                    <div class="drop-zone">
+                        <span class="drop-zone__prompt">Déposer le fichier</span>
+                            <div class="separator">
+                            <hr>
+                            <span class="ou">OU</span>
+                            </div>
+                        <div class="fake-button">
+                            Parcourir les fichiers
+                        </div>
+                        <input type="file" name="myFile" class="drop-zone__input">
+                    </div>
                     <button type="submit">Uploader</button>
                 </form>`;
         }
@@ -72,12 +87,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     boutonText.addEventListener("click", () => {
         switchBg.style.left = "0%";
+        boutonText.style.color = "white";
+        boutonFile.style.color = "black";
         afficherFormulaire("texte");
     });
 
     boutonFile.addEventListener("click", () => {
         switchBg.style.left = "50%";
+        boutonText.style.color = "black";
+        boutonFile.style.color = "white";
         afficherFormulaire("fichier");
+        dropZoneLoaded();
     });
 
     afficherFormulaire("texte");
@@ -152,3 +172,82 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+// Code pour la dropzone du file input :
+
+function dropZoneLoaded() {
+    document.querySelectorAll(".drop-zone__input").forEach((inputElement) => {
+        const dropZoneElement = inputElement.closest(".drop-zone");
+
+        dropZoneElement.addEventListener("click", (e) => {
+            inputElement.click();
+        });
+
+        inputElement.addEventListener("change", (e) => {
+            if (inputElement.files.length) {
+                updateThumbnail(dropZoneElement, inputElement.files[0]);
+            }
+        });
+
+        dropZoneElement.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            dropZoneElement.classList.add("drop-zone--over");
+        });
+
+        ["dragleave", "dragend"].forEach((type) => {
+            dropZoneElement.addEventListener(type, (e) => {
+                dropZoneElement.classList.remove("drop-zone--over");
+            });
+        });
+
+        dropZoneElement.addEventListener("drop", (e) => {
+            e.preventDefault();
+
+            if (e.dataTransfer.files.length) {
+                inputElement.files = e.dataTransfer.files;
+                updateThumbnail(dropZoneElement, e.dataTransfer.files[0]);
+            }
+
+            dropZoneElement.classList.remove("drop-zone--over");
+        });
+    });
+
+    /**
+     * Updates the thumbnail on a drop zone element.
+     *
+     * @param {HTMLElement} dropZoneElement
+     * @param {File} file
+     */
+    function updateThumbnail(dropZoneElement, file) {
+        let thumbnailElement = dropZoneElement.querySelector(".drop-zone__thumb");
+
+        // First time - remove the prompt
+        if (dropZoneElement.querySelector(".drop-zone__prompt")) {
+            dropZoneElement.querySelector(".drop-zone__prompt").remove();
+            dropZoneElement.querySelector("div.separator").remove();
+            dropZoneElement.querySelector("div.fake-button").remove();
+        }
+
+        // First time - there is no thumbnail element, so lets create it
+        if (!thumbnailElement) {
+            thumbnailElement = document.createElement("div");
+            thumbnailElement.classList.add("drop-zone__thumb");
+            dropZoneElement.appendChild(thumbnailElement);
+        }
+
+        thumbnailElement.dataset.label = file.name;
+
+        // Show thumbnail for image files
+        if (file.type.startsWith("image/")) {
+            const reader = new FileReader();
+
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                thumbnailElement.style.backgroundImage = `url('${reader.result}')`;
+            };
+        } else {
+            thumbnailElement.style.backgroundImage = null;
+        }
+    }
+
+}

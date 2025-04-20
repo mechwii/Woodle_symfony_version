@@ -76,91 +76,62 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
     </div>
 
 {#Partie liste des publications#}
-    <div class="liste_posts">
-        <div class="post info">
-            <div class="top_post">
-                <h5 class="title_post">Début des TD</h5>
-                <span class="date_post">22/02 11:39</span>
-                <div class="interactions_post">
-                    <button class="edit_post"><i class="fa-solid fa-pen"></i></button>
-                    <button class="delete_post"><i class="fa-solid fa-trash"></i></button>
-                </div>
-                <!-- Icône trois points -->
-                <i class="fa-solid fa-ellipsis-h ellipsis_icon"></i>
 
-                <!-- Menu d'options caché par défaut -->
-                <div class="options_menu">
-                    <button class="edit_post">Modifier</button>
-                    <button class="delete_post">Supprimer</button>
+    {% for section in sections_ue %}
+        <div class="section">
+            <h3>{{ section.nom }}</h3>
+
+            {% set hasPublications = false %}
+            {% for publication in liste_publications %}
+            {% if publication.section_id == section.id_section %}
+            {% if not hasPublications %}
+            <div class="liste_posts">
+                {% set hasPublications = true %}
+                {% endif %}
+
+                <div class="post
+    {% if publication.type_publication_id == 2 %}file
+    {% elseif publication.type_publication_id == 3 %}calendar
+    {% elseif publication.type_publication_id == 4 %}warning
+    {% elseif publication.type_publication_id == 5 %}info
+    {% endif %}">
+
+                <div class="top_post">
+                        <h5 class="title_post">{{ publication.titre }}</h5>
+                        <span class="date_post">{{ publication.derniere_modif }}</span>
+                        <div class="interactions_post">
+                            <button class="edit_post"><i class="fa-solid fa-pen"></i></button>
+                            <button class="delete_post"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        <!-- Icône trois points -->
+                        <i class="fa-solid fa-ellipsis-h ellipsis_icon"></i>
+
+                        <!-- Menu d'options caché par défaut -->
+                        <div class="options_menu">
+                            <button class="edit_post">Modifier</button>
+                            <button class="delete_post">Supprimer</button>
+                        </div>
+                    </div>
+                    {% if publication.type_publication_id == 2 %}
+                    <div class="download">
+                        <i class="fa-solid fa-file-pdf"></i>
+                        <span class="nom_fichier">{{ publication.contenu }}</span>
+                        <i class="fa-solid fa-download"></i>
+                    </div>
+                    {% else %}
+                    <p class="text_post">{{ publication.contenu }}</p>
+                    {% endif %}
                 </div>
+                {% endif %}
+                {% endfor %}
+
+                {% if hasPublications %}
             </div>
-            <p class="text_post">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis facere sed officia. Optio eos atque corrupti, explicabo dolorem nulla id ipsam quasi voluptas dignissimos, sed facere magnam debitis reiciendis similique.</p>
+        {% else %}
+            <p>Aucune publication dans cette section.</p>
+            {% endif %}
         </div>
-
-        <div class="post warning">
-            <div class="top_post">
-                <h5 class="title_post">Début des TD</h5>
-                <span class="date_post">22/02 11:39</span>
-                <div class="interactions_post">
-                    <button class="edit_post"><i class="fa-solid fa-pen"></i></button>
-                    <button class="delete_post"><i class="fa-solid fa-trash"></i></button>
-                </div>
-                <!-- Icône trois points -->
-                <i class="fa-solid fa-ellipsis-h ellipsis_icon"></i>
-
-                <!-- Menu d'options caché par défaut -->
-                <div class="options_menu">
-                    <button class="edit_post">Modifier</button>
-                    <button class="delete_post">Supprimer</button>
-                </div>
-            </div>
-            <p class="text_post">Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto, molestias ratione! Laudantium sed velit blanditiis nesciunt perspiciatis eius aspernatur porro ducimus ut quaerat saepe magni itaque, praesentium tempore consectetur temporibus?</p>
-        </div>
-
-        <div class="post calendar">
-            <div class="top_post">
-                <h5 class="title_post">Début des TD</h5>
-                <span class="date_post">22/02 11:39</span>
-                <div class="interactions_post">
-                    <button class="edit_post"><i class="fa-solid fa-pen"></i></button>
-                    <button class="delete_post"><i class="fa-solid fa-trash"></i></button>
-                </div>
-                <!-- Icône trois points -->
-                <i class="fa-solid fa-ellipsis-h ellipsis_icon"></i>
-
-                <!-- Menu d'options caché par défaut -->
-                <div class="options_menu">
-                    <button class="edit_post">Modifier</button>
-                    <button class="delete_post">Supprimer</button>
-                </div>
-            </div>
-            <p class="text_post">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fuga sapiente reprehenderit ad error! Laborum voluptatum nostrum neque delectus ipsam expedita corporis. Sequi ducimus autem maxime delectus alias assumenda numquam temporibus!</p>
-        </div>
-
-        <div class="post file">
-            <div class="top_post">
-                <h5 class="title_post">Début des TD</h5>
-                <span class="date_post">22/02 11:39</span>
-                <div class="interactions_post">
-                    <button class="edit_post"><i class="fa-solid fa-pen"></i></button>
-                    <button class="delete_post"><i class="fa-solid fa-trash"></i></button>
-                </div>
-                <!-- Icône trois points -->
-                <i class="fa-solid fa-ellipsis-h ellipsis_icon"></i>
-
-                <!-- Menu d'options caché par défaut -->
-                <div class="options_menu">
-                    <button class="edit_post">Modifier</button>
-                    <button class="delete_post">Supprimer</button>
-                </div>
-            </div>
-            <div class="download">
-                <i class="fa-solid fa-file-pdf"></i>
-                <span class="nom_fichier">Diapo.pdf</span>
-                <i class="fa-solid fa-download"></i>
-            </div>
-        </div>
-    </div>
+    {% endfor %}
 
     <div class="popUpListe popup hidden">
         <div class="boutonsSwitchListes">
