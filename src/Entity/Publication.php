@@ -22,7 +22,7 @@ class Publication
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(type: 'text')]
     private ?string $contenu = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]

@@ -82,7 +82,7 @@ CREATE TABLE Publication
     id_publication      SERIAL PRIMARY KEY,
     titre               VARCHAR(50) NOT NULL,
     description         VARCHAR(50),
-    contenu             VARCHAR(50) NOT NULL,
+    contenu             TEXT NOT NULL,
     derniere_modif      TIMESTAMP,
     ordre               INT,
     visible             BOOLEAN NOT NULL,
@@ -99,7 +99,7 @@ CREATE TABLE Publication
 CREATE TABLE Notification
 (
     id_notification             SERIAL PRIMARY KEY,
-    contenu                     VARCHAR(255) NOT NULL,
+    contenu                     TEXT NOT NULL,
     date_notif                  TIMESTAMP NOT NULL,
     url_destination             VARCHAR(255) NOT NULL,
     type_notification_id        INT,
@@ -386,9 +386,4 @@ VALUES
     (4, 'Hmmm comment ca va la team', 'Une analyse des ...', 'Contenu détaillé de la publication...', '2025-04-19 10:00:00', 1, TRUE, 1, 2, 3, 'IA41'),
     (5, 'Absence au prochain TD', 'Une étude approfondie des.', 'Contenu détaillé de la publication...', '2025-04-19 11:00:00', 2, TRUE, 2, 3, 4, 'IA41'),
     (6, 'CM annulé', 'Un regard sur l’évolution de.', 'Contenu détaillé de la publication...', '2025-04-19 12:00:00', 3, TRUE, 3, 5, 5, 'IA41');
-
-ALTER TABLE publication
-    ALTER COLUMN contenu
-        SET DATA TYPE VARCHAR(255);
-
 
