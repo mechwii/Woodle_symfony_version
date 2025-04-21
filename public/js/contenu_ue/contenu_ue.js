@@ -2,9 +2,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const darkBackground = document.querySelector("div.darkBackground");
     const popupPublication = document.querySelector("div.popupPublication");
     const popupListeUsers = document.querySelector("div.popUpListe");
+    const popupAddSection = document.querySelector("div.popupAddSection");
     const allPopups = document.querySelectorAll(".popup");
 
-    const boutonPublication = document.querySelector("button.add_post");
+    const boutonsPublications = document.querySelectorAll("button.add_post");
+    const boutonSection = document.querySelector("button.add_section");
     const buttonStatsEleves = document.querySelector("div.statistiques-section.eleves");
     const buttonStatsProfesseurs = document.querySelector("div.statistiques-section.professeurs");
 
@@ -44,27 +46,47 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    boutonSection.addEventListener("click", function (e) {
+        e.stopPropagation();
+        console.log("click fait");
+        console.log(popupAddSection);
+        openPopup(popupAddSection);
+    });
+
     // ----- POPUP CREATION PUBLICATION -----
 
-    boutonPublication.addEventListener("click", function (e) {
-        e.stopPropagation();
-        openPopup(popupPublication);
+
+
+    boutonsPublications.forEach(button => {
+        button.addEventListener("click", function (e) {
+            e.stopPropagation();
+            const sectionId = this.dataset.sectionId;
+
+            // Stocke l'ID quelque part, dans un champ caché par exemple
+            popupPublication.dataset.sectionId = sectionId;
+
+            openPopup(popupPublication);
+        });
     });
 
     function afficherFormulaire(type) {
+        const sectionId = popupPublication.dataset.sectionId;
+
         if (type === "texte") {
             formulaireContainer.innerHTML = `
-                <form>
-                    <input type="text" placeholder="Titre" required>
-                    <select name="types_publication" id="type_publication-select">
-                        <option value="">--Type de publication--</option>
-                        <option value="calendar">Evenement</option>
-                        <option value="warning">Important</option>
-                        <option value="info">Information</option>
-                    </select>
-                    <textarea placeholder="Contenu..." rows="4" required></textarea>
-                    <button type="submit">Envoyer</button>
-                </form>`;
+<!--            <form id="form-publication" action="{{ path('ajouter_publication') }}" method="post">-->
+            <form id="form-publication" action="" method="post">
+                <input type="hidden" name="section_id" value="${sectionId}">
+                <input type="text" name="titre" placeholder="Titre" required>
+                <select name="type_publication">
+                    <option value="">--Type de publication--</option>
+                    <option value="calendar">Evenement</option>
+                    <option value="warning">Important</option>
+                    <option value="info">Information</option>
+                </select>
+                <textarea name="contenu" placeholder="Contenu..." rows="4" required></textarea>
+                <button type="submit">Envoyer</button>
+            </form>`;
         } else {
             formulaireContainer.innerHTML = `
                 <form>
@@ -150,6 +172,8 @@ document.addEventListener("DOMContentLoaded", function () {
         boutonTeacher.style.color = "white";
         afficherListeUser("teacher");
     });
+
+
 
     // ----- MENU OPTIONS (les 3 points) -----
 

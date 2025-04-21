@@ -490,7 +490,7 @@ div.switch-buttons > button.switch-file {
 }
 
 /*Style de la popup ecrire une publication*/
-div.popupPublication, div.popUpListe {
+div.popupPublication, div.popUpListe, div.popupAddSection {
     position: absolute;
     left: 10%;
     top: 10%;
@@ -647,7 +647,27 @@ div.popup {
 
 div.section h3 {
     font-size: 36px;
+}
+
+div.head-section {
+    display: flex;
+    align-items: center;
     margin-top: 2em;
+    gap: 1em;
+}
+
+div.section div.head-section button {
+    background-color: #d6d6d6;
+    height: 50px;
+    border: 0;
+    font-family: "Sora", sans-serif;
+    padding: 0.5em 2em;
+    border-radius: 8px;
+    font-size: 16px;
+    display: flex;
+    gap: 1em;
+    align-items: center;
+    cursor: pointer;
 }
 
 div.section div.liste_posts {
@@ -656,7 +676,7 @@ div.section div.liste_posts {
 
 /*Mise en page de la popup publication*/
 
-div.popupPublication {
+div.popupPublication, div.popupAddSection {
     border-radius: 8px;
     display: flex;
     flex-direction: column;

@@ -69,21 +69,32 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
             <i class="fa-solid fa-arrow-up-wide-short"></i>
             Trier
         </button>
-        <button class="add_post">
-            <i class="fa-solid fa-feather"></i>
-            Ecrire une nouvelle publication
+        <button class="add_section">
+            <i class="fa-solid fa-plus"></i>
+            Ajouter une section
         </button>
     </div>
 
 {#Partie liste des publications#}
 
+<div class="sections-wrapper">
     {% for section in sections_ue %}
-        <div class="section">
-            <h3>{{ section.nom }}</h3>
+        <div class="section section-{{ section.id }}">
+            <div class="head-section">
+                <h3>{{ section.nom }}</h3>
+                <button class="add_post" data-section-id="{{ section.id }}">                    <i class="fa-solid fa-feather"></i>
+                </button>
+                <button class="delete_section">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+                <button class="edit_section">
+                    <i class="fa-solid fa-edit"></i>
+                </button>
+            </div>
 
             {% set hasPublications = false %}
             {% for publication in liste_publications %}
-            {% if publication.section_id == section.id_section %}
+            {% if publication.section_id == section.id %}
             {% if not hasPublications %}
             <div class="liste_posts">
                 {% set hasPublications = true %}
@@ -132,6 +143,7 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
             {% endif %}
         </div>
     {% endfor %}
+</div>
 
     <div class="popUpListe popup hidden">
         <div class="boutonsSwitchListes">
@@ -162,6 +174,17 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
 
 
     </div>
+
+    <div class="popup popupAddSection hidden">
+        <h3>Nouvelle section</h3>
+{#        <form id="form-section" action="{{ path('ajouter_section') }}" method="post">#}
+        <form id="add-section-form" action="{{ path('section_add') }}" method="post">
+            <input id="section_nom" type="text" name="nom" placeholder="Nom de la section" required>
+            <button type="submit">Ajouter</button>
+        </form>
+    </div>
+
+
     <div class="darkBackground hidden"></div>
 
     {% block javascripts %}

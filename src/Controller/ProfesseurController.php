@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -12,7 +14,9 @@ use App\Repository\EstAffecteRepository;
 
 use App\Entity\UE;
 use App\Entity\Utilisateur;
+use App\Entity\Section;
 use Doctrine\ORM\EntityManagerInterface;
+use Twig\Environment;
 
 final class ProfesseurController extends AbstractController
 {
@@ -120,7 +124,7 @@ final class ProfesseurController extends AbstractController
 
         // recuperation de la liste des sections
         $sql_sections_ue = '
-                SELECT id_section, nom
+                SELECT id_section as id, nom
                 FROM section
                 WHERE code_id = :codeUe
                 ';
@@ -157,6 +161,16 @@ final class ProfesseurController extends AbstractController
             'liste_publications' => $liste_publications,
         ]);
     }
+
+//    Route pour la ccréation d'une section
+    #[Route('/professeur/ontenu_ue-{codeUe}/section/{idSection}/edit', name: 'section_edit', methods: ['POST'])]
+    public function editSection(string $codeUe, int $idSection) {
+        return $this->render('professeur/edit_section.html.twig', [
+               'section' => $section,
+            ]
+        );
+    }
+
 
 
 }
