@@ -14,7 +14,7 @@ class Notification
     #[ORM\GeneratedValue(strategy: "IDENTITY")]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: 'text')]
     private ?string $contenu = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
