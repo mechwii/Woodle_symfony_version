@@ -217,7 +217,9 @@ div.liste_posts > div.post.file > div.download > i.fa-download {
 }
 
 /*Styles des popups*/
-
+div.popupEditSectionContainer {
+    z-index: 1000!important;
+}
 
 /* Assombrit l'arrière-plan quand la pop-up est active */
 .popup-overlay {
@@ -490,7 +492,7 @@ div.switch-buttons > button.switch-file {
 }
 
 /*Style de la popup ecrire une publication*/
-div.popupPublication, div.popUpListe, div.popupAddSection {
+div.popupPublication, div.popUpListe, div.popupAddSection, div.popupEditSectionContainer {
     position: absolute;
     left: 10%;
     top: 10%;
@@ -802,4 +804,61 @@ div.fake-button {
     background: rgba(0, 0, 0, 0.75);
     font-size: 14px;
     text-align: center;
+}
+
+/*Style popup confirmation suppression*/
+
+.custom-modal, .modal-backdrop {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.custom-modal {
+    z-index: 1000 !important;
+}
+
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    max-width: 400px;
+    text-align: center;
+    z-index: 1001;
+}
+
+.modal-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.confirm-btn {
+    background-color: crimson;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.cancel-btn {
+    background-color: lightgray;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
 }

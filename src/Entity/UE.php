@@ -77,6 +77,7 @@ class UE
         return $this->id;
     }
 
+
     public function getNom(): ?string
     {
         return $this->nom;

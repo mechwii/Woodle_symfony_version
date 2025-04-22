@@ -82,9 +82,10 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
         <div class="section section-{{ section.id }}">
             <div class="head-section">
                 <h3>{{ section.nom }}</h3>
-                <button class="add_post" data-section-id="{{ section.id }}">                    <i class="fa-solid fa-feather"></i>
+                <button class="add_post" data-section-id="{{ section.id }}">
+                    <i class="fa-solid fa-feather"></i>
                 </button>
-                <button class="delete_section">
+                <button class="delete_section" data-section-id="{{ section.id }}" >
                     <i class="fa-solid fa-trash"></i>
                 </button>
                 <button class="edit_section">
@@ -175,14 +176,24 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
 
     </div>
 
-    <div class="popup popupAddSection hidden">
-        <h3>Nouvelle section</h3>
-{#        <form id="form-section" action="{{ path('ajouter_section') }}" method="post">#}
-        <form id="add-section-form" action="{{ path('section_add') }}" method="post">
-            <input id="section_nom" type="text" name="nom" placeholder="Nom de la section" required>
-            <button type="submit">Ajouter</button>
-        </form>
+    <div class="popupEditSectionContainer hidden">
+{#        Ici on mettra le tempalte du formulaire edit#}
     </div>
+
+    <div class="popup popupAddSection hidden">
+{#       ici on mettra le tempalte du formulaire create#}
+    </div>
+
+    <div class="custom-modal hidden">
+        <div class="modal-content">
+            <p>Es-tu sûr(e) de vouloir supprimer cette section ?</p>
+            <div class="modal-actions">
+                <button class="cancel-btn">Annuler</button>
+                <button class="confirm-btn">Supprimer</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop hidden"></div>
 
 
     <div class="darkBackground hidden"></div>
