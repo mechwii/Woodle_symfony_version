@@ -249,9 +249,19 @@ final class ProfesseurController extends AbstractController
             ])
         ]);
 
-        }
+    }
 
+    // supprimer une section
+    #[Route('/professeur/contenu_ue-{codeUe}/section/{id}/delete', name: 'delete_section', methods: ['DELETE'])]
+    public function deleteSection(Section $section, EntityManagerInterface $entityManager) {
 
+        $entityManager->remove($section);
+        $entityManager->flush();
+
+        return new JsonResponse([
+            'status' => 'success',
+        ]);
+    }
 
 
 

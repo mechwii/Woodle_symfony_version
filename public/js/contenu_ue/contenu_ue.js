@@ -267,6 +267,58 @@ function reloadAll() {
         popupContainer.classList.add('hidden');
         background.classList.add('hidden');
     });
+
+    const modal = document.querySelector('.custom-modal');
+    const backdrop = document.querySelector('.modal-backdrop');
+    const cancelBtn = document.querySelector('.cancel-btn');
+    const confirmBtn = document.querySelector('.confirm-btn');
+
+    let sectionToDelete = null;
+    let sectionIdToDelete = null;
+
+    document.querySelectorAll('.delete_section').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sectionToDelete = btn.closest('.section');
+            sectionIdToDelete = btn.dataset.sectionId;
+
+            modal.classList.remove('hidden');
+            backdrop.classList.remove('hidden');
+        });
+    });
+
+    cancelBtn.addEventListener('click', () => {
+        modal.classList.add('hidden');
+        backdrop.classList.add('hidden');
+        sectionToDelete = null;
+        sectionIdToDelete = null;
+    });
+
+    confirmBtn.addEventListener('click', () => {
+        if (!sectionIdToDelete) return;
+
+        fetch(`/professeur/contenu_ue-IA41/section/${sectionIdToDelete}/delete`, {
+            method: 'DELETE'
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success' && sectionToDelete) {
+                    sectionToDelete.remove();
+                    console.log("section supprimée avec succès")
+                } else {
+                    alert("Erreur lors de la suppression.");
+                }
+
+                modal.classList.add('hidden');
+                backdrop.classList.add('hidden');
+                sectionToDelete = null;
+                sectionIdToDelete = null;
+            })
+            .catch(err => {
+                console.error("Erreur AJAX :", err);
+            });
+    });
+
 }
 
 
@@ -360,6 +412,8 @@ function attachCreateFormSubmit() {
                 console.error("Erreur lors de l'envoi du formulaire :", err);
             });
     });
+
+
 }
 
 
