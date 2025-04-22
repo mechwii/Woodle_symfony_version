@@ -175,13 +175,12 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
 
     </div>
 
+    <div class="popupEditSectionContainer hidden">
+{#        Ici on mettra le tempalte du formulaire edit#}
+    </div>
+
     <div class="popup popupAddSection hidden">
-        <h3>Nouvelle section</h3>
-{#        <form id="form-section" action="{{ path('ajouter_section') }}" method="post">#}
-        <form id="add-section-form" action="{{ path('section_add') }}" method="post">
-            <input id="section_nom" type="text" name="nom" placeholder="Nom de la section" required>
-            <button type="submit">Ajouter</button>
-        </form>
+{#       ici on mettra le tempalte du formulaire create#}
     </div>
 
 

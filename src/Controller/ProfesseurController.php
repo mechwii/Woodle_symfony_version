@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Form\SectionType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -162,14 +163,95 @@ final class ProfesseurController extends AbstractController
         ]);
     }
 
-//    Route pour la ccréation d'une section
-    #[Route('/professeur/ontenu_ue-{codeUe}/section/{idSection}/edit', name: 'section_edit', methods: ['POST'])]
-    public function editSection(string $codeUe, int $idSection) {
-        return $this->render('professeur/edit_section.html.twig', [
-               'section' => $section,
-            ]
-        );
+//    Route pour la modification d'une section
+    #[Route('/professeur/contenu_ue-{codeUe}/section/{id}/edit', name: 'section_edit', methods: ['GET', 'POST'])]
+    public function editSection(string $codeUe, Section $section, Request $request, EntityManagerInterface $entityManager) {
+
+
+        $form = $this->createForm(SectionType::class, $section);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $entityManager->flush();
+
+            return new JsonResponse([
+                'status' => 'success',
+                'section_id' => $section->getId(),
+                'section_nom' => $section->getNom(),
+            ]);
+        }
+
+        // Si GET ou erreur dans le form
+        return new JsonResponse([
+            'status' => 'form',
+            'html' => $this->renderView('professeur/edit_section.html.twig', [
+                'form' => $form->createView(),
+                'section' => $section,
+            ])
+        ]);
+
     }
+
+    // Création d'une section
+
+    #[Route('/professeur/contenu_ue-{codeUe}/section/create', name: 'section_create', methods: ['GET', 'POST'])]
+    public function createSection(string $codeUe, Request $request, EntityManagerInterface $entityManager, EntityManagerInterface $BDDManager)
+    {
+        // création d'une section vide
+        $section = new Section();
+
+        $connection = $BDDManager->getConnection();
+
+
+        // recuperation de la lsite des postes
+        $sql_liste_publications = '
+                SELECT titre, description, contenu, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id
+                FROM publication
+                WHERE code_id = :codeUe
+                ';
+
+        $prepareSQL = $connection->prepare($sql_liste_publications);
+        $resultat = $prepareSQL->executeQuery(['codeUe' => $codeUe]);
+        $liste_publications= $resultat->fetchAllAssociative();
+
+
+        $form = $this->createForm(SectionType::class, $section);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($section);
+            $entityManager->flush();
+
+
+            return new JsonResponse([
+                'status' => 'success',
+                'section_id' => $section->getId(),
+                'section_nom' => $section->getNom(),
+                'html' => $this->renderView('professeur/partials/_section.html.twig', [
+                    'section' => $section,
+                    'liste_publications' => $liste_publications,
+                ])
+            ]);
+
+//            return $this->redirectToRoute('contenu_ue_professeur', ['codeUe' => $codeUe]);
+        }
+
+//        return $this->render('professeur/create_section.html.twig', [
+
+
+
+        // Si GET ou erreur dans le form
+        return new JsonResponse([
+            'status' => 'form',
+            'html' => $this->renderView('professeur/create_section.html.twig', [
+                'form' => $form->createView(),
+                'section' => $section,
+            ])
+        ]);
+
+        }
+
+
 
 
 
