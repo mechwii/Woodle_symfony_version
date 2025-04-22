@@ -31,6 +31,7 @@ function handleAjout(){
     variable_pour_boutton_ajout === 1 ? ajouterUser() : ajouterUE();
 }
 function ajouterUser(){
+    popupManager.openAddPopupUser()
     console.log('User')
 
 }
@@ -59,6 +60,45 @@ function supprimerUtilisateur(id){
             console.log('Erreur delete user : ' + error)
             alert("Impossible de récuper les informations de l'utilisateur")
         })
+}
+
+function addUser(){
+    const nom = document.getElementById('nom')
+    const prenom = document.getElementById('prenom')
+    const email = document.getElementById('email')
+    const telephone = document.getElementById('telephone')
+
+    const selectedRole = document.querySelectorAll('#check-button input[type="checkbox"]');
+
+    console.log("SYUUUUUU")
+    let selectedRoles = [];
+
+    selectedRole.forEach(r => {
+        console.log("ici")
+        if (r.checked){
+            selectedRoles.push(r.value);
+        }
+    })
+
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    let file_name = "default.jpg"
+
+    if(file){
+        file_name = file.name;
+        console.log(file.name);
+        console.log(file.type);
+    }
+
+    const selectedUE = document.querySelectorAll('.selected-options .tag');
+    let allUeSelected = []
+
+    selectedUE.forEach( ue => {
+        allUeSelected.push(ue.dataset.value)
+    })
+
+    console.log(allUeSelected)
+    console.log(selectedRoles)
 }
 
 /*

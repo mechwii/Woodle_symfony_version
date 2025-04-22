@@ -1,0 +1,133 @@
+<div class="popup" id="add-user-popup">
+    <p class="close-popup" data-action="close-popup">X</p>
+    <div class="popup-content">
+        <div class="popup-content-add">
+            <div class="add-user-content">
+                <h2>Ajouter un utilisateur</h2>
+
+                <div class="add-form">
+                    <div class="section-user-add-form">
+                        <label for="nom">Nom :</label>
+                        <input name="nom" type="text" id="nom" placeholder="Nom*" >
+                    </div>
+
+                    <div class="section-user-add-form">
+                        <label for="prenom">Prénom :</label>
+                        <input name="prenom" type="text" id="prenom" placeholder="Prénom*" >
+                    </div>
+
+
+                    <div class="section-user-add-form">
+                        <label for="email">Email :</label>
+                        <input name="email" type="text" id="email" placeholder="Email*" >
+                    </div>
+
+
+                    <div class="section-user-add-form">
+                        <label for="telephone">Téléphone :</label>
+                        <input name="telephone" type="text" id="telephone" placeholder="Téléphone*" >
+                    </div>
+
+
+                    <div class="section-user-add-form">
+                        <p>Sélectionner un ou plusieurs rôles</p>
+                        <div class="role-section">
+                            {% for role in allRoles %}
+                                <div id="check-button">
+                                    <label class="toggle-btn">
+                                        <input type="checkbox" value="{{ role.id }}">
+                                        <span>{{ role.nom == "ROLE_ADMINISTRATEUR" ? "Administrateur" : ( role.nom == "ROLE_PROFESSEUR" ? "Professeur" : "Élève" )  }}</span>
+                                    </label>
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="section-user-add-form">
+                        <label for="ue-input">Sélectionner les UE</label>
+                        <div class="user-ue-add">
+                            <div class="custom-select" id="ue-select">
+                                <div class="select-box" onclick="toggleDropdown()">
+                                    <div class="selected-options" id="selected-options"></div>
+                                    <div class="select-arrow">▼</div>
+                                </div>
+
+                                <div id="option-container" class="options-container hidden">
+                                    <div class="filter-container">
+                                        <input type="text" id="option-filter" placeholder="Rechercher une UE..." onkeyup="filterOptions()">
+                                    </div>
+                                    <div class="options-list" id="options-list">
+                                        {% for unite in ue %}
+                                            <div class="option" onclick="toggleOption(this)" data-value="{{ unite.code }}">
+                                                <i class="fa fa-code"></i>
+                                                {{ unite.nom }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <input type="hidden" name="ue_input" id="ue-input">
+                            </div>
+                            <i class="fa fa-plus-circle add-plus"></i>
+                        </div>
+
+                    </div>
+
+
+
+
+                    <div class="drop-zone">
+                        <span class="drop-zone__prompt">Déposer le fichier</span>
+                        <div class="separator">
+                            <hr>
+                            <span class="ou">OU</span>
+                        </div>
+                        <div class="fake-button" >
+                            Parcourir les fichiers
+                        </div>
+                        <input type="file" id="fileInput" name="myFile" class="drop-zone__input">
+                    </div>
+
+
+
+
+
+                </div>
+            </div>
+            <div class="previsualition-add-user">
+                <h2>Prévisualisation</h2>
+                <div class="prev-form">
+                    <div class="prev-section">
+                        <img src="images/profil/default.jpg" id="prev-picture">
+                    </div>
+
+                    <div class="prev-section">
+                        <p>Bienvenue, </p>
+                        <div class="prev-name">
+                            <p id="prev-firstname-section"><strong>[Prénom]</strong></p>
+                            <p id="prev-name-section"><strong>[Nom de famille]</strong></p>
+                        </div>
+                    </div>
+
+                    <div class="prev-section">
+                        <p>Nous pouvons vous joindre à l'adresse suivante :</p>
+                        <p  id="prev-mail-section" class="prev-mail">adresse@mail.com</p>
+                    </div>
+
+                    <div class="prev-section">
+                        <p>Liste des UE :</p>
+                        <div id="prev-ue">
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+        <button onclick="addUser()" class="add-button-popup">Créer l'utilisateur</button>
+    </div>
+</div>

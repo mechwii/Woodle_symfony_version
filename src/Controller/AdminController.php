@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Role;
 use App\Entity\UE;
 use App\Entity\Utilisateur;
 use Doctrine\ORM\EntityManagerInterface;
@@ -45,28 +46,8 @@ final class AdminController extends AbstractController
         ]];
 
         $allUtilisateur = $BDDManager->getRepository(Utilisateur::class)->findAll();
+        $AllRoles = $BDDManager->getRepository(Role::class)->findAll();
 
-        // Certains utilisateurs ont plusieurs rôles et plusieurs UE donc il faut ajouter ça à chaque enregistrement
-        $AllUtilisateurWithRole= [];
-
-        $sql ='SELECT u.code, u.nom FROM Est_Affecte ea INNER JOIN UE u ON u.code = ea.code_id WHERE ea.utilisateur_id = :id;';
-        foreach ($allUtilisateur as $user) {
-
-            $stmt = $connection->prepare($sql);
-            $result = $stmt->executeQuery(['id' => $user->getId()]);
-            $ues = $result->fetchAllAssociative();
-
-            $AllUtilisateurWithRole[] = [
-                'id' => $user->getId(),
-                'email' => $user->getEmail(),
-                'roles' => $user->getRoles(),
-                'nom' => $user->getNom(),
-                'prenom' => $user->getPrenom(),
-                'motDePasse' => $user->getPassword(),
-                'image' => $user->getImage(),
-                'UE' => $ues
-            ];
-        }
 
         return $this->render('admin/index.html.twig', [
             'controller_name' => 'AdminController',
@@ -75,6 +56,7 @@ final class AdminController extends AbstractController
             "statistiques" => $statistiques,
             "allUtilisateur" => $allUtilisateur,
             "ue" => $ue,
+            "allRoles" => $AllRoles,
         ]);
     }
 
@@ -90,6 +72,7 @@ final class AdminController extends AbstractController
             'roles' => $roles
         ]);
     }
+
     #[Route('/admin/get-user/{id}', name: 'admin_get_user', methods: ['GET'])]
     public function getUtilisateur(int $id, EntityManagerInterface $BDDManager): JsonResponse
     {

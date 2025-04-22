@@ -64,21 +64,21 @@
 
             <div class="filter-section">
                 <div class="filter-button button">
-                    <i class="lni lni-menu-hamburger-1"></i>
+                    <i class="fa-solid fa-filter"></i>
                     <p>Filtrer</p>
                 </div>
 
                 <div class="filter-button button">
-                    <i class="lni lni-emoji-smile-tongue"></i>
+                    <i class="fa-solid fa-arrow-up-wide-short"></i>
                     <p>Trier</p>
                 </div>
 
             </div>
         </div>
 
-        <div id="add-section" class="add-section" onclick="handleAjout()">
-                    <div class="add-button button">
-                        <i class="add-icon lni lni-plus"></i>
+        <div id="add-section" class="add-section" >
+                    <div onclick="handleAjout()" class="add-button button">
+                        <i class="fa-solid fa-plus"></i>
                         <p>Ajouter</p>
                     </div>
         </div>
@@ -103,8 +103,11 @@
                         </div>
                     </div>
                     <div class="card-action">
-                        <i onclick="editUser()" class="lni lni-pencil-1 edit-icon edit"></i>
-                        <i onclick="supprimerUtilisateur('{{ user.id|e('js') }}')" class="lni lni-trash-3 edit-icon delete"></i>
+                        <i onclick="editUser()" class="fa-solid fa-pen edit-icon edit"></i>
+                        {# Afin de pas pouvoir supprimer l'admin qui est connecté #}
+                        {% if utilisateur.id != user.id %}
+                            <i onclick="supprimerUtilisateur('{{ user.id|e('js') }}')" class="fa-solid fa-trash edit-icon delete"></i>
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}
@@ -133,8 +136,8 @@
                         </div>
                     </div>
                     <div class="card-action">
-                        <i onclick="editUser()" class="lni lni-pencil-1 edit-icon edit"></i>
-                        <i onclick="deleteUser()" class="lni lni-trash-3 edit-icon delete"></i>
+                        <i onclick="editUser()" class="fa-solid fa-pen edit-icon edit"></i>
+                        <i onclick="deleteUser()" class="fa-solid fa-trash edit-icon delete"></i>
                     </div>
                 </div>
                 {% endfor %}
@@ -144,8 +147,9 @@
 
         {# Le code de ces classes sera dans admin.js plusieurs solutions s'offraient à nous
         mais on a préféré simplifier le code#}
-        <div id="overlay" class="hidden">
+        <div id="overlay" >
             {% include 'admin/popup/_delete_user.html.twig' %}
+            {% include 'admin/popup/_add_edit_user.html.twig' %}
 
             {#
             <div class="popup hidden">
@@ -156,8 +160,6 @@
                 <p class="close-popup" onclick="closePopup()">X</p>
             </div>
 #}
-
-
         </div>
     </div>
 
