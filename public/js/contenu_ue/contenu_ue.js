@@ -328,6 +328,8 @@ function reloadAll() {
         background.classList.add('hidden');
     });
 
+    // Supprimer une section
+
     const modal = document.querySelector('.custom-modal');
     const backdrop = document.querySelector('.modal-backdrop');
     const cancelBtn = document.querySelector('.cancel-btn');
@@ -354,6 +356,7 @@ function reloadAll() {
         sectionIdToDelete = null;
     });
 
+
     confirmBtn.addEventListener('click', () => {
         if (!sectionIdToDelete) return;
 
@@ -378,6 +381,113 @@ function reloadAll() {
                 console.error("Erreur AJAX :", err);
             });
     });
+
+
+
+    // supprimer un post
+
+    const modal_post = document.querySelector('.custom-modal-post');
+    const backdrop_post = document.querySelector('.modal-backdrop');
+    const cancelBtn_post = document.querySelector('.custom-modal-post .cancel-btn');
+    const confirmBtn_post = document.querySelector('.custom-modal-post .confirm-btn');
+
+    let sectionToDeleteForPublication = null;
+    let sectionIdToDeleteForPublication = null;
+
+    let publicationToDelete = null;
+    let publicationIdToDelete = null;
+
+    document.querySelectorAll('.delete_post').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sectionToDeleteForPublication = btn.closest('.section');
+            sectionIdToDeleteForPublication = sectionToDeleteForPublication.dataset.sectionId;
+            console.log("id de la section" + sectionIdToDeleteForPublication);
+            publicationToDelete = btn.closest('.post');
+            publicationIdToDelete = btn.dataset.publicationId;
+            console.log("id du post" + publicationIdToDelete);
+
+
+            modal_post.classList.remove('hidden');
+            backdrop_post.classList.remove('hidden');
+        });
+    });
+
+    cancelBtn.addEventListener('click', () => {
+        modal.classList.add('hidden');
+        backdrop.classList.add('hidden');
+        sectionToDelete = null;
+        sectionIdToDelete = null;
+    });
+
+    confirmBtn.addEventListener('click', () => {
+        if (!sectionIdToDelete) return;
+
+        fetch(`/professeur/contenu_ue-IA41/section/${sectionIdToDelete}/delete`, {
+            method: 'DELETE'
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success' && publicationToDelete) {
+                    publicationToDelete.remove();
+                    console.log("pubblication supprimée avec succès")
+                } else {
+                    alert("Erreur lors de la suppression.");
+                }
+
+                modal.classList.add('hidden');
+                backdrop.classList.add('hidden');
+                sectionToDelete = null;
+                sectionIdToDelete = null;
+            })
+            .catch(err => {
+                console.error("Erreur AJAX :", err);
+            });
+    });
+
+
+    cancelBtn_post.addEventListener('click', () => {
+        modal_post.classList.add('hidden');
+        backdrop_post.classList.add('hidden');
+        sectionToDeleteForPublication = null;
+        sectionIdToDeleteForPublication = null;
+        publicationToDelete = null;
+        publicationIdToDelete = null;
+    });
+
+
+    confirmBtn_post.addEventListener('click', () => {
+        if (!publicationIdToDelete) return;
+
+        fetch(`/professeur/contenu_ue-IA41/section/${sectionIdToDeleteForPublication}/publication/${publicationIdToDelete}/delete`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log("ici");
+                if (data.status === 'success' && publicationToDelete) {
+                    publicationToDelete.remove();
+                    console.log("publication supprimée avec succès")
+                }
+
+                modal_post.classList.add('hidden');
+                backdrop_post.classList.add('hidden');
+                sectionToDeleteForPublication = null;
+                sectionIdToDeleteForPublication = null;
+                publicationToDelete = null;
+                publicationIdToDelete = null;
+            })
+            .catch(err => {
+                console.log("par la");
+
+                console.error("Erreur AJAX :", err);
+            });
+    });
+
+    // editer un post
 
     document.querySelectorAll('.edit_post').forEach(button => {
         button.addEventListener('click', function () {

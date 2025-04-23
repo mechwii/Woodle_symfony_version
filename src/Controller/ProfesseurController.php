@@ -380,4 +380,25 @@ final class ProfesseurController extends AbstractController
 
     }
 
+    // SUPPRIMER UNE PUBLICATION
+
+    #[Route('/professeur/contenu_ue-{codeUe}/section/{id_section}/publication/{id_publication}/delete', name: 'delete_publication', methods: ['GET'])]
+    public function deletePublication($id_publication, EntityManagerInterface $entityManager): JsonResponse
+    {
+
+
+        $publication = $entityManager->getRepository(Publication::class)->find($id_publication);
+
+        if (!$publication) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Publication introuvable'], 404);
+        }
+
+        $entityManager->remove($publication);
+        $entityManager->flush();
+
+        return new JsonResponse(['status' => 'success']);
+    }
+
+
+
 }

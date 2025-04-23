@@ -119,7 +119,8 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
                                 id_publication: publication.id
                             }) }}">
                                 <i class="fa-solid fa-pen"></i>
-                            </button>                            <button class="delete_post"><i class="fa-solid fa-trash"></i></button>
+                            </button>
+                            <button class="delete_post" data-publication-id="{{ publication.id }}"><i class="fa-solid fa-trash"></i></button>
                         </div>
                         <!-- Icône trois points -->
                         <i class="fa-solid fa-ellipsis-h ellipsis_icon"></i>
@@ -193,6 +194,16 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
     <div class="custom-modal hidden">
         <div class="modal-content">
             <p>Es-tu sûr(e) de vouloir supprimer cette section ?</p>
+            <div class="modal-actions">
+                <button class="cancel-btn">Annuler</button>
+                <button class="confirm-btn">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="custom-modal-post hidden">
+        <div class="modal-content">
+            <p>Es-tu sûr(e) de vouloir supprimer cette publication ?</p>
             <div class="modal-actions">
                 <button class="cancel-btn">Annuler</button>
                 <button class="confirm-btn">Supprimer</button>

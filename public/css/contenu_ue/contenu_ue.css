@@ -808,7 +808,7 @@ div.fake-button {
 
 /*Style popup confirmation suppression*/
 
-.custom-modal, .modal-backdrop, .modal {
+.custom-modal, .modal-backdrop, .modal, .custom-modal-post {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     z-index: 100;
@@ -817,7 +817,7 @@ div.fake-button {
     justify-content: center;
 }
 
-.custom-modal, .modal {
+.custom-modal, .modal, .custom-modal-post {
     z-index: 1000 !important;
 }
 
