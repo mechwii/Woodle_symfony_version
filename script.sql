@@ -376,11 +376,11 @@ VALUES
     (2, 'TP', 'IA41'),
     (3, 'TD', 'IA41');
 
-INSERT INTO publication (id_publication, titre, description, contenu, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id)
+INSERT INTO publication (titre, description, contenu, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id)
 VALUES
-    (1, 'Salut la team zer', 'Une analyse des ...', 'Contenu détaillé de la publication...', '2025-04-19 10:00:00', 1, TRUE, 1, 2, 1, 'IA41'),
-    (2, 'Apaya', 'Une étude approfondie des.', 'Contenu détaillé de la publication...', '2025-04-19 11:00:00', 2, TRUE, 2, 3, 2, 'IA41'),
-    (3, 'Quoicoubeh', 'Un regard sur l’évolution de.', 'Contenu détaillé de la publication...', '2025-04-19 12:00:00', 3, TRUE, 3, 5, 1, 'IA41');
+    ('Salut la team zer', 'Une analyse des ...', 'Contenu détaillé de la publication...', '2025-04-19 10:00:00', 1, TRUE, 1, 2, 1, 'IA41'),
+    ('Apaya', 'Une étude approfondie des.', 'Contenu détaillé de la publication...', '2025-04-19 11:00:00', 2, TRUE, 2, 3, 2, 'IA41'),
+    ('Quoicoubeh', 'Un regard sur l’évolution de.', 'Contenu détaillé de la publication...', '2025-04-19 12:00:00', 3, TRUE, 3, 5, 1, 'IA41');
 
 
 INSERT INTO Epingle (utilisateur_id, publication_id, date_epingle)
@@ -416,9 +416,9 @@ VALUES
     (5, 'information');
 
 
-INSERT INTO publication (id_publication, titre, description, contenu, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id)
+INSERT INTO publication (titre, description, contenu, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id)
 VALUES
-    (4, 'Hmmm comment ca va la team', 'Une analyse des ...', 'Contenu détaillé de la publication...', '2025-04-19 10:00:00', 1, TRUE, 1, 2, 3, 'IA41'),
-    (5, 'Absence au prochain TD', 'Une étude approfondie des.', 'Contenu détaillé de la publication...', '2025-04-19 11:00:00', 2, TRUE, 2, 3, 4, 'IA41'),
-    (6, 'CM annulé', 'Un regard sur l’évolution de.', 'Contenu détaillé de la publication...', '2025-04-19 12:00:00', 3, TRUE, 3, 5, 5, 'IA41');
+    ( 'Hmmm comment ca va la team', 'Une analyse des ...', 'Contenu détaillé de la publication...', '2025-04-19 10:00:00', 1, TRUE, 1, 2, 3, 'IA41'),
+    ('Absence au prochain TD', 'Une étude approfondie des.', 'Contenu détaillé de la publication...', '2025-04-19 11:00:00', 2, TRUE, 2, 3, 4, 'IA41'),
+    ('CM annulé', 'Un regard sur l’évolution de.', 'Contenu détaillé de la publication...', '2025-04-19 12:00:00', 3, TRUE, 3, 5, 5, 'IA41');
 

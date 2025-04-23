@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Publication;
+use App\Form\PublicationType;
 use App\Form\SectionType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -137,7 +139,7 @@ final class ProfesseurController extends AbstractController
 
         // recuperation de la lsite des postes
         $sql_liste_publications = '
-                SELECT titre, description, contenu, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id
+                SELECT id_publication as id, titre, description, contenu, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id
                 FROM publication
                 WHERE code_id = :codeUe
                 ';
@@ -163,6 +165,7 @@ final class ProfesseurController extends AbstractController
         ]);
     }
 
+//    ICI ROUTES POUR SECTION
 //    Route pour la modification d'une section
     #[Route('/professeur/contenu_ue-{codeUe}/section/{id}/edit', name: 'section_edit', methods: ['GET', 'POST'])]
     public function editSection(string $codeUe, Section $section, Request $request, EntityManagerInterface $entityManager) {
@@ -263,6 +266,118 @@ final class ProfesseurController extends AbstractController
         ]);
     }
 
+//ICI ROUTES POUR PUBLICATION
 
+// EDITER UNE PUBLICATION
+    #[Route('/professeur/contenu_ue-{codeUe}/section/{id_section}/publication/{id_publication}/edit', name: 'publication_edit', methods: ['GET', 'POST'])]
+    public function editPublication(int $id_publication, Request $request, EntityManagerInterface $entityManager) {
+
+        $publication = $entityManager->getRepository(Publication::class)->find($id_publication);
+
+        if (!$publication) {
+            throw $this->createNotFoundException('Publication non trouvée.');
+        }
+
+        $form = $this->createForm(PublicationType::class, $publication);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $publication->setDerniereModif(new \DateTimeImmutable());
+
+            $entityManager->flush();
+
+            return new JsonResponse([
+                'status' => 'success',
+                'id' => $publication->getId(),
+                'titre' => $publication->getTitre(),
+                'description' => $publication->getDescription(),
+                'contenu' => $publication->getContenu(),
+                'derniere_modif' => $publication->getDerniereModif()->format('d/m/Y H:i'),
+                'ordre' => $publication->getOrdre(),
+                'visible' => $publication->isVisible(),
+                'section_id' => $publication->getSectionId(),
+                'utilisateur_id' => $publication->getUtilisateurId(),
+                'type_publication_id' => $publication->getTypePublicationId()->getId(), // ou ->getTypePublication()->getId() selon ton entité
+                'code_id' => $publication->getCodeId(),
+            ]);
+
+        }
+
+        // Si GET ou erreur dans le form
+        return new JsonResponse([
+            'status' => 'form',
+            'html' => $this->renderView('professeur/edit_publication.html.twig', [
+                'form' => $form->createView(),
+                'publication' => $publication,
+            ])
+        ]);
+
+    }
+
+    // créer une publication
+
+    #[Route('/professeur/contenu_ue-{codeUe}/section/{id_section}/publication/create', name: 'publication_create', methods: ['GET', 'POST'])]
+    public function createPublication(Request $request, EntityManagerInterface $entityManager)
+    {
+        // création d'une publication vide
+        $publication = new Publication();
+
+        $type = $request->query->get('type');
+
+
+        $form = $this->createForm(PublicationType::class, $publication);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($publication);
+            $entityManager->flush();
+
+
+            return new JsonResponse([
+                'status' => 'success',
+                'id' => $publication->getId(),
+                'titre' => $publication->getTitre(),
+                'description' => $publication->getDescription(),
+                'contenu' => $publication->getContenu(),
+                'derniere_modif' => $publication->getDerniereModif()->format('d/m/Y H:i'),
+                'ordre' => $publication->getOrdre(),
+                'visible' => $publication->isVisible(),
+                'section_id' => $publication->getSectionId()?->getId(),
+                'utilisateur_id' => $publication->getUtilisateurId()?->getId(),
+                'type_publication_id' => $publication->getTypePublicationId()?->getId(), // ou ->getTypePublication()->getId() selon ton entité
+                'code_id' => $publication->getCodeId()?->getId(),
+                'html' => $this->renderView('professeur/partials/_publication.html.twig', [
+                    'id' => $publication->getId(),
+                    'titre' => $publication->getTitre(),
+                    'description' => $publication->getDescription(),
+                    'contenu' => $publication->getContenu(),
+                    'derniere_modif' => $publication->getDerniereModif()->format('d/m/Y H:i'),
+                    'ordre' => $publication->getOrdre(),
+                    'visible' => $publication->isVisible(),
+                    'section_id' => $publication->getSectionId()?->getId(),
+                    'utilisateur_id' => $publication->getUtilisateurId()?->getId(),
+                    'type_publication_id' => $publication->getTypePublicationId()?->getId(), // ou ->getTypePublication()->getId() selon ton entité
+                    'code_id' => $publication->getCodeId()?->getId(),
+
+                ])
+            ]);
+
+//            return $this->redirectToRoute('contenu_ue_professeur', ['codeUe' => $codeUe]);
+        }
+
+//        return $this->render('professeur/create_section.html.twig', [
+
+
+
+        // Si GET ou erreur dans le form
+        return new JsonResponse([
+            'status' => 'form',
+            'html' => $this->renderView('professeur/create_publication.html.twig', [
+                'form' => $form->createView(),
+                'publication' => $publication,
+                'type' => $type,
+            ])
+        ]);
+
+    }
 
 }

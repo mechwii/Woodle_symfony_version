@@ -67,48 +67,106 @@ function reloadAll() {
                 popupPublication.dataset.sectionId = sectionId;
 
                 openPopup(popupPublication);
+                afficherFormulaire("texte", sectionId)
             });
         });
 
-        function afficherFormulaire(type) {
-            const sectionId = popupPublication.dataset.sectionId;
+    function afficherFormulaire(type) {
+        const sectionId = popupPublication.dataset.sectionId;
+        console.log(sectionId);
+        const codeUe = document.querySelector('span.code').innerHTML;// Stocke le codeUe dans un attribut quelque part
+        console.log(codeUe);
+        const url = `/professeur/contenu_ue-${codeUe}/section/${sectionId}/publication/create?type=${type}`;
+        console.log(url);
 
-            if (type === "texte") {
-                formulaireContainer.innerHTML = `
-<!--            <form id="form-publication" action="{{ path('ajouter_publication') }}" method="post">-->
-            <form id="form-publication" action="" method="post">
-                <input type="hidden" name="section_id" value="${sectionId}">
-                <input type="text" name="titre" placeholder="Titre" required>
-                <select name="type_publication">
-                    <option value="">--Type de publication--</option>
-                    <option value="calendar">Evenement</option>
-                    <option value="warning">Important</option>
-                    <option value="info">Information</option>
-                </select>
-                <textarea name="contenu" placeholder="Contenu..." rows="4" required></textarea>
-                <button type="submit">Envoyer</button>
-            </form>`;
-            } else {
-                formulaireContainer.innerHTML = `
-                <form>
-                    <input type="text" placeholder="Nom du fichier" required><br>
-                    <div class="drop-zone">
-                        <span class="drop-zone__prompt">Déposer le fichier</span>
-                            <div class="separator">
-                            <hr>
-                            <span class="ou">OU</span>
-                            </div>
-                        <div class="fake-button">
-                            Parcourir les fichiers
-                        </div>
-                        <input type="file" name="myFile" class="drop-zone__input">
-                    </div>
-                    <button type="submit">Uploader</button>
-                </form>`;
-            }
-        }
+        fetch(`/professeur/contenu_ue-${codeUe}/section/${sectionId}/publication/create?type=${type}`, {
+            method: 'POST'
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'form') {
+                    formulaireContainer.innerHTML = data.html;
+                    attachCreatePublicationListener(sectionId); // écoute le submit
+                }
+            })
+            .catch(error => {
+                console.error("Erreur lors du chargement du formulaire :", error);
+            });
+    }
 
-        boutonText.addEventListener("click", () => {
+    function attachCreatePublicationListener(sectionId) {
+        const form = document.querySelector(".create-publication-form");
+        if (!form) return;
+
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+            console.log(form.action);
+
+            // c ici le probleme brotha
+
+            fetch(`/professeur/contenu_ue-IA41/section/${sectionId}/publication/create`, {
+                method: "POST",
+                body: formData,
+            })
+                .then(async res => {
+                    const contentType = res.headers.get("content-type");
+
+                    if (contentType && contentType.includes("application/json")) {
+                        return res.json();
+                    } else {
+                        const text = await res.text();
+                        console.error("Erreur : réponse non JSON reçue", text);
+                        throw new Error("Réponse non-JSON");
+                    }
+                })
+                .then(data => {
+                    if (data.status === "success") {
+                        console.log("valid");
+
+                        console.log(formData);
+                        console.log(formData.get('publication[section_id]'));
+                        const section = document.querySelector(`.section[data-section-id="${formData.get('publication[section_id]')}"]`);
+                        console.log(section);
+
+                        if (!section) return;
+
+                        let postsContainer = section.querySelector('.liste_posts');
+
+                        // Si le container de posts n'existe pas encore (première publication)
+                        if (!postsContainer) {
+                            postsContainer = document.createElement('div');
+                            postsContainer.classList.add('liste_posts');
+
+                            // Supprime le message "Aucune publication..."
+                            const noPostMsg = section.querySelector('p');
+                            if (noPostMsg) noPostMsg.remove();
+
+                            section.appendChild(postsContainer);
+                        }
+
+                        const newPost = document.createElement("div");
+                        newPost.innerHTML = data.html;
+
+                        // On ajoute la nouvelle publication en haut de la liste
+                        postsContainer.prepend(newPost.firstElementChild);
+
+                        // Ferme la popup
+                        closeAllPopups();
+                        reloadAll();
+                    } else if (data.status === "form") {
+                        console.log("no valid");
+                        formulaireContainer.innerHTML = data.html;
+                        attachCreatePublicationListener(); // Rebind
+                    }
+                });
+        });
+    }
+
+
+
+    boutonText.addEventListener("click", () => {
             switchBg.style.left = "0%";
             boutonText.style.color = "white";
             boutonFile.style.color = "black";
@@ -200,7 +258,7 @@ function reloadAll() {
     const popupContainer = document.querySelector('.popupEditSectionContainer');
     const background = document.querySelector('.darkBackground');
 
-    // Ouvrir la popup de modification
+    // Ouvrir la popup de modification de la section
     document.querySelectorAll('.edit_section').forEach(btn => {
         btn.addEventListener('click', () => {
             const sectionDiv = btn.closest('.section');
@@ -260,6 +318,8 @@ function reloadAll() {
                 });
 
         });
+
+
     }
 
     // Fermer la popup si on clique sur le fond sombre
@@ -319,6 +379,32 @@ function reloadAll() {
             });
     });
 
+    document.querySelectorAll('.edit_post').forEach(button => {
+        button.addEventListener('click', function () {
+            const url = this.dataset.url;
+            const publicationId = this.closest('.post').dataset.id; // On récupère l'ID directement du DOM
+            console.log("Publication ID :", publicationId);
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'form') {
+                        document.getElementById('edit-publication-form-container').innerHTML = data.html;
+                        document.getElementById('editPublicationModal').style.display = 'flex';
+                        attachEditPublicationFormListener(publicationId); // on passe bien l'id ici
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur AJAX :', error);
+                });
+        });
+    });
+
+    // Fermer la modal
+    document.querySelector('.close-btn').addEventListener('click', function () {
+        document.getElementById('editPublicationModal').style.display = 'none';
+    });
+
 }
 
 
@@ -335,7 +421,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const popupContainer = document.querySelector('.popupAddSection');
     const background = document.querySelector('.darkBackground');
 
-    // Ouvrir la popup de modification
+    // Ouvrir la popup de création
     document.querySelector('.add_section').addEventListener('click', () => {
     console.log(document.querySelector('.add_section'));
             fetch(`/professeur/contenu_ue-IA41/section/create`)
@@ -420,8 +506,71 @@ function attachCreateFormSubmit() {
 
 
 
+function attachEditPublicationFormListener(publicationId) {
+    const form = document.querySelector('#edit-publication-form');
+    if (!form) return;
 
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
 
+        const formData = new FormData(form);
+        for (const value of formData.values()) {
+            console.log(value);
+        }
+        const action = form.action;
+        console.log("voici le action : " + action);
+
+        fetch(`/professeur/contenu_ue-IA41/section/1/publication/${publicationId}/edit`, {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('editPublicationModal').style.display = 'none';
+
+                    const postDiv = document.querySelector(`.post[data-id="${data.id}"]`);
+                    if (!postDiv) return;
+
+                    // Met à jour titre, date
+                    postDiv.querySelector('.title_post').textContent = data.titre;
+                    postDiv.querySelector('.date_post').textContent = data.derniere_modif;
+
+                    // Mise à jour contenu
+                    const textPost = postDiv.querySelector('.text_post');
+                    const nomFichier = postDiv.querySelector('.nom_fichier');
+
+                    if (data.type_publication_id === 2 && nomFichier) {
+                        nomFichier.textContent = data.contenu;
+                    } else if (textPost) {
+                        textPost.textContent = data.contenu;
+                    }
+
+                    // Mettre à jour les classes
+                    postDiv.className = 'post'; // reset
+                    console.log('Données reçues après édition :', data); // 👈 vérifie ici
+                    if (data.type_publication_id === 2) postDiv.classList.add('file');
+                    else if (data.type_publication_id === 3) postDiv.classList.add('calendar');
+                    else if (data.type_publication_id === 4) postDiv.classList.add('warning');
+                    else if (data.type_publication_id === 5) postDiv.classList.add('info');
+
+                    // Ajout visuel temporaire (ex: animation highlight)
+                    postDiv.style.transition = 'background-color 0.5s';
+                    postDiv.style.backgroundColor = '#fff1a8';
+                    setTimeout(() => {
+                        postDiv.style.backgroundColor = '';
+                    }, 1000);
+
+                } else if (data.status === 'form') {
+                    document.getElementById('edit-publication-form-container').innerHTML = data.html;
+                    attachEditPublicationFormListener();
+                }
+            })
+            .catch(error => {
+                console.error('Erreur AJAX :', error);
+            });
+    });
+}
 
 
 

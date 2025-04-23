@@ -79,7 +79,7 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
 
 <div class="sections-wrapper">
     {% for section in sections_ue %}
-        <div class="section section-{{ section.id }}">
+        <div class="section section-{{ section.id }}" data-section-id="{{ section.id }}">
             <div class="head-section">
                 <h3>{{ section.nom }}</h3>
                 <button class="add_post" data-section-id="{{ section.id }}">
@@ -106,14 +106,20 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
     {% elseif publication.type_publication_id == 3 %}calendar
     {% elseif publication.type_publication_id == 4 %}warning
     {% elseif publication.type_publication_id == 5 %}info
-    {% endif %}">
+    {% endif %}"
+                     data-id="{{ publication.id }}">
 
                 <div class="top_post">
                         <h5 class="title_post">{{ publication.titre }}</h5>
                         <span class="date_post">{{ publication.derniere_modif }}</span>
                         <div class="interactions_post">
-                            <button class="edit_post"><i class="fa-solid fa-pen"></i></button>
-                            <button class="delete_post"><i class="fa-solid fa-trash"></i></button>
+                            <button class="edit_post" data-url="{{ path('publication_edit', {
+                                codeUe: ue.id,
+                                id_section: section.id,
+                                id_publication: publication.id
+                            }) }}">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>                            <button class="delete_post"><i class="fa-solid fa-trash"></i></button>
                         </div>
                         <!-- Icône trois points -->
                         <i class="fa-solid fa-ellipsis-h ellipsis_icon"></i>
@@ -193,6 +199,16 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
             </div>
         </div>
     </div>
+
+    <div id="editPublicationModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div id="edit-publication-form-container">
+                <!-- Le formulaire AJAX va arriver ici -->
+            </div>
+        </div>
+    </div>
+
     <div class="modal-backdrop hidden"></div>
 
 
