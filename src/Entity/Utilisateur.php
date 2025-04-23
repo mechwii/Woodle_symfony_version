@@ -36,7 +36,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $telephone = null;
 
-    #[ORM\Column(name: "date_creation", type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(name: "date_creation", type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $date_creation = null;
 
     #[ORM\Column(name: "date_modification", type: Types::DATETIME_MUTABLE, nullable: true)]
@@ -211,6 +211,16 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
         return array_unique($roles);
     }
+
+    /**
+     * Gets the Role entities associated with this user
+     * @return Collection<int, Role>
+     */
+    public function getRoleObjects(): Collection
+    {
+        return $this->roles;
+    }
+
 
     public function eraseCredentials(): void
     {

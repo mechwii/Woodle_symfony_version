@@ -62,83 +62,27 @@ function supprimerUtilisateur(id){
         })
 }
 
-function addUser(){
-    const nom = document.getElementById('nom')
-    const prenom = document.getElementById('prenom')
-    const email = document.getElementById('email')
-    const telephone = document.getElementById('telephone')
+function modifierUtilisateur(id){
 
-    const selectedRole = document.querySelectorAll('#check-button input[type="checkbox"]');
-
-    console.log("SYUUUUUU")
-    let selectedRoles = [];
-
-    selectedRole.forEach(r => {
-        console.log("ici")
-        if (r.checked){
-            selectedRoles.push(r.value);
-        }
-    })
-
-    const fileInput = document.getElementById('fileInput');
-    const file = fileInput.files[0];
-    let file_name = "default.jpg"
-
-    if(file){
-        file_name = file.name;
-        console.log(file.name);
-        console.log(file.type);
-    }
-
-    const selectedUE = document.querySelectorAll('.selected-options .tag');
-    let allUeSelected = []
-
-    selectedUE.forEach( ue => {
-        allUeSelected.push(ue.dataset.value)
-    })
-
-    console.log(allUeSelected)
-    console.log(selectedRoles)
-}
-
-/*
-function deleteUser(id){
-    fetch(`/admin/delete-user/${id}`, {
-        method: 'DELETE',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    }).then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                const userCard = document.getElementById(`user-${id}`);
-                if (userCard) {
-                    userCard.remove();
-                }
-                closePopup();
-            } else {
-                alert('Erreur lors de la suppression');
+    fetch(`/admin/get-user/${id}`)
+        .then(response => {
+            if(!response.ok){
+                throw new Error('Erreur lors de la récupération des données');
             }
+            return response.json();
         })
-        .catch(error => {
-            console.error('Erreur:', error);
-            alert('Erreur lors de la suppression');
-        });
+        .then(user =>{
+            if(user.error){
+                throw new Error(user.error);
+            }
+            window.popupManager.openModifyUserPopup(id, user.nom, user.prenom, user.email, user.image ,user.telephone, user.roles, user.ue);
+
+        })
+        .catch(error =>{
+            console.log('Erreur delete user : ' + error)
+            alert("Impossible de récuper les informations de l'utilisateur")
+        })
+
+
 }
 
-function supprimerUE(){
-
-}
-
-function closePopup(){
-    document.getElementById('overlay').classList.add('hidden');
-}
-
-document.addEventListener('DOMContentLoaded', (event) => {
-    document.getElementById('overlay').addEventListener('click', (event) => {
-        // On veut uniquement fermer quand on clique en dehors donc on doit vérfier qu'on clique sur l'overlay
-        if (event.target === document.getElementById('overlay')) {
-            closePopup();
-        }
-    });
-})*/

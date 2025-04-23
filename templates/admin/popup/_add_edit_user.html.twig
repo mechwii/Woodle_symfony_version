@@ -1,33 +1,19 @@
-<div class="popup" id="add-user-popup">
+<div class="popup hidden" id="add-user-popup">
     <p class="close-popup" data-action="close-popup">X</p>
     <div class="popup-content">
         <div class="popup-content-add">
             <div class="add-user-content">
                 <h2>Ajouter un utilisateur</h2>
 
+                {{ form_start(form) }}
                 <div class="add-form">
-                    <div class="section-user-add-form">
-                        <label for="nom">Nom :</label>
-                        <input name="nom" type="text" id="nom" placeholder="Nom*" >
-                    </div>
 
-                    <div class="section-user-add-form">
-                        <label for="prenom">Prénom :</label>
-                        <input name="prenom" type="text" id="prenom" placeholder="Prénom*" >
-                    </div>
+                    {{ form_row(form.nom, {'attr': {'class' :'section-user-add-form', 'placeholder' : 'Nom*'} }) }}
+                    {{ form_row(form.prenom, {'attr': {'class' :'section-user-add-form', 'placeholder' : 'Prenom*'} }) }}
+                    {{ form_row(form.email, {'attr': {'class' :'section-user-add-form', 'placeholder' : 'Email*'} }) }}
+                    {{ form_row(form.telephone, {'attr': {'class' :'section-user-add-form', 'placeholder' : 'Téléphone'} }) }}
 
-
-                    <div class="section-user-add-form">
-                        <label for="email">Email :</label>
-                        <input name="email" type="text" id="email" placeholder="Email*" >
-                    </div>
-
-
-                    <div class="section-user-add-form">
-                        <label for="telephone">Téléphone :</label>
-                        <input name="telephone" type="text" id="telephone" placeholder="Téléphone*" >
-                    </div>
-
+                    {{ form_end(form) }}
 
                     <div class="section-user-add-form">
                         <p>Sélectionner un ou plusieurs rôles</p>
@@ -128,6 +114,7 @@
                 </div>
             </div>
         </div>
-        <button onclick="addUser()" class="add-button-popup">Créer l'utilisateur</button>
+        <button id="add-user-button" class="add-button-popup"></button>
+        <input type="hidden" id="utilisateur_id" name="utilisateur[id]" value="">
     </div>
 </div>

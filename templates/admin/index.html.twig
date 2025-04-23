@@ -91,9 +91,9 @@
                     <div class="card-left">
                         <img id="user-picture" src="{{ 'images/profil/' ~ user.image }}" alt="Photo de profil admin">
                         <div class="card-content">
-                            <h4>{{ user.prenom }} {{ user.nom }}</h4>
+                            <h4 id="name-firstname-section">{{ user.prenom }} {{ user.nom }}</h4>
                             {# Comme c'est un tableau je sépare les valeurs avec des -, et je change pour l'aspect visuel  #}
-                            <h4 class="card-text">
+                            <h4 id="roles-section" class="card-text">
                                 {{
                                 user.roles
                                 |map(r => r == 'ROLE_ELEVE' ? 'Élève' : (r == 'ROLE_ADMINISTRATEUR' ? 'Administrateur' : (r == 'ROLE_PROFESSEUR' ? 'Professeur' : r)))
@@ -103,7 +103,7 @@
                         </div>
                     </div>
                     <div class="card-action">
-                        <i onclick="editUser()" class="fa-solid fa-pen edit-icon edit"></i>
+                        <i onclick="modifierUtilisateur(' {{ user.id|e('js') }} ')" class="fa-solid fa-pen edit-icon edit"></i>
                         {# Afin de pas pouvoir supprimer l'admin qui est connecté #}
                         {% if utilisateur.id != user.id %}
                             <i onclick="supprimerUtilisateur('{{ user.id|e('js') }}')" class="fa-solid fa-trash edit-icon delete"></i>
@@ -147,7 +147,7 @@
 
         {# Le code de ces classes sera dans admin.js plusieurs solutions s'offraient à nous
         mais on a préféré simplifier le code#}
-        <div id="overlay" >
+        <div class="hidden" id="overlay" >
             {% include 'admin/popup/_delete_user.html.twig' %}
             {% include 'admin/popup/_add_edit_user.html.twig' %}
 

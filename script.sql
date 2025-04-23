@@ -21,7 +21,7 @@ CREATE TABLE Utilisateur
     email             VARCHAR(255) NOT NULL,
     mot_de_passe      VARCHAR(255) NOT NULL,
     telephone         VARCHAR(50),
-    date_creation     TIMESTAMP NOT NULL,
+    date_creation     TIMESTAMP,
     date_modification TIMESTAMP,
     image             VARCHAR(255) NOT NULL
 );
@@ -154,7 +154,42 @@ CREATE TABLE Epingle
     FOREIGN KEY (publication_id) REFERENCES Publication (id_publication)
 );
 
--- INSERT 
+CREATE OR REPLACE FUNCTION maj_dates_utilisateur()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF (TG_OP = 'INSERT') THEN
+        NEW.date_creation := NOW();
+        NEW.date_modification := NOW();
+    ELSIF (TG_OP = 'UPDATE') THEN
+        NEW.date_modification := NOW();
+END IF;
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_maj_dates_utilisateur
+    BEFORE INSERT OR UPDATE ON Utilisateur
+        FOR EACH ROW
+            EXECUTE FUNCTION maj_dates_utilisateur();
+
+CREATE OR REPLACE FUNCTION maj_date_affection()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF(TG_OP = 'INSERT') THEN
+      NEW.date_inscription := NOW();
+END IF;
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_maj_affectation
+    BEFORE INSERT OR UPDATE ON Est_Affecte
+            FOR EACH ROW
+                    EXECUTE FUNCTION maj_date_affection();
+
+
+
+-- INSERT
 
 INSERT INTO Utilisateur (nom, prenom, email, mot_de_passe, telephone, date_creation, date_modification, image)
 VALUES ('San', 'M''hammedu', 'mhammedu.san@example.com', 'password123', '+33612345678', '2024-01-15', '2024-01-15',

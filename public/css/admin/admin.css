@@ -270,7 +270,9 @@
 }
 
 #user-picture {
+    width: 130px;
     height: 130px;
+    object-fit: cover;
     border-radius: 10px 0 0 10px;
 }
 
@@ -328,6 +330,7 @@
     }
 
     #user-picture {
+        width: 90px;
         height: 90px;
     }
 
@@ -369,6 +372,7 @@
     }
 
     #user-picture {
+        width: 70px;
         height: 70px;
     }
 
