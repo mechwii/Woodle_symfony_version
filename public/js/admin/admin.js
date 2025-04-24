@@ -31,13 +31,18 @@ function handleAjout(){
     variable_pour_boutton_ajout === 1 ? ajouterUser() : ajouterUE();
 }
 function ajouterUser(){
-    popupManager.openAddPopupUser()
+    popupManager.popupCat = 1;
+    popupManager.openAddPopupUser();
     console.log('User')
 
 }
 
 function ajouterUE(){
     console.log('UE')
+    console.log('UEs')
+    popupManager.popupCat = 2;
+
+    popupManager.openAddPopupUE();
 }
 
 function supprimerUtilisateur(id){
@@ -75,6 +80,7 @@ function modifierUtilisateur(id){
             if(user.error){
                 throw new Error(user.error);
             }
+            window.popupManager.popupCat = 1;
             window.popupManager.openModifyUserPopup(id, user.nom, user.prenom, user.email, user.image ,user.telephone, user.roles, user.ue);
 
         })
@@ -85,4 +91,36 @@ function modifierUtilisateur(id){
 
 
 }
+
+function modifierUE(id){
+    fetch(`/admin/get-one-ue/${id}`)
+        .then(response => {
+            if(!response.ok){
+                console.log(response)
+                throw new Error('Erreur lors de la récupération des données');
+            }
+            return response.json();
+        })
+        .then(ue => {
+            if(ue.error){
+                throw new Error(ue.error);
+            }
+
+            const ues = ue.ue;
+            popupManager.popupCat = 2;
+            popupManager.openEditPopupUE(
+                ues.code,
+                ues.nom,
+                ues.responsable_id,
+                ues.responsable_nom,
+                ues.image,
+                ues.utilisateurs_affectes
+            );
+        })
+        .catch(e => {
+            console.log('Erreur open edit ue popup : ' + e);
+        });
+}
+
+
 

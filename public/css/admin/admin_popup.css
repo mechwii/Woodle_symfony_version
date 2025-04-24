@@ -147,13 +147,14 @@
 
 }
 
-.add-form input[type=text], input[type=email] {
+.add-form input[type=text], input[type=email], select {
     background-color: #fff;
     padding: 8px;
     border: 1px solid #d4d4d4;
     border-radius: 5px;
-
 }
+
+
 
 .user-ue-add{
     width: 100%;
@@ -303,6 +304,14 @@ div.fake-button:hover{
     flex-direction: column;
     margin-top: 25px;
     gap : 35px;
+}
+
+.previ-ue {
+    width: 100%;
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap:15px;
 }
 
 .prev-section{
@@ -476,13 +485,7 @@ div.fake-button:hover{
     display: none;
 }
 
-#prev-ue{
-    width: 100%;
-    margin-top: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    gap:15px;
-}
+
 
 .ue-item{
     display: flex;
@@ -515,6 +518,38 @@ div.fake-button:hover{
     margin-bottom: 1rem;
     border-radius: 4px;
     border-left: 5px solid #ff3860;
+}
+
+#prev-picture-ue{
+    width: 100%;
+    height: 130px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.previ-user{
+    margin-top: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.hover-effect {
+    cursor: pointer;
+    color: black; /* Couleur initiale du texte */
+}
+
+.hover-effect:hover {
+    color: #ff3860; /* Couleur du texte au survol */
+}
+
+.success-toast{
+    position: fixed;
+    background-color: #1eb55b;
+    color: white;
+    left: 5%;
+    bottom: 5%;
+    z-index: 100;
 }
 
 @media only screen

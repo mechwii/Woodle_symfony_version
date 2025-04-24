@@ -1,0 +1,96 @@
+{% block javascripts %}
+    <script src="{{ asset('js/admin/composant/multiselect.js') }}"></script>
+{% endblock %}
+
+
+
+<div class="popup hidden" id="add-ue-popup">
+    <p class="close-popup" data-action="close-popup">X</p>
+    <div class="popup-content">
+        <div class="popup-content-add">
+            <div class="add-user-content">
+                <h2>Ajouter UE</h2>
+                {{ form_start(form2) }}
+                <div class="add-form">
+
+
+                    {{ form_row(form2.id, {'attr': {'placeholder' : 'Code*'} }) }}
+                    {{ form_row(form2.nom, {'attr': {'placeholder' : 'Nom*'} }) }}
+                    {{ form_end(form2) }}
+
+                <div class="section-user-add-form">
+
+                    <label for="responsable_section_id">Responsable</label>
+                    <label for="ue_responsable_id"></label><select name="responsable_section_id" id="ue_responsable_id"></select>
+
+                </div>
+
+                    <div class="section-user-add-form">
+                        <label for="ue-input">Sélectionner des utilisateurs</label>
+                        <div class="user-ue-add">
+                            <div class="custom-select" id="ue-ue-select">
+                                <div class="select-box" onclick="toggleDropdown('ue')">
+                                    <div class="selected-options" id="ue-selected-options"></div>
+                                    <div class="select-arrow">▼</div>
+                                </div>
+
+                                <div id="ue-option-container" class="options-container hidden">
+                                    <div class="filter-container">
+                                        <input type="text" id="ue-option-filter" placeholder="Rechercher une UE..." onkeyup="filterOptions('ue')">
+                                    </div>
+                                    <div class="options-list" id="ue-options-list">
+                                        {#    {% for utilisateur_ in allUtilisateur %}
+                                          <div class="option" onclick="toggleOption(this, 'ue' )" data-value="{{ utilisateur_.id }}">
+                                                <i class="fa-regular fa-user"></i>
+                                                {{ utilisateur_.nom }} {{ utilisateur_.prenom }}
+                                            </div>
+                                        {% endfor %}#}
+                                    </div>
+                                </div>
+                                <input type="hidden" name="ue_input" id="ue-ue-input">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="drop-zone">
+                        <span class="drop-zone__prompt">Déposer le fichier</span>
+                        <div class="separator">
+                            <hr>
+                            <span class="ou">OU</span>
+                        </div>
+                        <div class="fake-button" >
+                            Parcourir les fichiers
+                        </div>
+                        <input type="file" id="fileInput2" name="myFile" class="drop-zone__input">
+                    </div>
+                </div>
+
+            </div>
+            <div class="previsualition-add-user">
+                <h2>Prévisualisation</h2>
+                <div class="prev-form">
+                    <div class="prev-section">
+                        <img src="images/ue/default-ban.jpg" id="prev-picture-ue">
+                    </div>
+
+                    <div class="prev-section">
+                        <p style="margin-bottom: 10px">Vous êtes dans l'UE :</p>
+                            <p id="prev-code-section"><strong>[Code]</strong></p>
+                            <p id="prev-nomUe-section"><strong>[Nom de l'UE]</strong></p>
+                    </div>
+
+                    <div class="prev-section">
+                        <p>Liste des Utilisateurs :</p>
+                        <div class="previ-user" id="ue-prev-ue">
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+        <button id="add-ue-button" class="add-button-popup"></button>
+    </div>
+</div>

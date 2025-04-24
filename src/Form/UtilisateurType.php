@@ -29,6 +29,7 @@ class UtilisateurType extends AbstractType
                         'maxMessage' => 'Le nom ne peut pas dépasser {{ limit }} caractères',
                     ]),
                 ],
+                'row_attr' => ['class' => 'section-user-add-form']
             ])
             ->add('prenom', TextType::class, [
                 'constraints' => [
@@ -42,6 +43,7 @@ class UtilisateurType extends AbstractType
                         'maxMessage' => 'Le prénom ne peut pas dépasser {{ limit }} caractères',
                     ]),
                 ],
+                'row_attr' => ['class' => 'section-user-add-form']
             ])
             ->add('email', EmailType::class, [
                 'constraints' => [
@@ -56,6 +58,7 @@ class UtilisateurType extends AbstractType
                         'maxMessage' => 'L\'email ne peut pas dépasser {{ limit }} caractères',
                     ]),
                 ],
+                'row_attr' => ['class' => 'section-user-add-form']
             ])
             ->add('telephone', TextType::class, [
                 'required' => false,
@@ -65,6 +68,7 @@ class UtilisateurType extends AbstractType
                         'maxMessage' => 'Le numéro de téléphone ne peut pas dépasser {{ limit }} caractères',
                     ]),
                 ],
+                'row_attr' => ['class' => 'section-user-add-form']
             ])
         ;
     }

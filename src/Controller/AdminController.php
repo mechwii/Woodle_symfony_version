@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\EstAffecte;
 use App\Entity\Role;
 use App\Entity\UE;
+use App\Form\UeType;
 use App\Form\UtilisateurType;
 use App\Entity\Utilisateur;
 use Doctrine\ORM\EntityManagerInterface;
@@ -30,7 +31,7 @@ final class AdminController extends AbstractController
         $connection = $BDDManager->getConnection();
 
         // Récupération des UE avec Nom Responsable
-        $sql = 'SELECT Ue.code, Ue.nom, Ue.description, Ue.semestre, Ue.image, u.nom as nom_responsable, u.prenom as prenom_responsable  FROM Ue INNER JOIN Utilisateur u ON u.id_utilisateur = UE.responsable_id';
+        $sql = 'SELECT Ue.code, Ue.nom, Ue.image, u.nom as nom_responsable, u.prenom as prenom_responsable  FROM Ue INNER JOIN Utilisateur u ON u.id_utilisateur = UE.responsable_id';
         $prepareSQL = $connection->prepare($sql);
         $resultat = $prepareSQL->executeQuery();
         $ue = $resultat->fetchAllAssociative();
@@ -38,20 +39,7 @@ final class AdminController extends AbstractController
         $utilisateur = $this->getUser();
         $roles = $utilisateur->getRoles();
 
-
-        $statistiques = [[
-            "nom" => "Nombre d'élèves",
-            "nombre" => 39,
-            "icons" => "lni lni-user-multiple-4"
-        ], [
-            "nom" => "Nombre d'enseignants",
-            "nombre" => 39,
-            "icons" => "lni lni-coffee-cup-2"
-        ], [
-            "nom" => "Nombre d'UE",
-            "nombre" => 39,
-            "icons" => "lni lni-graduation-cap-1"
-        ]];
+        $statistiques = $this->getStatisticsData($BDDManager);
 
         $allUtilisateur = $BDDManager->getRepository(Utilisateur::class)->findAll();
         $AllRoles = $BDDManager->getRepository(Role::class)->findAll();
@@ -60,8 +48,13 @@ final class AdminController extends AbstractController
         $form = $this->createForm(UtilisateurType::class, $nouvelUtilisateur);
         $form->handleRequest($request);
 
+        $newUe = new UE();
+        $form2 = $this->createForm(UEType::class, $newUe);
+        $form2->handleRequest($request);
+
         return $this->render('admin/index.html.twig', [
             'form' => $form->createView(),
+            'form2' => $form2->createView(),
             'controller_name' => 'AdminController',
             'utilisateur' => $utilisateur,
             'roles' => $roles,
@@ -72,7 +65,51 @@ final class AdminController extends AbstractController
         ]);
     }
 
+    #[Route('/admin/get-stat', name: 'get_admin_stat')]
+    public function getStat(EntityManagerInterface $BDDManager): JsonResponse
+    {
+        // Return JSON response using the same private method
+        return new JsonResponse($this->getStatisticsData($BDDManager));
+    }
 
+    /**
+     * Private method that contains the actual statistics logic
+     */
+    private function getStatisticsData(EntityManagerInterface $BDDManager): array
+    {
+        return [
+            [
+                "id_stat" => "nb_eleve",
+                "nom" => "Nombre d'élèves",
+                "nombre" => $BDDManager->getRepository(Utilisateur::class)
+                    ->createQueryBuilder('u')
+                    ->select('COUNT(DISTINCT u.id)')
+                    ->join('u.roles', 'r', 'WITH', 'r.id = :roleId')
+                    ->setParameter('roleId', 3)
+                    ->getQuery()
+                    ->getSingleScalarResult(),
+                "icons" => "lni lni-user-multiple-4"
+            ],
+            [
+                "id_stat" => "nb_enseignant",
+                "nom" => "Nombre d'enseignants",
+                "nombre" => $BDDManager->getRepository(Utilisateur::class)
+                    ->createQueryBuilder('u')
+                    ->select('COUNT(DISTINCT u.id)')
+                    ->join('u.roles', 'r', 'WITH', 'r.id = :roleId')
+                    ->setParameter('roleId', 2)
+                    ->getQuery()
+                    ->getSingleScalarResult(),
+                "icons" => "lni lni-coffee-cup-2"
+            ],
+            [
+                "id_stat" => "nb_ue",
+                "nom" => "Nombre d'UE",
+                "nombre" => $BDDManager->getRepository(UE::class)->count([]),
+                "icons" => "lni lni-graduation-cap-1"
+            ]
+        ];
+    }
     #[Route('/admin/profil', name: 'admin_profil')]
     public function profile(EntityManagerInterface $BDDManager): Response
     {
@@ -450,6 +487,99 @@ final class AdminController extends AbstractController
     }
 
     /**
+     * Ajoute une UE avec Ajax et validation de formulaire
+     */
+    #[Route('/admin/add-ue', name: 'admin_add_ue', methods: ['POST'])]
+    public function addUE(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        ValidatorInterface $validator,
+    ): Response
+    {
+        if (!$request->isXmlHttpRequest()) {
+            return $this->json(['error' => 'Requête non autorisée'], Response::HTTP_BAD_REQUEST);
+        }
+
+        try{
+            $data = $request->toArray();
+
+            if (!$data) {
+                return $this->json(['error' => 'Données invalides'], Response::HTTP_BAD_REQUEST);
+            }
+
+            $ue = new UE();
+
+            $id = $data['id'];
+            $nom = $data['nom'];
+            $responsable_id = $data['responsable_id'];
+            $image = $data['image'];
+            $utilisateurs = $data['utilisateurs'];
+
+
+/*            $form = $this->createForm(UE::class, $ue);
+
+            if (!$form->isValid()) {
+                $errors = [];
+                foreach ($form->getErrors(true) as $error) {
+                    $errors[] = $error->getMessage();
+                }
+                return $this->json(['error' => 'Erreurs de validation', 'details' => $errors], Response::HTTP_BAD_REQUEST);
+            }*/
+
+            $existingUE = $entityManager->getRepository(UE::class)->find($id);
+
+            if ($existingUE) {
+                return $this->json(['error' => 'Cette UE existe déjà'], Response::HTTP_CONFLICT);
+            }
+
+            $ue->setId($id);
+            $ue->setNom($nom);
+            $ue->setImage($image);
+            $responsable = $entityManager->getRepository(Utilisateur::class)->find($responsable_id);
+            $ue->setResponsableId($responsable);
+            $entityManager->persist($ue);
+
+            if (!empty($utilisateurs)) {
+                foreach ($utilisateurs as $utilisateurId) {
+                    $utilisateur = $entityManager->getRepository(Utilisateur::class)->find($utilisateurId);
+                    if ($utilisateur) {
+                        $estAffecte = new EstAffecte();
+                        $estAffecte->setUtilisateurId($utilisateur);
+                        $estAffecte->setCodeId($ue);
+                        $estAffecte->setFavori(false);
+                        $estAffecte->setDateInscription(new \DateTime());
+
+                        $entityManager->persist($estAffecte);
+                    }
+                }
+            }
+
+            $entityManager->flush();
+
+
+            // Préparation de la réponse
+            $responseData = [
+                'success' => true,
+                'message' => 'UE créée avec succès',
+                'ue' => [
+                    'id' => $ue->getId(),
+                    'nom' => $ue->getNom(),
+                    'image' => $ue->getImage(),
+                    'responsable' => $ue->getResponsableId(),
+                    'responsable_nom' => $ue->getResponsableId()->getNom(),
+                    'responsable_prenom' => $ue->getResponsableId()->getPrenom(),
+                ]
+            ];
+            return $this->json($responseData, Response::HTTP_CREATED);
+
+        } catch (\Exception $e){
+            return $this->json(['error' => 'Une erreur est survenue: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+
+    /**
      * Upload d'image pour un utilisateur
      */
     #[Route('/admin/upload-image', name: 'admin_upload_image', methods: ['POST'])]
@@ -458,6 +588,9 @@ final class AdminController extends AbstractController
         try {
             $uploadedFile = $request->files->get('file');
             $userId = $request->request->get('id_user');
+            $dest = $request->request->get('dest');
+
+
 
             $realName = $uploadedFile->getClientOriginalName();
             $extension = $uploadedFile->getClientOriginalExtension();
@@ -465,15 +598,16 @@ final class AdminController extends AbstractController
             if ($userId) {
                 $user = $em->getRepository(Utilisateur::class)->find($userId);
 
-                if ($user && $user->getImage() !== 'default.jpg' && $user->getImage() !== $realName) {
-                    $oldImagePath = $this->getParameter('kernel.project_dir') . '/public/images/profil/' . $user->getImage();
+                if ($user && $user->getImage() !== 'default.jpg' && $user->getImage() !== 'default-ban.jpg' && $user->getImage() !== $realName) {
+                    $oldImagePath = $this->getParameter('kernel.project_dir') . $dest . $user->getImage();
 
                     if (file_exists($oldImagePath)) {
                         unlink($oldImagePath);
                     }
                 }
             }
-            $uploadedFile->move($this->getParameter('kernel.project_dir') . '/public/images/profil', $realName);
+            // $defaultPassword = strtolower(substr($prenom, 0, 1) . $nom . '_picture' .  '.' . $extension);
+            $uploadedFile->move($this->getParameter('kernel.project_dir') . $dest , $realName);
 
 
             return $this->json([
@@ -487,4 +621,96 @@ final class AdminController extends AbstractController
             return $this->json(['success' => false], Response::HTTP_NOT_FOUND);
         }
     }
+
+    // Contrôleur
+    #[Route('/admin/get-responsables', name: 'admin_get_responsables')]
+    public function getResponsables(EntityManagerInterface $em): JsonResponse
+    {
+        $responsables = $em->getRepository(Utilisateur::class)
+            ->createQueryBuilder('u')
+            ->join('u.roles', 'r')
+            ->where('r.id = :id')
+            ->setParameter('id', 2)
+            ->getQuery()
+            ->getResult();
+
+        // On renvoie les utilisateurs sous forme d'un tableau JSON avec id et nom
+        $response = [];
+        foreach ($responsables as $responsable) {
+            $response[] = [
+                'id' => $responsable->getId(),
+                'name' => $responsable->getNom() . ' ' . $responsable->getPrenom(),
+            ];
+        }
+
+        return new JsonResponse($response);
+    }
+
+    #[Route('/admin/get-utilisateurs-affectable', name: 'admin_get_utilisateurs-affectable')]
+    public function getUtilisateurAffectable(EntityManagerInterface $em): JsonResponse
+    {
+        $utilisateurs = $em->getRepository(Utilisateur::class)
+            ->createQueryBuilder('u')
+            ->join('u.roles', 'r')
+            ->where('r.id = :id OR r.id = :id2')
+            ->setParameter('id', 2, )
+            ->setParameter('id2', 3, )
+            ->getQuery()
+            ->getResult();
+
+        $response = [];
+        foreach ($utilisateurs as $utilisateur) {
+            $response[] = [
+                'id' => $utilisateur->getId(),
+                'nom' => $utilisateur->getNom() . ' ' . $utilisateur->getPrenom(),
+            ];
+        }
+
+        return new JsonResponse($response);
+    }
+
+    #[Route('/admin/get-ue', name: 'admin_get_ue', methods: ['GET'])]
+    public function getUe(EntityManagerInterface $em): JsonResponse
+    {
+        $ues = $em->getRepository(UE::class)->findAll();
+
+        $response = [];
+
+        foreach ($ues as $ue) {
+            $response[] = [
+                'code' => $ue->getId(),
+                'nom' => $ue->getNom()
+            ];
+        }
+
+        return new JsonResponse($response);
+    }
+
+    #[Route('/admin/get-one-ue/{id}', name: 'admin_get_one_ue', methods: ['GET'])]
+    public function getUeById(EntityManagerInterface $repo, string $id): JsonResponse
+    {
+        $connection = $repo->getConnection();
+
+        $ue = $repo->getRepository(UE::class)->find($id);
+
+        $sql = 'SELECT u.id_utilisateur as id , u.nom as nom, u.prenom as prenom
+                FROM Est_affecte e
+                INNER JOIN Utilisateur u ON u.id_utilisateur = e.utilisateur_id
+                WHERE code_id= :id;';
+
+        $affectations = $connection->prepare($sql)->executeQuery(['id' => $id])->fetchAllAssociative();
+
+        $response = [
+            'code' => $ue->getId(),
+            'nom' => $ue->getNom(),
+            'responsable_id' => $ue->getResponsableId()?->getId(),
+            'responsable_nom' => $ue->getResponsableId()?->getNom() . ' ' . $ue->getResponsableId()?->getPrenom(),
+            'image' => $ue->getImage(),
+            'utilisateurs_affectes' => $affectations,
+        ];
+
+        return $this->json(['error' => false, 'ue' => $response], Response::HTTP_OK);
+    }
+
+
 }

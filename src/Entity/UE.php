@@ -18,12 +18,6 @@ class UE
     #[ORM\Column(length: 100)]
     private ?string $nom = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $description = null;
-
-    #[ORM\Column(length: 50)]
-    private ?string $semestre = null;
-
     #[ORM\Column(length: 255)]
     private ?string $image = null;
 
@@ -72,6 +66,12 @@ class UE
 
     }
 
+    public function setId(string $id): void
+    {
+        $this->id = $id;
+    }
+
+
     public function getId(): ?string
     {
         return $this->id;
@@ -86,30 +86,6 @@ class UE
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
-
-        return $this;
-    }
-
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(?string $description): static
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    public function getSemestre(): ?string
-    {
-        return $this->semestre;
-    }
-
-    public function setSemestre(string $semestre): static
-    {
-        $this->semestre = $semestre;
 
         return $this;
     }

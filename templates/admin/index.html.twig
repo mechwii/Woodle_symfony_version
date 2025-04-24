@@ -36,7 +36,7 @@
                 <i class="{{ "svg-icon " ~ stat.icons }}"></i>
 
             </div>
-            <h5>{{ stat.nombre }}</h5>
+            <h5 id="{{ stat.id_stat }}">{{ stat.nombre }}</h5>
 
         </div>
     {% endfor %}
@@ -136,13 +136,12 @@
                         </div>
                     </div>
                     <div class="card-action">
-                        <i onclick="editUser()" class="fa-solid fa-pen edit-icon edit"></i>
-                        <i onclick="deleteUser()" class="fa-solid fa-trash edit-icon delete"></i>
+                        <i onclick="modifierUE('{{ unite.code }}')" class="fa-solid fa-pen edit-icon edit"></i>
+                        <i onclick="supprimerUE()" class="fa-solid fa-trash edit-icon delete"></i>
                     </div>
                 </div>
                 {% endfor %}
         </div>
-
     </div>
 
         {# Le code de ces classes sera dans admin.js plusieurs solutions s'offraient à nous
@@ -150,16 +149,7 @@
         <div class="hidden" id="overlay" >
             {% include 'admin/popup/_delete_user.html.twig' %}
             {% include 'admin/popup/_add_edit_user.html.twig' %}
-
-            {#
-            <div class="popup hidden">
-                <p class="close-popup" onclick="closePopup()">X</p>
-            </div>
-
-            <div class="mini-popup hidden">
-                <p class="close-popup" onclick="closePopup()">X</p>
-            </div>
-#}
+            {% include 'admin/popup/_add_edit_ue.html.twig' %}
         </div>
     </div>
 

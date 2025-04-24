@@ -1,3 +1,8 @@
+{% block javascripts %}
+    <script src="{{ asset('js/admin/composant/multiselect.js') }}"></script>
+{% endblock %}
+
+
 <div class="popup hidden" id="add-user-popup">
     <p class="close-popup" data-action="close-popup">X</p>
     <div class="popup-content">
@@ -8,10 +13,10 @@
                 {{ form_start(form) }}
                 <div class="add-form">
 
-                    {{ form_row(form.nom, {'attr': {'class' :'section-user-add-form', 'placeholder' : 'Nom*'} }) }}
-                    {{ form_row(form.prenom, {'attr': {'class' :'section-user-add-form', 'placeholder' : 'Prenom*'} }) }}
-                    {{ form_row(form.email, {'attr': {'class' :'section-user-add-form', 'placeholder' : 'Email*'} }) }}
-                    {{ form_row(form.telephone, {'attr': {'class' :'section-user-add-form', 'placeholder' : 'Téléphone'} }) }}
+                    {{ form_row(form.nom, {'attr': {'placeholder' : 'Nom*'} }) }}
+                    {{ form_row(form.prenom, {'attr': {'placeholder' : 'Prenom*'} }) }}
+                    {{ form_row(form.email, {'attr': {'placeholder' : 'Email*'} }) }}
+                    {{ form_row(form.telephone, {'attr': {'placeholder' : 'Téléphone'} }) }}
 
                     {{ form_end(form) }}
 
@@ -36,26 +41,26 @@
                     <div class="section-user-add-form">
                         <label for="ue-input">Sélectionner les UE</label>
                         <div class="user-ue-add">
-                            <div class="custom-select" id="ue-select">
-                                <div class="select-box" onclick="toggleDropdown()">
-                                    <div class="selected-options" id="selected-options"></div>
+                            <div class="custom-select" id="user-ue-select">
+                                <div class="select-box" onclick="toggleDropdown('user')">
+                                    <div class="selected-options" id="user-selected-options"></div>
                                     <div class="select-arrow">▼</div>
                                 </div>
 
-                                <div id="option-container" class="options-container hidden">
+                                <div id="user-option-container" class="options-container hidden">
                                     <div class="filter-container">
-                                        <input type="text" id="option-filter" placeholder="Rechercher une UE..." onkeyup="filterOptions()">
+                                        <input type="text" id="user-option-filter" placeholder="Rechercher une UE..." onkeyup="filterOptions('user')">
                                     </div>
-                                    <div class="options-list" id="options-list">
-                                        {% for unite in ue %}
-                                            <div class="option" onclick="toggleOption(this)" data-value="{{ unite.code }}">
+                                    <div class="options-list" id="user-options-list">
+{#                                        {% for unite in ue %}
+                                            <div class="option" onclick="toggleOption(this, 'user')" data-value="{{ unite.code }}" data-nom="{{ unite.nom }}">
                                                 <i class="fa fa-code"></i>
                                                 {{ unite.nom }}
                                             </div>
-                                        {% endfor %}
+                                        {% endfor %}#}
                                     </div>
                                 </div>
-                                <input type="hidden" name="ue_input" id="ue-input">
+                                <input type="hidden" name="ue_input" id="user-ue-input">
                             </div>
                             <i class="fa fa-plus-circle add-plus"></i>
                         </div>
@@ -105,7 +110,7 @@
 
                     <div class="prev-section">
                         <p>Liste des UE :</p>
-                        <div id="prev-ue">
+                        <div class="previ-ue" id="user-prev-ue">
                         </div>
 
                     </div>

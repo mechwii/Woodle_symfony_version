@@ -1,6 +1,7 @@
 class PopupManager {
     constructor() {
         this.overlay = document.getElementById('overlay');
+        this.popupCat = 1;
         this.init();
     }
 
@@ -15,6 +16,8 @@ class PopupManager {
         document.querySelectorAll('[data-action="close-popup"]').forEach(element => {
             element.addEventListener('click', () => this.closeAll());
         });
+
+
     }
 
     openDeleteUserPopup(id, nom, prenom, image) {
@@ -40,11 +43,13 @@ class PopupManager {
         });
         this.resetAllForm()
 
+
     }
 
     resetAllForm(){
-        const addUserForm = document.getElementById('add-user-popup');
-        if (addUserForm) {
+        if (this.popupCat === 1) {
+            console.log('ouch1')
+
             // Réinitialiser les champs du formulaire
             document.getElementById('utilisateur_nom').value = '';
             document.getElementById('utilisateur_prenom').value = '';
@@ -56,10 +61,12 @@ class PopupManager {
                 checkbox.checked = false;
             });
 
-            // Réinitialiser les UE sélectionnées
-            document.getElementById('selected-options').innerHTML = '';
-            document.querySelectorAll('.option.selected').forEach(opt => opt.classList.remove('selected'));
-            document.getElementById('ue-input').value = '';
+
+            // Réinitialiser les options sélectionnées dans la liste
+            document.querySelectorAll('.option.selected').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+
 
             // Réinitialiser l'image
             document.getElementById('fileInput').value = '';
@@ -69,8 +76,16 @@ class PopupManager {
             document.getElementById('prev-firstname-section').innerHTML = '<strong>[Prénom]</strong>';
             document.getElementById('prev-name-section').innerHTML = '<strong>[Nom de famille]</strong>';
             document.getElementById('prev-mail-section').innerHTML = 'adresse@mail.com';
-            document.getElementById('prev-ue').innerHTML = '';
+
+
         }
+        else{
+            document.getElementById('fileInput2').value = '';
+
+
+        }
+        resetDropZone()
+        resetAllMultiSelect();
     }
 
     deleteUser(id) {
@@ -87,6 +102,7 @@ class PopupManager {
                     if (userCard) {
                         userCard.remove();
                     }
+                    this.editStat();
                     this.closeAll();
                 } else {
                     alert('Erreur lors de la suppression');
@@ -99,7 +115,10 @@ class PopupManager {
     }
 
 
-    openAddPopupUser(){
+    async openAddPopupUser(){
+
+        this.loadUEOptions('user-options-list', 'user');
+
         document.getElementById('add-user-popup').classList.remove('hidden');
         document.body.style.overflow = "hidden"
         this.overlay.classList.remove('hidden');
@@ -107,6 +126,8 @@ class PopupManager {
         const addButton = document.getElementById('add-user-button');
         addButton.innerHTML = "Créer l'utilisateur";
         addButton.onclick = () => this.addUser();
+
+
     }
 
     addUser() {
@@ -154,7 +175,7 @@ class PopupManager {
         if(file){
             const imageData = new FormData();
             imageData.append('file', file);
-            imageData.append('nom', nom);
+            imageData.append('dest', '/public/images/profil/')
 
 
 
@@ -190,7 +211,6 @@ class PopupManager {
     }
 
     createUser(userData) {
-        console.log(userData)
         fetch('/admin/add-user', {
             method: 'POST',
             headers: {
@@ -205,23 +225,19 @@ class PopupManager {
                 if (data.success) {
                     console.log(data.data)
                     // Fermer la popup
-                    window.popupManager.closeAll();
 
-                    // Rafraîchir la liste des utilisateurs ou ajouter le nouvel utilisateur à la liste
-                    // sans recharger la page complète
+                    this.editStat();
+                    this.closeAll();
                     this.addUserToList(data.user);
-
-                    // Message de succès
-                    // showSuccess("Utilisateur créé avec succès !");
+                    showSuccess("Utilisateur créé avec succès !");
                 } else {
                     // Gestion des erreurs de validation
                     if (data.details && Array.isArray(data.details)) {
-                        // Afficher chaque erreur de validation à côté du champ correspondant
                         // displayValidationErrors(data.details);
                         console.log(data.details)
                     } else {
                         // Afficher le message d'erreur général
-                        //showError(data.error || "Erreur lors de la création de l'utilisateur");
+                        // showError(data.error || "Erreur lors de la création de l'utilisateur");
                     }
                 }
             })
@@ -229,6 +245,76 @@ class PopupManager {
                 console.error('Erreur:', error);
                 //showError("Erreur lors de la création de l'utilisateur");
             });
+    }
+
+    // Méthodes utilitaires pour la gestion des erreurs
+    resetErrorDisplay() {
+        // Supprimer tous les messages d'erreur
+        document.querySelectorAll('.error-message').forEach(el => el.remove());
+        // Réinitialiser les styles des champs
+        document.querySelectorAll('.input-error').forEach(el => {
+            el.classList.remove('input-error');
+        });
+        // Cacher l'erreur générale si elle existe
+        const generalError = document.getElementById('general-error');
+        if (generalError) generalError.remove();
+    }
+
+    displayFieldErrors(errors) {
+        errors.forEach(errorMsg => {
+            // Trouver le champ correspondant au message d'erreur
+            const fieldNames = ['nom', 'prenom', 'email', 'telephone'];
+            const matchedField = fieldNames.find(field =>
+                errorMsg.toLowerCase().includes(field)
+            );
+
+            if (matchedField) {
+                this.displaySingleError(matchedField, errorMsg);
+            }
+        });
+    }
+
+    displaySingleError(fieldName, message) {
+        const field = document.querySelector(`[name="utilisateur[${fieldName}]"]`);
+        if (!field) return;
+
+        // Ajouter la classe d'erreur au champ
+        field.classList.add('input-error');
+
+        // Créer le message d'erreur
+        const errorElement = document.createElement('div');
+        errorElement.className = 'error-message';
+        errorElement.textContent = message;
+
+        // Insérer après le champ
+        field.insertAdjacentElement('afterend', errorElement);
+    }
+
+    displayRoleError(message) {
+        const roleSection = document.querySelector('.role-section');
+        if (!roleSection) return;
+
+        // Créer le message d'erreur
+        const errorElement = document.createElement('div');
+        errorElement.className = 'error-message';
+        errorElement.textContent = message;
+
+        // Ajouter au début de la section rôle
+        roleSection.prepend(errorElement);
+    }
+
+    displayGeneralError(message) {
+        // Créer ou mettre à jour l'erreur générale
+        let errorBox = document.getElementById('general-error');
+        if (!errorBox) {
+            errorBox = document.createElement('div');
+            errorBox.id = 'general-error';
+            errorBox.className = 'error-box';
+            // Insérer au début du formulaire
+            const form = document.querySelector('.add-form');
+            form?.prepend(errorBox);
+        }
+        errorBox.textContent = message;
     }
 
     addUserToList(user) {
@@ -271,7 +357,9 @@ class PopupManager {
             userContainer.appendChild(userCard);
         }
     }
-    openModifyUserPopup(id, nom, prenom, email, image ,telephone, roles,ue){
+
+    async openModifyUserPopup(id, nom, prenom, email, image ,telephone, roles,ue){
+
         document.getElementById('utilisateur_id').value = id;
 
         console.log(id, nom, prenom, email, image ,telephone, roles,ue)
@@ -300,30 +388,34 @@ class PopupManager {
             checkbox.checked = hasRole;
         });
 
-        if (ue && Array.isArray(ue)) {
-            // Réinitialise les options sélectionnées
-            document.querySelectorAll('.option.selected').forEach(opt => opt.classList.remove('selected'));
-            document.getElementById('selected-options').innerHTML = '';
+        console.log('test212')
+        // Des fois cette fonction est appelé avant que les éléments soit chargés, donc lors du premier click ça m'affichait pas les UE
+        this.loadUEOptions('user-options-list', 'user', () => {
+            if (ue && Array.isArray(ue)) {
+                document.querySelectorAll('.option.selected').forEach(opt => opt.classList.remove('selected'));
+                document.getElementById('user-selected-options').innerHTML = '';
 
-            ue.forEach(ueItem => {
-                const code = ueItem.code; // ou `ueItem` si c’est un simple tableau de codes
-                const option = document.querySelector(`.option[data-value="${code}"]`);
+                ue.forEach(ueItem => {
+                    const code = ueItem.code;
+                    const noms = ueItem.nom;
 
-                if (option) {
-                    option.classList.add('selected');
+                    const option = document.querySelector(`.option[data-value="${code}"]`);
+                    if (option) {
+                        option.classList.add('selected');
 
-                    const tag = document.createElement('span');
-                    tag.className = 'tag';
-                    tag.dataset.value = code;
-                    tag.innerHTML = `<i class="fa fa-code"></i> ${code} <span onclick="removeTag('${code}', event)">✖</span>`;
+                        const tag = document.createElement('span');
+                        tag.className = 'tag';
+                        tag.dataset.value = code;
+                        tag.dataset.nom = noms;
+                        tag.innerHTML = `<i class="fa fa-code"></i> ${noms} <span onclick="removeTag('${code}', event, 'user')">✖</span>`;
+                        document.getElementById('user-selected-options').appendChild(tag);
+                    }
+                });
 
-                    document.getElementById('selected-options').appendChild(tag);
-                }
-            });
-
-            updateHiddenInput();
-            updatePreviewUEList();
-        }
+                updateHiddenInput('user');
+                updatePreviewUEList('user');
+            }
+        });
 
         addButton.onclick = () => this.editUser();
     }
@@ -385,6 +477,7 @@ class PopupManager {
             const imageData = new FormData();
             imageData.append('file', file);
             imageData.append('nom', nom);
+            imageData.append('prenom', prenom);
             imageData.append('id_user', id)
 
             fetch('/admin/upload-image', {
@@ -435,14 +528,15 @@ class PopupManager {
                     console.log('oui')
                     console.log(data)
                     // Fermer la popup
-                    window.popupManager.closeAll();
+                    this.editStat();
+                    this.closeAll();
 
                     // Rafraîchir la liste des utilisateurs ou ajouter le nouvel utilisateur à la liste
                     // sans recharger la page complète
                     this.editUserToList(data.user);
 
                     // Message de succès
-                    // showSuccess("Utilisateur créé avec succès !");
+                    showSuccess("Utilisateur créé avec succès !");
                 } else {
                     console.log('non')
 
@@ -490,12 +584,355 @@ class PopupManager {
         userCard.querySelector("#roles-section").innerHTML = rolesTransformed;
     }
 
+    loadUEOptions(containerId, nomDuMultiselect = 'user', callback) {
+        fetch('/admin/get-ue')
+            .then(res => res.json())
+            .then(ueList => {
+
+                console.log(ueList)
+                const optionsList = document.getElementById(containerId);
+                optionsList.innerHTML = ''; // On vide l'ancien contenu
+
+                ueList.forEach(unite => {
+                    const div = document.createElement('div');
+                    div.className = 'option';
+                    div.dataset.value = unite.code;
+                    div.dataset.nom = unite.nom;
+                    div.onclick = () => toggleOption(div, nomDuMultiselect);
+                    div.innerHTML = `<i class="fa fa-code"></i> ${unite.nom}`;
+                    optionsList.appendChild(div);
+                });
+                if(callback) callback();
+            })
+            .catch(error => {
+                console.error("Erreur lors du chargement des UE", error);
+            });
+    }
+
+    openAddPopupUE(){
+        document.getElementById('add-ue-popup').classList.remove('hidden');
+        document.body.style.overflow = "hidden"
+        this.overlay.classList.remove('hidden');
+
+        const addButton = document.getElementById('add-ue-button');
+        addButton.innerHTML = "Créer l'UE";
+        addButton.onclick = () => this.addUe();
+        this.getResponsable();
+        this.getUtilisateurAffectable();
+
+    }
+
+    getResponsable(responsable_id){
+        fetch('/admin/get-responsables')
+            .then(res => res.json())
+            .then(data => {
+                console.log(data)
+                const responsableSelect = document.getElementById('ue_responsable_id'); // ID du select
+                responsableSelect.innerHTML = ''; // On vide le select avant d'ajouter les nouvelles options
+
+                const options = document.createElement('option');
+                options.value = '';
+                options.textContent = "Choisissez un responsable";
+                responsableSelect.appendChild(options);
+
+                data.forEach(responsable => {
+                    const option = document.createElement('option');
+                    option.value = responsable.id;
+                    option.textContent = responsable.name;
+                    if(responsable_id && responsable_id === responsable.id)
+                    {
+                        console.log("ICI")
+                        option.selected = true;
+                    }
+                    responsableSelect.appendChild(option);
+
+                });
+            })
+            .catch(error => {
+                console.error("Erreur lors du chargement des responsables", error);
+            });
+
+    }
+
+    getUtilisateurAffectable(callback){
+        fetch('/admin/get-utilisateurs-affectable')  // Route à créer côté serveur
+            .then(res => res.json())
+            .then(data => {
+                console.log("Utilisateurs:", data);
+                const optionsList = document.getElementById('ue-options-list');
+                optionsList.innerHTML = '';
+
+                data.forEach(utilisateur => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.onclick = function() { toggleOption(this, 'ue'); };
+                    optionDiv.setAttribute('data-value', utilisateur.id);
+                    optionDiv.setAttribute('data-nom', utilisateur.nom);
+
+                    const icon = document.createElement('i');
+                    icon.className = 'fa-regular fa-user';
+
+                    optionDiv.appendChild(icon);
+                    optionDiv.appendChild(document.createTextNode(` ${utilisateur.nom}`));
+
+                    optionsList.appendChild(optionDiv);
+
+                    if(callback) callback()
+
+                });
+            })
+            .catch(error => {
+                console.error("Erreur lors du chargement des utilisateurs", error);
+            });
+    }
+
+    addUe(){
+        const selectedUser = document.querySelectorAll('.selected-options .tag');
+        let allUserSelected = [];
+
+        selectedUser.forEach(ue => {
+            allUserSelected.push(ue.dataset.value);
+        });
+
+        const ueData = {
+            id: document.getElementById('ue_id').value,
+            nom: document.getElementById('ue_nom').value,
+            responsable_id: document.getElementById('ue_responsable_id').value || null,
+            utilisateurs: allUserSelected,
+            image: 'default-ban.jpg'
+        };
+
+        /*if (!ueData.id || !ueData.nom) {
+            console.error('Veuillez remplir tous les champs obligatoires');
+            return;
+        }*/
+
+        /*if (!ueData.responsable_id) {
+            console.error('Veuillez remplir tous les champs obligatoires');
+            return;
+        }*/
+
+        const fileInput = document.getElementById('fileInput2');
+        const file = fileInput.files[0];
+
+        if(file){
+            const imageData = new FormData();
+            imageData.append('file', file);
+            imageData.append('dest', '/public/images/ue/')
+
+            fetch('/admin/upload-image', {
+                method: 'POST',
+                body: imageData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            }).then( response => {
+                if(!response.ok){
+                    console.log(response.text());
+                }
+                return response.json();
+            }).then( data => {
+                if(data.success){
+                    ueData.image = data.image;
+                    this.createUe(ueData);
+                } else {
+                    console.log("erreur impossible d'upload l'image")
+                    // showError("Erreur lors de l'upload de l'image: " + (data.error || "Erreur inconnue"));
+                }
+            }).catch(e => {
+                console.error('Erreur ', e)
+            })
+        } else {
+            this.createUe(ueData);
+
+        }
+    }
+
+    createUe(userData){
+        console.log(JSON.stringify(userData))
+        fetch('/admin/add-ue', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify(userData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log(data.data)
+                    // Fermer la popup
+
+                    this.editStat();
+                    this.closeAll();
+                    this.addUEToList(data.ue);
+                    showSuccess("Utilisateur créé avec succès !");
+                } else {
+                    // Gestion des erreurs de validation
+                    if (data.details && Array.isArray(data.details)) {
+                        // displayValidationErrors(data.details);
+                        console.log(data.details)
+                    } else {
+                        // Afficher le message d'erreur général
+                        // showError(data.error || "Erreur lors de la création de l'UE");
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                //showError("Erreur lors de la création de l'UE");
+            });
+
+    }
+
+
+    /**
+     * Ajoute l'UE nouvellement créée à la liste des UEs dans l'interface
+     * @param {Object} ue - L'objet UE retourné par l'API
+     */
+    addUEToList(ue) {
+        const ueContent = document.getElementById('ue-content');
+        if (!ueContent) return;
+
+        // Créer un nouvel élément de carte UE
+        const cardBox = document.createElement('div');
+        cardBox.className = 'card-box';
+
+        // Récupérer les noms du responsable (si disponible)
+        let nomResponsable = ue.responsable_nom;
+        let prenomResponsable = ue.responsable_prenom;
+
+
+        // Construire le HTML de la carte
+        cardBox.innerHTML = `
+        <div class="card-left">
+            <img id="ue-picture" src="./images/ue/${ue.image}" alt="Image UE">
+            <div class="card-content">
+                <h4>${ue.nom}</h4>
+                <h4 class="card-text">Responsable : ${prenomResponsable} ${nomResponsable}</h4>
+                <div class="ue-stat">
+                    <div class="ue-stat-icons">
+                        <i class="lni lni-graduation-cap-1"></i>
+                        <p>0</p>
+                    </div>
+                    
+                    <div class="ue-stat-icons">
+                        <i class="lni lni-user-multiple-4"></i>
+                        <p>${ue.utilisateurs ? ue.utilisateurs.length : '0'}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-action">
+            <i onclick="modifierUE('${ue.id}')" class="fa-solid fa-pen edit-icon edit"></i>
+            <i onclick="deleteUE('${ue.id}')" class="fa-solid fa-trash edit-icon delete"></i>
+        </div>
+    `;
+
+        ueContent.appendChild(cardBox);
+
+    }
+
+    openEditPopupUE(code, nom, responsable_id, responsable_nom, image, affecte) {
+        console.log("ICI ! ", code, nom, responsable_id, responsable_nom, affecte);
+
+        // Affiche la popup
+        document.getElementById('add-ue-popup').classList.remove('hidden');
+        document.body.style.overflow = "hidden";
+        this.overlay.classList.remove('hidden');
+
+        // Bouton Modifier
+        const addButton = document.getElementById('add-ue-button');
+        addButton.innerHTML = "Modifier l'UE";
+        addButton.onclick = () => this.editUE();
+
+        // Pré-remplir les champs texte
+        document.getElementById('ue_id').value = code;
+        document.getElementById('ue_nom').value = nom;
+
+        this.getResponsable(responsable_id);
+
+        document.getElementById('ue_responsable_id').value = responsable_id
+        document.getElementById('prev-code-section').innerHTML = `<strong>${code}</strong>`
+        document.getElementById('prev-nomUe-section').innerHTML = `<strong>${nom}</strong>`
+
+        document.getElementById('prev-picture-ue').src = 'images/ue/' + image;
+
+        this.getUtilisateurAffectable(() => {
+
+            document.querySelectorAll('.option.selected').forEach(opt => opt.classList.remove('selected'));
+            document.getElementById('ue-selected-options').innerHTML = '';
+
+            affecte.forEach(userItem => {
+                const code = userItem.id;
+                const noms = userItem.nom + " " + userItem.prenom;
+
+                const option = document.querySelector(`.option[data-value="${code}"]`);
+                if (option) {
+                    option.classList.add('selected');
+
+                    const tag = document.createElement('span');
+                    tag.className = 'tag';
+                    tag.dataset.value = code;
+                    tag.dataset.nom = noms;
+                    tag.innerHTML = `<i class="fa fa-user"></i> ${noms} <span onclick="removeTag('${code}', event, 'ue')">✖</span>`;
+                    document.getElementById('ue-selected-options').appendChild(tag);
+                }
+            });
+
+            updateHiddenInput('ue');
+            updatePreviewUEList('ue');
+        });
+
+    }
+
+
+    editUE(){
+        console.log("Modification")
+
+    }
+
+
+
+    editStat(){
+        try{
+            fetch('/admin/get-stat')
+                .then(res => res.json())
+                .then(data => {
+                    //console.log(data)
+                    data.forEach(dat => {
+                        document.getElementById(dat.id_stat).innerHTML = dat.nombre;
+                    });
+                    //console.log("stat")
+                })
+        } catch (e){
+            console.log(e)
+
+        }
+
+    }
+
+
+
+
 }
 
+/**
+ * Affiche un message de succès
+ * @param {string} message - Message à afficher
+ */
+function showSuccess(message) {
+    // Implémenter selon votre UI
+    const successToast = document.createElement('div');
+    successToast.className = 'success-toast';
+    successToast.textContent = message;
+    document.body.appendChild(successToast);
 
-document.addEventListener('DOMContentLoaded', () => {
-    window.popupManager = new PopupManager();
-})
+    setTimeout(() => {
+        successToast.remove();
+    }, 3000);
+}
 
 
 // ELEMENT VISUEL DANS LES POPUP MAJORITAIREMENT DRAG AND DROP ET MULTI SELECT
@@ -570,13 +1007,69 @@ function dropZoneLoaded() {
             reader.readAsDataURL(file);
             reader.onload = () => {
                 thumbnailElement.style.backgroundImage = `url('${reader.result}')`;
-                document.getElementById('prev-picture').src = reader.result;
+
+                let cat = window.popupManager.popupCat
+
+                let element = cat === 1 ? document.getElementById('prev-picture') : document.getElementById('prev-picture-ue');
+                element.src = reader.result;
             };
         } else {
             thumbnailElement.style.backgroundImage = null;
         }
     }
 
+}
+
+function resetDropZone() {
+    const dropZoneElements = document.querySelectorAll('.drop-zone');
+
+    dropZoneElements.forEach(dropZoneElement => {
+        const inputElement = dropZoneElement.querySelector('.drop-zone__input');
+
+        // Réinitialise l'input file
+        inputElement.value = '';
+
+        // Supprime la miniature si elle existe
+        const thumbnailElement = dropZoneElement.querySelector('.drop-zone__thumb');
+        if (thumbnailElement) {
+            thumbnailElement.remove();
+        }
+
+        // Recrée les éléments initiaux s'ils ont été supprimés
+        if (!dropZoneElement.querySelector('.drop-zone__prompt')) {
+            const promptElement = document.createElement('div');
+            promptElement.classList.add('drop-zone__prompt');
+            promptElement.textContent = "Glissez-déposez un fichier ou cliquez pour sélectionner";
+
+            const separator = document.createElement('div');
+            separator.classList.add('separator');
+            separator.textContent = "ou";
+
+            const fakeButton = document.createElement('div');
+            fakeButton.classList.add('fake-button');
+            fakeButton.textContent = "Sélectionner un fichier";
+
+            dropZoneElement.prepend(fakeButton);
+            dropZoneElement.prepend(separator);
+            dropZoneElement.prepend(promptElement);
+        }
+
+        let element, image;
+        let cat = window.popupManager.popupCat;
+
+        if (cat === 1) {
+            element = document.getElementById('prev-picture')
+            image = 'images/profil/default.jpg';
+        } else {
+            element = document.getElementById('prev-picture-ue');
+            image = 'images/ue/default-ban.jpg'
+        }
+
+
+        if (element.src !== image) {
+            element.src = image;
+        }
+    });
 }
 
 function changeFirstName(prenom){
@@ -608,132 +1101,106 @@ function changeMail(mail){
 
 }
 
+function changeCodeUE(code){
+    let result = code;
+    if(result === ""){
+        result = "[Code]";
+    }
+    document.getElementById('prev-code-section').innerHTML = `<strong>${result}</strong>`;
+}
+
+function changeNomUE(nom){
+    let result = nom;
+    if(result === ""){
+        result = "[Nom de l'UE]";
+    }
+    document.getElementById('prev-nomUe-section').innerHTML = `<strong>${result}</strong>`;
+}
+
+function resetAllMultiSelect() {
+
+    // Réinitialiser les sélections d'UE
+    resetUESelections();
+
+    // Réinitialiser les prévisualisations
+    resetPreviews();
+
+}
+
+function resetUESelections() {
+    // Pour les deux types (ue et user)
+    ['ue', 'user'].forEach(pref => {
+        // Désélectionner toutes les options
+        document.querySelectorAll(`#${pref}-options-list .option.selected`).forEach(option => {
+            option.classList.remove('selected');
+        });
+
+        // Supprimer tous les tags
+        const selectedContainer = document.getElementById(`${pref}-selected-options`);
+        if (selectedContainer) {
+            selectedContainer.innerHTML = '';
+        }
+
+        // Réinitialiser l'input caché
+        const hiddenInput = document.getElementById(`${pref}-ue-input`);
+        if (hiddenInput) {
+            hiddenInput.value = '';
+        }
+    });
+}
+
+function resetFilters() {
+    // Réinitialiser les champs de filtre
+    const filterUE = document.getElementById('ue-option-filter');
+    const filterUser = document.getElementById('user-option-filter');
+
+    if (filterUE) filterUE.value = '';
+    if (filterUser) filterUser.value = '';
+
+    // Afficher à nouveau toutes les options
+    document.querySelectorAll('.option.hidden').forEach(option => {
+        option.classList.remove('hidden');
+    });
+}
+
+function resetPreviews() {
+    // Réinitialiser les prévisualisations d'UE
+    const previewUE = document.getElementById('ue-prev-ue');
+    const previewUser = document.getElementById('user-prev-ue');
+
+    if (previewUE) previewUE.innerHTML = '';
+    if (previewUser) previewUser.innerHTML = '';
+
+    // Réinitialiser le prénom dans la prévisualisation
+    changeFirstName('');
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('utilisateur_nom').addEventListener('keyup', (event) =>{
         changeLastName(event.target.value)
     })
 
-    document.getElementById('utilisateur_prenom').addEventListener('keyup', () =>{
+    document.getElementById('utilisateur_prenom').addEventListener('keyup', (event) =>{
         changeFirstName(event.target.value)
 
     })
 
-    document.getElementById('utilisateur_email').addEventListener('keyup', () =>{
+    document.getElementById('utilisateur_email').addEventListener('keyup', (event) =>{
         changeMail(event.target.value)
 
     })
 
+    document.getElementById('ue_id').addEventListener('keyup', (event) => {
+        changeCodeUE(event.target.value)
+    })
+
+    document.getElementById('ue_nom').addEventListener('keyup', (event) => {
+        changeNomUE(event.target.value)
+    })
+
     dropZoneLoaded()
+
+    window.popupManager = new PopupManager();
 })
 
-
-/* MULTISELECT */
-
-document.addEventListener('DOMContentLoaded', () => {
-    document.addEventListener('click', closeDropdownOutside);
-})
-
-function toggleDropdown() {
-    const select = document.getElementById('ue-select');
-    const container = document.getElementById('option-container');
-
-    select.classList.toggle('open');
-
-    if (select.classList.contains('open')) {
-        container.classList.remove('hidden');
-        // document.getElementById('option-filter').focus(); // Optionnel si besoin focus input
-        document.addEventListener('click', closeDropdownOutside);
-    } else {
-        container.classList.add('hidden');
-        document.removeEventListener('click', closeDropdownOutside);
-    }
-}
-
-function closeDropdownOutside(event) {
-    const select = document.getElementById('ue-select');
-    const container = document.getElementById('option-container');
-
-    if (!select.contains(event.target)) {
-        select.classList.remove('open');
-        container.classList.add('hidden');
-        document.removeEventListener('click', closeDropdownOutside);
-    }
-}
-
-
-function filterOptions() {
-    const filterValue = document.getElementById('option-filter').value.toLowerCase();
-    const options = document.querySelectorAll('#options-list .option');
-
-    options.forEach(option => {
-        const text = option.textContent.toLowerCase();
-        if (text.includes(filterValue)) {
-            option.classList.remove('hidden');
-        } else {
-            option.classList.add('hidden');
-        }
-    });
-}
-
-function toggleOption(el) {
-    el.classList.toggle('selected');
-
-    const selectedContainer = document.getElementById('selected-options');
-    const value = el.dataset.value;
-
-    if (el.classList.contains('selected')) {
-        const tag = document.createElement('span');
-        tag.className = 'tag';
-        tag.dataset.value = value;
-        tag.innerHTML = `<i class="fa fa-code"></i> ${value} <span onclick="removeTag('${value}', event)">✖</span>`;
-        selectedContainer.appendChild(tag);
-    } else {
-        document.querySelector(`.tag[data-value="${value}"]`)?.remove();
-    }
-
-    updateHiddenInput();
-    updatePreviewUEList();
-}
-
-function removeTag(value, event) {
-    if (event) {
-        event.stopPropagation(); // Si je fais pas ça quand je selectionne une UE le menu se feme
-    }
-    document.querySelector(`.option[data-value="${value}"]`)?.classList.remove('selected');
-    document.querySelector(`.tag[data-value="${value}"]`)?.remove();
-    updateHiddenInput();
-    updatePreviewUEList();
-}
-
-function updateHiddenInput() {
-    const tags = document.querySelectorAll('.selected-options .tag');
-    const values = Array.from(tags).map(t => t.dataset.value);
-    document.getElementById('ue-input').value = values.join(',');
-}
-
-function updatePreviewUEList() {
-    const selectedUE = document.querySelectorAll('.selected-options .tag');
-    const ListUe = document.getElementById('prev-ue');
-
-    if (ListUe) {
-        ListUe.innerHTML = ''; // On vide d'abord
-    }
-
-    if (selectedUE.length > 0) {
-        selectedUE.forEach(tag => {
-            const wrapperDiv = document.createElement('div');
-            wrapperDiv.classList.add('ue-item');
-
-            const icon = document.createElement('i');
-            icon.classList.add('fa', 'fa-square-root-variable');
-
-            const text = document.createElement('span');
-            text.textContent = tag.dataset.value;
-
-            wrapperDiv.appendChild(icon);
-            wrapperDiv.appendChild(text);
-
-            ListUe.appendChild(wrapperDiv);
-        });
-    }
-}
