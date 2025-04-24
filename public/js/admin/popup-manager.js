@@ -41,6 +41,7 @@ class PopupManager {
         document.querySelectorAll('.mini-popup, .popup').forEach(popup => {
             popup.classList.add('hidden');
         });
+
         this.resetAllForm()
 
 
@@ -81,6 +82,16 @@ class PopupManager {
         }
         else{
             document.getElementById('fileInput2').value = '';
+
+            document.getElementById('prev-code-section').innerHTML = '<strong>[Code]</strong>';
+            document.getElementById('prev-nomUe-section').innerHTML = `<strong>[Nom de l'UE]</strong>`;
+
+            document.getElementById('ue_id').value = '';
+            document.getElementById('ue_nom').value = '';
+
+            document.getElementById('ue_id').disabled = false
+
+
 
 
         }
@@ -223,9 +234,6 @@ class PopupManager {
             .then(data => {
 
                 if (data.success) {
-                    console.log(data.data)
-                    // Fermer la popup
-
                     this.editStat();
                     this.closeAll();
                     this.addUserToList(data.user);
@@ -462,13 +470,6 @@ class PopupManager {
             image: ""
         };
 
-        console.log(userData.roles)
-        console.log(userData.roles)
-        console.log(userData.roles)
-        console.log(userData.roles)
-
-
-
         // Si un fichier est sélectionné, on l'upload d'abord
         const fileInput = document.getElementById('fileInput');
         const file = fileInput.files[0];
@@ -479,6 +480,7 @@ class PopupManager {
             imageData.append('nom', nom);
             imageData.append('prenom', prenom);
             imageData.append('id_user', id)
+            imageData.append('dest', '/public/images/profil/')
 
             fetch('/admin/upload-image', {
                 method: 'POST',
@@ -496,6 +498,7 @@ class PopupManager {
                     console.log('Succès : ' + data);
                     console.log(userData)
 
+                    console.log("IMAGE : ",data.image)
                     userData.image = data.image;
                     this.modifyUser(userData);
                 } else{
@@ -525,28 +528,19 @@ class PopupManager {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    console.log('oui')
-                    console.log(data)
-                    // Fermer la popup
+
                     this.editStat();
                     this.closeAll();
-
-                    // Rafraîchir la liste des utilisateurs ou ajouter le nouvel utilisateur à la liste
-                    // sans recharger la page complète
                     this.editUserToList(data.user);
 
-                    // Message de succès
-                    showSuccess("Utilisateur créé avec succès !");
+                    showSuccess("Utilisateur modifié avec succès !");
                 } else {
                     console.log('non')
 
-                    // Gestion des erreurs de validation
                     if (data.details && Array.isArray(data.details)) {
-                        // Afficher chaque erreur de validation à côté du champ correspondant
                         // displayValidationErrors(data.details);
                         console.log(data.details)
                     } else {
-                        // Afficher le message d'erreur général
                         //showError(data.error || "Erreur lors de la création de l'utilisateur");
                     }
                 }
@@ -808,20 +802,9 @@ class PopupManager {
         cardBox.innerHTML = `
         <div class="card-left">
             <img id="ue-picture" src="./images/ue/${ue.image}" alt="Image UE">
-            <div class="card-content">
+            <div class="card-content" id="ue-${ue.id}">
                 <h4>${ue.nom}</h4>
                 <h4 class="card-text">Responsable : ${prenomResponsable} ${nomResponsable}</h4>
-                <div class="ue-stat">
-                    <div class="ue-stat-icons">
-                        <i class="lni lni-graduation-cap-1"></i>
-                        <p>0</p>
-                    </div>
-                    
-                    <div class="ue-stat-icons">
-                        <i class="lni lni-user-multiple-4"></i>
-                        <p>${ue.utilisateurs ? ue.utilisateurs.length : '0'}</p>
-                    </div>
-                </div>
             </div>
         </div>
         <div class="card-action">
@@ -849,7 +832,12 @@ class PopupManager {
 
         // Pré-remplir les champs texte
         document.getElementById('ue_id').value = code;
+        document.getElementById('ue_id').disabled = true;
+
+
+
         document.getElementById('ue_nom').value = nom;
+
 
         this.getResponsable(responsable_id);
 
@@ -890,6 +878,110 @@ class PopupManager {
 
     editUE(){
         console.log("Modification")
+        const fullPath = document.getElementById('prev-picture-ue').src;
+        const fileName = fullPath.substring(fullPath.lastIndexOf('/') + 1);
+
+       const selectedUser = document.querySelectorAll('.selected-options .tag');
+        let allUserSelected = [];
+
+        selectedUser.forEach(ue => {
+            allUserSelected.push(ue.dataset.value);
+        });
+
+        const ueData = {
+            id: document.getElementById('ue_id').value,
+            nom: document.getElementById('ue_nom').value,
+            responsable_id: document.getElementById('ue_responsable_id').value || null,
+            utilisateurs: allUserSelected,
+            image: fileName
+        };
+
+        const fileInput = document.getElementById('fileInput2');
+        const file = fileInput.files[0];
+
+        if(file){
+            const imageData = new FormData();
+            imageData.append('file', file);
+            imageData.append('dest', '/public/images/ue/')
+            imageData.append('code', document.getElementById('ue_id').value);
+
+
+            fetch('/admin/upload-image', {
+                method: 'POST',
+                body: imageData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            }).then( response => {
+                if(!response.ok){
+                    console.log(response.text());
+                }
+                return response.json();
+            }).then( data => {
+                if(data.success){
+                    ueData.image = data.image;
+                    this.modifyUE(ueData);
+                } else {
+                    console.log("erreur impossible d'upload l'image")
+                    // showError("Erreur lors de l'upload de l'image: " + (data.error || "Erreur inconnue"));
+                }
+            }).catch(e => {
+                console.error('Erreur ', e)
+            })
+        } else {
+            this.modifyUE(ueData);
+
+        }
+    }
+
+    modifyUE(data){
+        console.log(data);
+        fetch("/admin/edit-ue/" + data.id.trim() , {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+
+                    this.editStat();
+                    this.closeAll();
+                    this.editUEToList(data.ue);
+
+                    showSuccess("UE modifié avec succès !");
+                } else {
+                    console.log('non')
+
+                    if (data.details && Array.isArray(data.details)) {
+                        // displayValidationErrors(data.details);
+                        console.log(data.details)
+                    } else {
+                        //showError(data.error || "Erreur lors de la création de l'utilisateur");
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                //showError("Erreur lors de la création de l'utilisateur");
+            });
+
+    }
+
+    editUEToList(data){
+        const userCard = document.getElementById("ue-" + data.id);
+
+        if (!userCard) return;
+
+        userCard.querySelector(".card-left img").src = "images/ue/" + data.image;
+
+        // Mise à jour du nom et prénom
+        userCard.querySelector(".card-content h4:first-child").innerHTML = data.nom;
+
+        userCard.querySelector("#ue-roles-section").innerHTML = 'Responsable : ' + data.responsable_prenom + " " + data.responsable_nom;
 
     }
 

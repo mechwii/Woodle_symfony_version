@@ -215,7 +215,8 @@ final class AdminController extends AbstractController
 
 
             // Image de profil
-            $imageName = $data['image'] ?? 'default.jpg';
+            $imageName = $data['image'];
+            // $imageName = $data['image'] ?? 'default.jpg';
             $utilisateur->setImage($imageName);
 
             // Ajouter les rôles
@@ -435,7 +436,7 @@ final class AdminController extends AbstractController
             }
 
             // Mettre à jour l'image de profil si elle a été modifiée
-            $imageName = $data['image'] ?? $originalImage;
+            $imageName = $data['image'];
             if ($imageName !== $originalImage && $data['image'] !== "") {
                 $utilisateur->setImage($imageName);
             }
@@ -589,8 +590,7 @@ final class AdminController extends AbstractController
             $uploadedFile = $request->files->get('file');
             $userId = $request->request->get('id_user');
             $dest = $request->request->get('dest');
-
-
+            $code = $request->request->get('code');
 
             $realName = $uploadedFile->getClientOriginalName();
             $extension = $uploadedFile->getClientOriginalExtension();
@@ -598,7 +598,7 @@ final class AdminController extends AbstractController
             if ($userId) {
                 $user = $em->getRepository(Utilisateur::class)->find($userId);
 
-                if ($user && $user->getImage() !== 'default.jpg' && $user->getImage() !== 'default-ban.jpg' && $user->getImage() !== $realName) {
+                if ($user && $user->getImage() !== 'default.jpg' && $user->getImage() !== $realName  && $user->getImage() !== "") {
                     $oldImagePath = $this->getParameter('kernel.project_dir') . $dest . $user->getImage();
 
                     if (file_exists($oldImagePath)) {
@@ -606,6 +606,21 @@ final class AdminController extends AbstractController
                     }
                 }
             }
+
+            if($code){
+                $ue = $em->getRepository(UE::class)->find($code);
+
+                if($ue && $ue->getImage() !== $realName && $ue->getImage() !=='default-ban.jpg' && $ue->getImage() !== "") {
+                    $oldImagePath = $this->getParameter('kernel.project_dir') . $dest . $ue->getImage();
+
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
+                }
+
+            }
+
+
             // $defaultPassword = strtolower(substr($prenom, 0, 1) . $nom . '_picture' .  '.' . $extension);
             $uploadedFile->move($this->getParameter('kernel.project_dir') . $dest , $realName);
 
@@ -712,5 +727,173 @@ final class AdminController extends AbstractController
         return $this->json(['error' => false, 'ue' => $response], Response::HTTP_OK);
     }
 
+    /**
+     * Modifie un utilisateur existant avec Ajax et validation de formulaire
+     */
+    #[Route('/admin/edit-ue/{id}', name: 'admin_edit_ue', methods: ['PUT'])]
+    public function editUE(
+        Request                $request,
+        EntityManagerInterface $entityManager,
+        string                    $id
+    ): Response
+    {
+        if (!$request->isXmlHttpRequest()) {
+            return $this->json(['error' => 'Requête non autorisée'], Response::HTTP_BAD_REQUEST);
+        }
 
+        try {
+            // Récupération des données du formulaire
+            $data = $request->toArray();
+
+            if (!$data) {
+                return $this->json(['error' => 'Données invalides'], Response::HTTP_BAD_REQUEST);
+            }
+
+            // Récupération de l'utilisateur existant
+            $ue = $entityManager->getRepository(UE::class)->find($id);
+
+            if (!$ue) {
+                return $this->json(['error' => 'Utilisateur non trouvé'], Response::HTTP_NOT_FOUND);
+            }
+
+            $dataUEs = $data['utilisateurs'] ?? [];
+
+
+            $originalUser = false;
+
+            // Récupérer les codes des UEs actuelles
+            $originalUECodes = [];
+            foreach ($ue->getEstAffectes() as $estAffecte) {
+                if ($estAffecte->getUtilisateurId()->getId()) {
+                    $originalUECodes[] = $estAffecte->getUtilisateurId()->getId();
+                }
+            }
+
+
+            if($dataUEs) {
+                $uesToRemove = array_diff($originalUECodes, $dataUEs);
+                $uesToAdd = array_diff($dataUEs, $originalUECodes);
+                if (!empty($uesToRemove) || !empty($uesToAdd)) {
+                    $originalUser = true;
+                    if (!empty($uesToRemove)) {
+                        foreach ($ue->getEstAffectes() as $estAffecte) {
+                            $idUtilisateur = $estAffecte->getUtilisateurId()->getId();
+                            if (in_array($idUtilisateur, $uesToRemove)) {
+                                $entityManager->remove($estAffecte);
+                            }
+                        }
+                    }
+                    if (!empty($uesToAdd)) {
+                        foreach ($uesToAdd as $idUtilisateur) {
+                            $utilisateur = $entityManager->getRepository(Utilisateur::class)->find($idUtilisateur);
+                            if ($ue) {
+                                $estAffecte = new EstAffecte();
+                                $estAffecte->setUtilisateurId($utilisateur);
+                                $estAffecte->setCodeId($ue);
+                                $estAffecte->setFavori(false);
+                                $entityManager->persist($estAffecte);
+                            }
+                        }
+                    }
+                    $entityManager->flush();
+                }
+
+            }
+
+            $originalCode = $ue->getId();
+            $originalNom = $ue->getNom();
+            $orginalResponsable = $ue->getResponsableId()->getId();
+            $originalImage = $ue->getImage();
+
+
+            /*
+             // Création d'un formulaire sans le lier à une requête (car on utilise JSON)
+             $form = $this->createForm(UtilisateurType::class, $utilisateur);
+
+             // Soumission manuelle des données au formulaire
+             $form->submit([
+                 'code' => $data['id'],
+                 'prenom' => $data['nom']
+             ]);
+
+             // Validation du formulaire
+             if (!$form->isValid()) {
+                 $errors = [];
+                 foreach ($form->getErrors(true) as $error) {
+                     $errors[] = $error->getMessage();
+                 }
+                 return $this->json(['error' => 'Erreurs de validation', 'details' => $errors], Response::HTTP_BAD_REQUEST);
+             }
+
+            */
+
+            // Vérifier si l'email existe déjà (si l'email a été modifié)
+            if ($originalCode !== $data['id']) {
+                $existingUE = $entityManager->getRepository(UE::class)->find($data['id']);
+                if ($existingUE && $existingUE->getId() !== $id) {
+                    return $this->json(['error' => 'Ce code UE est déjà utilisé'], Response::HTTP_CONFLICT);
+                } else {
+                    $ue->setId($data['id']);
+                }
+            }
+
+            // Mettre à jour l'image de profil si elle a été modifiée
+            $imageName = $data['image'];
+            // $imageName = $data['image'] ?? 'default-ban.jpg';
+
+            if ($imageName !== $originalImage && $imageName !== "") {
+                $ue->setImage($imageName);
+            }
+
+            if ($originalNom !== $data['nom']) {
+                $ue->setNom($data['nom']);
+            }
+            if ($orginalResponsable !== $data['responsable_id']) {
+                $responsable = $entityManager->getRepository(Utilisateur::class)->find($data['responsable_id']);
+                $ue->setResponsableId($responsable);
+            }
+
+
+            // Vérifier si des modifications ont été effectuées
+            $informationsModifiees =
+                $originalCode !== $data['id'] ||
+                $originalNom !== $data['nom'] ||
+                $orginalResponsable !== $data['responsable_id'] ||
+                $originalUser;
+
+
+            // Persister les modifications uniquement si nécessaire
+            if ($informationsModifiees) {
+                $entityManager->flush();
+                return $this->json([
+                    'success' => true,
+                    'message' => 'Utilisateur modifié avec succès',
+                    'ue' => [
+                        'id' => $ue->getId(),
+                        'nom' => $ue->getNom(),
+                        'image' => $ue->getImage(),
+                        'responsable' => $ue->getResponsableId(),
+                        'responsable_nom' => $ue->getResponsableId()->getNom(),
+                        'responsable_prenom' => $ue->getResponsableId()->getPrenom(),
+                    ]
+                ], Response::HTTP_OK);
+            } else {
+                return $this->json([
+                    'success' => true,
+                    'message' => 'Aucune modification détectée',
+                    'ue' => [
+                        'id' => $ue->getId(),
+                        'nom' => $ue->getNom(),
+                        'image' => $ue->getImage(),
+                        'responsable' => $ue->getResponsableId(),
+                        'responsable_nom' => $ue->getResponsableId()->getNom(),
+                        'responsable_prenom' => $ue->getResponsableId()->getPrenom(),
+                    ]
+                ], Response::HTTP_OK);
+            }
+        } catch
+        (\Exception $e) {
+            return $this->json(['error' => 'Une erreur est survenue: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }
