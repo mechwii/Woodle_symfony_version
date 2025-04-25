@@ -152,6 +152,7 @@ final class AdminController extends AbstractController
             'email' => $user->getEmail(),
             'prenom' => $user->getPrenom(),
             'image' => $user->getImage(),
+            'password' => $user->getPassword(),
             'roles' => $roles,
             'ue' => $ue
         ]);
@@ -190,6 +191,7 @@ final class AdminController extends AbstractController
                 'nom' => $data['nom'],
                 'prenom' => $data['prenom'],
                 'email' => $data['email'],
+                'password' => $data['password']
             ]);
 
             // Validation du formulaire
@@ -207,10 +209,13 @@ final class AdminController extends AbstractController
                 return $this->json(['error' => 'Cet email est déjà utilisé'], Response::HTTP_CONFLICT);
             }
 
-            // Générer un mot de passe par défaut
-            $defaultPassword = strtolower(substr($data['prenom'], 0, 1) . $data['nom'] . '@123');
-            $utilisateur->setPassword($defaultPassword);
-
+            // Générer un mot de passe par défaut password
+            if($data['password'] === ""){
+                $defaultPassword = strtolower(substr($data['prenom'], 0, 1) . $data['nom'] . '@123');
+                $utilisateur->setPassword($defaultPassword);
+            } else {
+                $utilisateur->setPassword($data['password']);
+            }
 
             // Image de profil
             $imageName = $data['image'];
@@ -403,6 +408,7 @@ final class AdminController extends AbstractController
             $originalNom = $utilisateur->getNom();
             $originalPrenom = $utilisateur->getPrenom();
             $originalImage = $utilisateur->getImage();
+            $originalPassword = $utilisateur->getPassword();
 
             // Création d'un formulaire sans le lier à une requête (car on utilise JSON)
             $form = $this->createForm(UtilisateurType::class, $utilisateur);
@@ -412,6 +418,7 @@ final class AdminController extends AbstractController
                 'nom' => $data['nom'],
                 'prenom' => $data['prenom'],
                 'email' => $data['email'],
+                'password' => $data['password'],
             ]);
 
             // Validation du formulaire
@@ -444,6 +451,7 @@ final class AdminController extends AbstractController
                 $originalPrenom !== $data['prenom'] ||
                 $originalEmail !== $data['email'] ||
                 $originalImage !== $imageName ||
+                $originalPassword !== $data['password'] ||
                 $originalRoleIds !== $data['roles'];
 
             // Persister les modifications uniquement si nécessaire

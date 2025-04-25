@@ -26,6 +26,7 @@ class PopupManager {
         document.getElementById('delete-user-popup').classList.remove('hidden');
         document.getElementById('picture-popup').src = `images/profil/${image}`;
         document.getElementById('user-name').textContent = `${prenom} ${nom}`;
+
         document.body.style.overflow = "hidden"
 
         const deleteButton = document.getElementById('confirm-delete');
@@ -56,6 +57,7 @@ class PopupManager {
             // Réinitialiser les champs du formulaire
             document.getElementById('utilisateur_nom').value = '';
             document.getElementById('utilisateur_prenom').value = '';
+            document.getElementById('utilisateur_password').value = ''
             document.getElementById('utilisateur_email').value = '';
 
             // Réinitialiser les cases à cocher des rôles
@@ -146,6 +148,7 @@ class PopupManager {
         const nom = document.getElementById('utilisateur_nom').value;
         const prenom = document.getElementById('utilisateur_prenom').value;
         const email = document.getElementById('utilisateur_email').value;
+        const password = document.getElementById('utilisateur_password').value;
 
         // Réinitialiser les messages d'erreur
         // clearValidationErrors();
@@ -173,6 +176,7 @@ class PopupManager {
             nom: nom,
             prenom: prenom,
             email: email,
+            password: password,
             roles: selectedRoles,
             ues: allUeSelected,
             image: "default.jpg" // Par défaut
@@ -365,7 +369,7 @@ class PopupManager {
         }
     }
 
-    async openModifyUserPopup(id, nom, prenom, email, image, roles,ue){
+    async openModifyUserPopup(id, nom, prenom, email, image, roles,ue, password){
 
         document.getElementById('utilisateur_id').value = id;
 
@@ -376,15 +380,19 @@ class PopupManager {
 
         const addButton = document.getElementById('add-user-button');
         addButton.innerHTML = "Modifier l'utilisateur";
+        console.log("mot de passe : " + password)
 
         document.getElementById('prev-firstname-section').innerHTML = `<strong>${prenom}</strong>`;
         document.getElementById('prev-name-section').innerHTML = `<strong>${nom}</strong>`;
         document.getElementById('prev-mail-section').innerHTML = `<strong>${email}</strong>`;
+
         document.getElementById('prev-picture').src = '/images/profil/' + image;
 
         document.getElementById('utilisateur_nom').value = nom;
         document.getElementById('utilisateur_prenom').value = prenom;
         document.getElementById('utilisateur_email').value = email;
+        document.getElementById('utilisateur_password').value = password;
+
 
         const roleSection = document.querySelectorAll('.role-section #check-button input[type="checkbox"]');
 
@@ -431,6 +439,7 @@ class PopupManager {
         const nom = document.getElementById('utilisateur_nom').value;
         const prenom = document.getElementById('utilisateur_prenom').value;
         const email = document.getElementById('utilisateur_email').value;
+        const password = document.getElementById('utilisateur_password').value;
 
         console.log(id)
         // Réinitialiser les messages d'erreur
@@ -463,6 +472,7 @@ class PopupManager {
             email: email,
             roles: selectedRoles,
             ues: allUeSelected,
+            password: password,
             image: ""
         };
 

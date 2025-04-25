@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Utilisateur;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -56,6 +57,18 @@ class UtilisateurType extends AbstractType
                     new Length([
                         'max' => 255,
                         'maxMessage' => 'L\'email ne peut pas dépasser {{ limit }} caractères',
+                    ]),
+                ],
+                'row_attr' => ['class' => 'section-user-add-form']
+            ])
+            ->add('password', TextType::class, [
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Le mot de passe ne peut pas être vide',
+                    ]),
+                    new Length([
+                        'max' => 255,
+                        'maxMessage' => 'Le mot de passe ne peut pas dépasser {{ limit }} caractères',
                     ]),
                 ],
                 'row_attr' => ['class' => 'section-user-add-form']

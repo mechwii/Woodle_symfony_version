@@ -102,7 +102,7 @@ function modifierUtilisateur(id){
                 throw new Error(user.error);
             }
             window.popupManager.popupCat = 1;
-            window.popupManager.openModifyUserPopup(id, user.nom, user.prenom, user.email, user.image, user.roles, user.ue);
+            window.popupManager.openModifyUserPopup(id, user.nom, user.prenom, user.email, user.image, user.roles, user.ue, user.password);
 
         })
         .catch(error =>{
