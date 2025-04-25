@@ -60,16 +60,6 @@ class UtilisateurType extends AbstractType
                 ],
                 'row_attr' => ['class' => 'section-user-add-form']
             ])
-            ->add('telephone', TextType::class, [
-                'required' => false,
-                'constraints' => [
-                    new Length([
-                        'max' => 50,
-                        'maxMessage' => 'Le numéro de téléphone ne peut pas dépasser {{ limit }} caractères',
-                    ]),
-                ],
-                'row_attr' => ['class' => 'section-user-add-form']
-            ])
         ;
     }
 

@@ -125,7 +125,7 @@
                     </div>
                     <div class="card-action">
                         <i onclick="modifierUE('{{ unite.code }}')" class="fa-solid fa-pen edit-icon edit"></i>
-                        <i onclick="supprimerUE()" class="fa-solid fa-trash edit-icon delete"></i>
+                        <i onclick="supprimerUE('{{ unite.code }}')" class="fa-solid fa-trash edit-icon delete"></i>
                     </div>
                 </div>
                 {% endfor %}
@@ -138,6 +138,7 @@
             {% include 'admin/popup/_delete_user.html.twig' %}
             {% include 'admin/popup/_add_edit_user.html.twig' %}
             {% include 'admin/popup/_add_edit_ue.html.twig' %}
+            {% include 'admin/popup/_delete_ue.html.twig' %}
         </div>
     </div>
 

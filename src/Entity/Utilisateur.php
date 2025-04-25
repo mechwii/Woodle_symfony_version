@@ -33,9 +33,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(name: "mot_de_passe", length: 255)]
     private ?string $password = null;
 
-    #[ORM\Column(length: 50, nullable: true)]
-    private ?string $telephone = null;
-
     #[ORM\Column(name: "date_creation", type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $date_creation = null;
 
@@ -135,18 +132,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
-
-        return $this;
-    }
-
-    public function getTelephone(): ?string
-    {
-        return $this->telephone;
-    }
-
-    public function setTelephone(?string $telephone): static
-    {
-        $this->telephone = $telephone;
 
         return $this;
     }

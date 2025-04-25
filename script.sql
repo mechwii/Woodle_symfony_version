@@ -20,7 +20,6 @@ CREATE TABLE Utilisateur
     prenom            VARCHAR(100) NOT NULL,
     email             VARCHAR(255) NOT NULL,
     mot_de_passe      VARCHAR(255) NOT NULL,
-    telephone         VARCHAR(50),
     date_creation     TIMESTAMP,
     date_modification TIMESTAMP,
     image             VARCHAR(255) NOT NULL
@@ -189,30 +188,30 @@ CREATE TRIGGER trg_maj_affectation
 
 -- INSERT
 
-INSERT INTO Utilisateur (nom, prenom, email, mot_de_passe, telephone, date_creation, date_modification, image)
-VALUES ('San', 'M''hammedu', 'mhammedu.san@example.com', 'password123', '+33612345678', '2024-01-15', '2024-01-15',
+INSERT INTO Utilisateur (nom, prenom, email, mot_de_passe, date_creation, date_modification, image)
+VALUES ('San', 'M''hammedu', 'mhammedu.san@example.com', 'password123', '2024-01-15', '2024-01-15',
         'avatar1.jpg'),
-       ('Balonu', 'Elmiru', 'elmiru.balonu@example.com', 'securePass456', '+33623456789', '2024-01-20', '2024-02-05',
+       ('Balonu', 'Elmiru', 'elmiru.balonu@example.com', 'securePass456', '2024-01-20', '2024-02-05',
         'avatar2.jpg'),
-       ('Alpuren', 'Enessu', 'enessu.alpuren@example.com', 'alpuren2024', '+33634567890', '2024-01-25', '2024-01-25',
+       ('Alpuren', 'Enessu', 'enessu.alpuren@example.com', 'alpuren2024', '2024-01-25', '2024-01-25',
         'avatar3.jpg'),
-       ('Vazmazz', 'Evrensan', 'evrensan.vazmazz@example.com', 'vazmazz789!', '+33645678901', '2024-02-01',
+       ('Vazmazz', 'Evrensan', 'evrensan.vazmazz@example.com', 'vazmazz789!', '2024-02-01',
         '2024-03-10', 'avatar4.jpg'),
-       ('Dubois', 'Marie', 'marie.dubois@example.com', 'dubois123', '+33656789012', '2024-02-05', '2024-02-05',
+       ('Dubois', 'Marie', 'marie.dubois@example.com', 'dubois123', '2024-02-05', '2024-02-05',
         'avatar5.jpg'),
-       ('Martin', 'Thomas', 'thomas.martin@example.com', 'martinPass', '+33667890123', '2024-02-10', '2024-02-15',
+       ('Martin', 'Thomas', 'thomas.martin@example.com', 'martinPass', '2024-02-10', '2024-02-15',
         'avatar6.jpg'),
-       ('Bernard', 'Sophie', 'sophie.bernard@example.com', 'sophie2024', '+33678901234', '2024-02-15', '2024-02-15',
+       ('Bernard', 'Sophie', 'sophie.bernard@example.com', 'sophie2024', '2024-02-15', '2024-02-15',
         'avatar7.jpg'),
-       ('Petit', 'Lucas', 'lucas.petit@example.com', 'petitLucas!', '+33689012345', '2024-02-20', '2024-02-20',
+       ('Petit', 'Lucas', 'lucas.petit@example.com', 'petitLucas!', '2024-02-20', '2024-02-20',
         'avatar8.jpg'),
-       ('Robert', 'Emma', 'emma.robert@example.com', 'emmaR2024', '+33690123456', '2024-02-25', '2024-03-01',
+       ('Robert', 'Emma', 'emma.robert@example.com', 'emmaR2024',  '2024-02-25', '2024-03-01',
         'avatar9.jpg'),
-       ('Richard', 'Hugo', 'hugo.richard@example.com', 'hugoRich456', '+33601234567', '2024-03-01', '2024-03-01',
+       ('Richard', 'Hugo', 'hugo.richard@example.com', 'hugoRich456', '2024-03-01', '2024-03-01',
         'avatar10.jpg'),
-       ('Kaya', 'Mehmet', 'mehmet.kaya@example.com', 'kayaM2024', '+33634567891', '2024-03-15', '2024-03-15',
+       ('Kaya', 'Mehmet', 'mehmet.kaya@example.com', 'kayaM2024',  '2024-03-15', '2024-03-15',
         'avatar13.jpg'),
-       ('Yilmaz', 'Ayse', 'ayse.yilmaz@example.com', 'yilmazA456!', '+33645678902', '2024-03-20', '2024-03-20',
+       ('Yilmaz', 'Ayse', 'ayse.yilmaz@example.com', 'yilmazA456!', '2024-03-20', '2024-03-20',
         'avatar14.jpg');
 
 INSERT INTO Role (nom)

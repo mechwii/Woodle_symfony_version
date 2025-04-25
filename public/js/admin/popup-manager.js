@@ -1,4 +1,5 @@
 class PopupManager {
+
     constructor() {
         this.overlay = document.getElementById('overlay');
         this.popupCat = 1;
@@ -29,9 +30,10 @@ class PopupManager {
 
         const deleteButton = document.getElementById('confirm-delete');
         deleteButton.onclick = () => this.deleteUser(id);
-
         this.overlay.classList.remove('hidden');
     }
+
+
 
     closeAll() {
         this.overlay.classList.add('hidden');
@@ -55,7 +57,6 @@ class PopupManager {
             document.getElementById('utilisateur_nom').value = '';
             document.getElementById('utilisateur_prenom').value = '';
             document.getElementById('utilisateur_email').value = '';
-            document.getElementById('utilisateur_telephone').value = '';
 
             // Réinitialiser les cases à cocher des rôles
             document.querySelectorAll('#check-button input[type="checkbox"]').forEach(checkbox => {
@@ -145,7 +146,6 @@ class PopupManager {
         const nom = document.getElementById('utilisateur_nom').value;
         const prenom = document.getElementById('utilisateur_prenom').value;
         const email = document.getElementById('utilisateur_email').value;
-        const telephone = document.getElementById('utilisateur_telephone').value;
 
         // Réinitialiser les messages d'erreur
         // clearValidationErrors();
@@ -173,7 +173,6 @@ class PopupManager {
             nom: nom,
             prenom: prenom,
             email: email,
-            telephone: telephone,
             roles: selectedRoles,
             ues: allUeSelected,
             image: "default.jpg" // Par défaut
@@ -271,7 +270,7 @@ class PopupManager {
     displayFieldErrors(errors) {
         errors.forEach(errorMsg => {
             // Trouver le champ correspondant au message d'erreur
-            const fieldNames = ['nom', 'prenom', 'email', 'telephone'];
+            const fieldNames = ['nom', 'prenom', 'email'];
             const matchedField = fieldNames.find(field =>
                 errorMsg.toLowerCase().includes(field)
             );
@@ -366,11 +365,11 @@ class PopupManager {
         }
     }
 
-    async openModifyUserPopup(id, nom, prenom, email, image ,telephone, roles,ue){
+    async openModifyUserPopup(id, nom, prenom, email, image, roles,ue){
 
         document.getElementById('utilisateur_id').value = id;
 
-        console.log(id, nom, prenom, email, image ,telephone, roles,ue)
+        console.log(id, nom, prenom, email, image, roles,ue)
         document.getElementById('add-user-popup').classList.remove('hidden');
         document.body.style.overflow = "hidden"
         this.overlay.classList.remove('hidden');
@@ -386,7 +385,6 @@ class PopupManager {
         document.getElementById('utilisateur_nom').value = nom;
         document.getElementById('utilisateur_prenom').value = prenom;
         document.getElementById('utilisateur_email').value = email;
-        document.getElementById('utilisateur_telephone').value = telephone;
 
         const roleSection = document.querySelectorAll('.role-section #check-button input[type="checkbox"]');
 
@@ -433,7 +431,6 @@ class PopupManager {
         const nom = document.getElementById('utilisateur_nom').value;
         const prenom = document.getElementById('utilisateur_prenom').value;
         const email = document.getElementById('utilisateur_email').value;
-        const telephone = document.getElementById('utilisateur_telephone').value;
 
         console.log(id)
         // Réinitialiser les messages d'erreur
@@ -464,7 +461,6 @@ class PopupManager {
             nom: nom,
             prenom: prenom,
             email: email,
-            telephone: telephone,
             roles: selectedRoles,
             ues: allUeSelected,
             image: ""
@@ -792,6 +788,7 @@ class PopupManager {
         // Créer un nouvel élément de carte UE
         const cardBox = document.createElement('div');
         cardBox.className = 'card-box';
+        cardBox.id = 'ue-'+ue.id;
 
         // Récupérer les noms du responsable (si disponible)
         let nomResponsable = ue.responsable_nom;
@@ -809,7 +806,7 @@ class PopupManager {
         </div>
         <div class="card-action">
             <i onclick="modifierUE('${ue.id}')" class="fa-solid fa-pen edit-icon edit"></i>
-            <i onclick="deleteUE('${ue.id}')" class="fa-solid fa-trash edit-icon delete"></i>
+            <i onclick="supprimerUE('${ue.id}')" class="fa-solid fa-trash edit-icon delete"></i>
         </div>
     `;
 
@@ -985,6 +982,45 @@ class PopupManager {
 
     }
 
+    openDeleteUEPopup(code, nom, image){
+        console.log(code, nom, image)
+        document.getElementById('delete-ue-popup').classList.remove('hidden');
+        document.getElementById('picture-popup-ue').src = `images/ue/${image}`;
+        document.getElementById('ue-delete-name').textContent = `${nom}`;
+        document.body.style.overflow = "hidden"
+
+        const deleteButton = document.getElementById('confirm-delete-ue');
+        deleteButton.onclick = () => this.deleteUE(code);
+        this.overlay.classList.remove('hidden');
+    }
+
+    deleteUE(id) {
+        fetch(`/admin/delete-ue/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const userCard = document.getElementById(`ue-${id}`);
+                    if (userCard) {
+                        userCard.remove();
+                    }
+                    this.editStat();
+                    this.closeAll();
+                } else {
+                    alert('Erreur lors de la suppression');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la suppression');
+            });
+    }
+
+
 
 
     editStat(){
@@ -1004,10 +1040,6 @@ class PopupManager {
         }
 
     }
-
-
-
-
 }
 
 /**

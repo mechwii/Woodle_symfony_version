@@ -67,6 +67,27 @@ function supprimerUtilisateur(id){
         })
 }
 
+function supprimerUE(code){
+    fetch(`/admin/get-one-ue/${code}`)
+        .then(response => {
+            if(!response.ok){
+                throw new Error('Erreur lors de la récupération des UE')
+            }
+            return response.json();
+        })
+        .then(ue =>{
+            if(ue.error){
+                throw new Error(ue.error)
+            }
+            window.popupManager.openDeleteUEPopup(ue.ue.code, ue.ue.nom, ue.ue.image)
+
+        }).catch(error => {
+            console.error('Erreur delete ue : ' + error);
+            alert("Impossible de récupere les informations de l'UE")
+    })
+
+}
+
 function modifierUtilisateur(id){
 
     fetch(`/admin/get-user/${id}`)
@@ -81,7 +102,7 @@ function modifierUtilisateur(id){
                 throw new Error(user.error);
             }
             window.popupManager.popupCat = 1;
-            window.popupManager.openModifyUserPopup(id, user.nom, user.prenom, user.email, user.image ,user.telephone, user.roles, user.ue);
+            window.popupManager.openModifyUserPopup(id, user.nom, user.prenom, user.email, user.image, user.roles, user.ue);
 
         })
         .catch(error =>{

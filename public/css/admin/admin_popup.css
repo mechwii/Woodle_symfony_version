@@ -552,6 +552,14 @@ div.fake-button:hover{
     z-index: 100;
 }
 
+#picture-popup-ue{
+    width: 100%;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 15px;
+
+}
+
 @media only screen
 and (max-width : 1300px) {
     .mini-popup {

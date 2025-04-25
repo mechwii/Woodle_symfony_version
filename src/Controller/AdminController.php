@@ -150,7 +150,6 @@ final class AdminController extends AbstractController
             'id' => $user->getId(),
             'nom' => $user->getNom(),
             'email' => $user->getEmail(),
-            'telephone' => $user->getTelephone(),
             'prenom' => $user->getPrenom(),
             'image' => $user->getImage(),
             'roles' => $roles,
@@ -191,7 +190,6 @@ final class AdminController extends AbstractController
                 'nom' => $data['nom'],
                 'prenom' => $data['prenom'],
                 'email' => $data['email'],
-                'telephone' => $data['telephone'] ?? null,
             ]);
 
             // Validation du formulaire
@@ -404,7 +402,6 @@ final class AdminController extends AbstractController
             $originalEmail = $utilisateur->getEmail();
             $originalNom = $utilisateur->getNom();
             $originalPrenom = $utilisateur->getPrenom();
-            $originalTelephone = $utilisateur->getTelephone();
             $originalImage = $utilisateur->getImage();
 
             // Création d'un formulaire sans le lier à une requête (car on utilise JSON)
@@ -415,7 +412,6 @@ final class AdminController extends AbstractController
                 'nom' => $data['nom'],
                 'prenom' => $data['prenom'],
                 'email' => $data['email'],
-                'telephone' => $data['telephone'] ?? null,
             ]);
 
             // Validation du formulaire
@@ -447,7 +443,6 @@ final class AdminController extends AbstractController
                 $originalNom !== $data['nom'] ||
                 $originalPrenom !== $data['prenom'] ||
                 $originalEmail !== $data['email'] ||
-                $originalTelephone !== ($data['telephone'] ?? null) ||
                 $originalImage !== $imageName ||
                 $originalRoleIds !== $data['roles'];
 
@@ -517,7 +512,12 @@ final class AdminController extends AbstractController
             $utilisateurs = $data['utilisateurs'];
 
 
-/*            $form = $this->createForm(UE::class, $ue);
+            $form = $this->createForm(UeType::class, $ue);
+
+            $form->submit([
+                'id' => $data['id'],
+                'nom' => $data['nom'],
+            ]);
 
             if (!$form->isValid()) {
                 $errors = [];
@@ -525,7 +525,7 @@ final class AdminController extends AbstractController
                     $errors[] = $error->getMessage();
                 }
                 return $this->json(['error' => 'Erreurs de validation', 'details' => $errors], Response::HTTP_BAD_REQUEST);
-            }*/
+            }
 
             $existingUE = $entityManager->getRepository(UE::class)->find($id);
 
@@ -806,14 +806,14 @@ final class AdminController extends AbstractController
             $originalImage = $ue->getImage();
 
 
-            /*
+
              // Création d'un formulaire sans le lier à une requête (car on utilise JSON)
-             $form = $this->createForm(UtilisateurType::class, $utilisateur);
+             $form = $this->createForm(UeType::class, $ue);
 
              // Soumission manuelle des données au formulaire
              $form->submit([
-                 'code' => $data['id'],
-                 'prenom' => $data['nom']
+                 'id' => $data['id'],
+                 'nom' => $data['nom']
              ]);
 
              // Validation du formulaire
@@ -825,7 +825,7 @@ final class AdminController extends AbstractController
                  return $this->json(['error' => 'Erreurs de validation', 'details' => $errors], Response::HTTP_BAD_REQUEST);
              }
 
-            */
+
 
             // Vérifier si l'email existe déjà (si l'email a été modifié)
             if ($originalCode !== $data['id']) {
@@ -895,5 +895,27 @@ final class AdminController extends AbstractController
         (\Exception $e) {
             return $this->json(['error' => 'Une erreur est survenue: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    #[Route('/admin/delete-ue/{code}', name: 'admin_delete_ue', methods: ['DELETE'])]
+    public function deleteUE(string $code, EntityManagerInterface $BDDManager): Response
+    {
+        $ue = $BDDManager->getRepository(UE::class)->find($code);
+
+        if (!$ue) {
+            return $this->json(['success' => false, 'message' => 'UE introuvable'], Response::HTTP_NOT_FOUND);
+        }
+
+        if ($ue && $ue->getImage() !== 'default-ban.jpg') {
+            $oldImagePath = $this->getParameter('kernel.project_dir') . '/public/images/ue/' . $ue->getImage();
+
+            if (file_exists($oldImagePath)) {
+                unlink($oldImagePath);
+            }
+        }
+
+        $BDDManager->remove($ue);
+        $BDDManager->flush();
+        return $this->json(['success' => true], Response::HTTP_OK);
     }
 }

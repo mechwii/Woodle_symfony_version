@@ -28,6 +28,7 @@ class UeType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => UE::class,
+            'csrf_protection' => false
         ]);
     }
 }
