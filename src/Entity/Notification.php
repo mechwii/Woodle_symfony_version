@@ -17,7 +17,7 @@ class Notification
     #[ORM\Column(type: 'text')]
     private ?string $contenu = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $date_notif = null;
 
     #[ORM\Column(length: 255)]

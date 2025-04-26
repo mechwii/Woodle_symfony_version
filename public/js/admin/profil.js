@@ -1,18 +1,16 @@
 function editProfil(id){
     const nom = document.getElementById('user_profile_nom').value;
     const prenom= document.getElementById('user_profile_prenom').value;
-    const email= document.getElementById('user_profile_email').value;
     const password= document.getElementById('user_profile_password').value;
 
     const userData = {
         id : id,
         nom: nom,
         prenom: prenom,
-        email: email,
         password: password,
     };
 
-    if(nom !== "" && prenom !=="" && email !== "" && password !== ""){
+    if(nom !== "" && prenom !=="" && password !== ""){
         console.log(id)
 
         fetch("/admin/edit-profil/" + id , {

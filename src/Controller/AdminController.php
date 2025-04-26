@@ -1,8 +1,11 @@
 <?php
 
 namespace App\Controller;
+use App\Entity\Priorite;
 
 use App\Entity\EstAffecte;
+use App\Entity\TypeNotification;
+use App\Entity\Notification;
 use App\Entity\Role;
 use App\Entity\UE;
 use App\Form\UeType;
@@ -258,6 +261,7 @@ final class AdminController extends AbstractController
                         $estAffecte->setFavori(false);
                         $entityManager->persist($estAffecte);
 
+                        $this->createAffectationNotification($entityManager, $utilisateur, $ue, $this->getUser());
                     }
                 }
                 $entityManager->flush();
@@ -401,6 +405,9 @@ final class AdminController extends AbstractController
                             $estAffecte->setCodeId($ue);
                             $estAffecte->setFavori(false);
                             $entityManager->persist($estAffecte);
+
+                            $this->createAffectationNotification($entityManager, $utilisateur, $ue, $this->getUser());
+
                         }
                     }
                 }
@@ -565,8 +572,10 @@ final class AdminController extends AbstractController
                         $estAffecte->setCodeId($ue);
                         $estAffecte->setFavori(false);
                         $estAffecte->setDateInscription(new \DateTime());
-
                         $entityManager->persist($estAffecte);
+
+                        $this->createAffectationNotification($entityManager, $utilisateur, $ue, $this->getUser());
+
                     }
                 }
             }
@@ -817,6 +826,9 @@ final class AdminController extends AbstractController
                                 $estAffecte->setCodeId($ue);
                                 $estAffecte->setFavori(false);
                                 $entityManager->persist($estAffecte);
+
+                                $this->createAffectationNotification($entityManager, $utilisateur, $ue, $this->getUser());
+
                             }
                         }
                     }
@@ -974,7 +986,6 @@ final class AdminController extends AbstractController
                 return $this->json(['error' => 'Utilisateur non trouvé'], Response::HTTP_NOT_FOUND);
             }
 
-            $originalEmail = $utilisateur->getEmail();
             $originalNom = $utilisateur->getNom();
             $originalPrenom = $utilisateur->getPrenom();
             $originalPassword = $utilisateur->getPassword();
@@ -984,7 +995,6 @@ final class AdminController extends AbstractController
             $form->submit([
                 'nom' => $data['nom'],
                 'prenom' => $data['prenom'],
-                'email' => $data['email'],
                 'password' => $data['password'],
             ]);
 
@@ -996,17 +1006,10 @@ final class AdminController extends AbstractController
                 return $this->json(['error' => 'Erreurs de validation', 'details' => $errors], Response::HTTP_BAD_REQUEST);
             }
 
-            if ($originalEmail !== $data['email']) {
-                $existingUser = $entityManager->getRepository(Utilisateur::class)->findOneBy(['email' => $data['email']]);
-                if ($existingUser && $existingUser->getId() !== $id) {
-                    return $this->json(['error' => 'Cet email est déjà utilisé'], Response::HTTP_CONFLICT);
-                }
-            }
             // Vérifier si des modifications ont été effectuées
             $informationsModifiees =
                 $originalNom !== $data['nom'] ||
                 $originalPrenom !== $data['prenom'] ||
-                $originalEmail !== $data['email'] ||
                 $originalPassword !== $data['password'];
 
             // Persister les modifications uniquement si nécessaire
@@ -1041,5 +1044,46 @@ final class AdminController extends AbstractController
         (\Exception $e) {
             return $this->json(['error' => 'Une erreur est survenue: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    /**
+     * Crée une notification lorsqu'un utilisateur est affecté à une UE
+     */
+    private function createAffectationNotification(
+        EntityManagerInterface $entityManager,
+        Utilisateur $utilisateur,
+        UE $ue,
+        Utilisateur $expediteur
+    ): void {
+        $notification = new Notification();
+
+        $notification->setContenu("Vous avez été affecté(e) à l'UE: " . $ue->getNom());
+
+        $roles = $utilisateur->getRoles();
+
+        if(in_array('ROLE_PROFESSEUR', $roles)) {
+            $notification->setUrlDestination('professeur/contenu_ue-' . $ue->getId());
+        }else if(in_array('ROLE_ELEVE', $roles)){
+            $notification->setUrlDestination('etudiant/contenu_ue-' . $ue->getId());
+        }
+
+        $typeNotification = $entityManager->getRepository(TypeNotification::class)->findOneBy(['id' => 1]);
+        if ($typeNotification) {
+            $notification->setTypeNotificationId($typeNotification);
+        }
+
+        $notification->setUtilisateurExpediteurId($expediteur ?? $this->getUser());
+
+        $notification->setUtilisateurDestinataireId($utilisateur);
+
+        $notification->setCodeId($ue);
+
+        $priorite = $entityManager->getRepository(Priorite::class)->findOneBy(['id' => 1]);
+        if ($priorite) {
+            $notification->setPrioriteId($priorite);
+        }
+
+        $entityManager->persist($notification);
+        $entityManager->flush();
     }
 }

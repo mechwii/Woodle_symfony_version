@@ -40,20 +40,6 @@ class UserProfileType extends AbstractType
                     ]),
                 ],
             ])
-            ->add('email', EmailType::class, [
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'L\'email ne peut pas être vide',
-                    ]),
-                    new Email([
-                        'message' => 'L\'email "{{ value }}" n\'est pas valide.',
-                    ]),
-                    new Length([
-                        'max' => 255,
-                        'maxMessage' => 'L\'email ne peut pas dépasser {{ limit }} caractères',
-                    ]),
-                ],
-            ])
             ->add('password', TextType::class, [
                 'label' => 'Mot de passe',
                 'constraints' => [

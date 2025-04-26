@@ -97,7 +97,7 @@ CREATE TABLE Notification
 (
     id_notification             SERIAL PRIMARY KEY,
     contenu                     TEXT NOT NULL,
-    date_notif                  TIMESTAMP NOT NULL,
+    date_notif                  TIMESTAMP,
     url_destination             VARCHAR(255) NOT NULL,
     type_notification_id        INT,
     utilisateur_expediteur_id   INT,
@@ -183,6 +183,23 @@ CREATE TRIGGER trg_maj_affectation
     BEFORE INSERT OR UPDATE ON Est_Affecte
             FOR EACH ROW
                     EXECUTE FUNCTION maj_date_affection();
+
+
+
+CREATE OR REPLACE FUNCTION maj_dates_notification()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF (TG_OP = 'INSERT') THEN
+        NEW.date_notif := NOW();
+END IF;
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_maj_notification
+    BEFORE INSERT OR UPDATE ON Notification
+                         FOR EACH ROW
+                         EXECUTE FUNCTION maj_dates_notification();
 
 
 
@@ -397,3 +414,5 @@ VALUES
     ('Absence au prochain TD', 'Une étude approfondie des.', 'Contenu détaillé de la publication...', '2025-04-19 11:00:00', 2, TRUE, 2, 3, 4, 'IA41'),
     ('CM annulé', 'Un regard sur l’évolution de.', 'Contenu détaillé de la publication...', '2025-04-19 12:00:00', 3, TRUE, 3, 5, 5, 'IA41');
 
+INSERT INTO Priorite(nom) VALUES
+    ('normale'), ('élevé'), ('suprême');
