@@ -6,6 +6,8 @@
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('css/admin/admin.css') }}">
     <link rel="stylesheet" href="{{ asset('css/admin/admin_popup.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/alerte.css') }}">
+
 
 {% endblock %}
 
@@ -13,6 +15,8 @@
     {{ parent() }}
     <script src="{{ asset('js/admin/admin.js') }}"></script>
     <script src="{{ asset('js/admin/popup-manager.js') }}"></script>
+    <script src="{{ asset('js/admin/alerte.js') }}"></script>
+
 
 {% endblock %}
 
@@ -141,6 +145,8 @@
             {% include 'admin/popup/_add_edit_ue.html.twig' %}
             {% include 'admin/popup/_delete_ue.html.twig' %}
         </div>
+        <div id="notification"></div>
+
     </div>
 
 

@@ -119,15 +119,16 @@ class PopupManager {
                     if (userCard) {
                         userCard.remove();
                     }
+                    alerte.showSuccess("Suppresion réussi de l'utilisateur");
                     this.editStat();
                     this.closeAll();
                 } else {
-                    alert('Erreur lors de la suppression');
+                    alerte.showError("Erreur lors de la suppression");
                 }
             })
             .catch(error => {
                 console.error('Erreur:', error);
-                alert('Erreur lors de la suppression');
+                alerte.showError("Erreur lors de la suppression");
             });
     }
 
@@ -215,12 +216,12 @@ class PopupManager {
                     userData.image = data.image;
                     this.createUser(userData);
                 } else{
-                    // showError("Erreur lors de l'upload de l'image: " + (data.error || "Erreur inconnue"));
+                    alerte.showError("Erreur lors de l'upload de l'image: " + (data.error || "Erreur inconnue"));
                 }
 
             }).catch(error => {
                 console.error('Erreur:', error);
-             //   showError("Erreur lors de l'upload de l'image");
+                    alerte.showError("Erreur lors de l'upload de l'image");
             })
         } else {
             this.createUser(userData);
@@ -243,21 +244,14 @@ class PopupManager {
                     this.editStat();
                     this.closeAll();
                     this.addUserToList(data.user);
-                    showSuccess("Utilisateur créé avec succès !");
+                    alerte.showSuccess("Utilisateur créé avec succès !");
                 } else {
-                    // Gestion des erreurs de validation
-                    if (data.details && Array.isArray(data.details)) {
-                        // displayValidationErrors(data.details);
-                        console.log(data.details)
-                    } else {
-                        // Afficher le message d'erreur général
-                        // showError(data.error || "Erreur lors de la création de l'utilisateur");
-                    }
+                    alerte.showError(data.error || "Erreur lors de la création de l'utilisateur");
                 }
             })
             .catch(error => {
                 console.error('Erreur:', error);
-                //showError("Erreur lors de la création de l'utilisateur");
+                alerte.showError("Erreur lors de la création de l'utilisateur");
             });
     }
 
@@ -512,12 +506,12 @@ class PopupManager {
                     this.modifyUser(userData);
                 } else{
                     console.log("nein")
-                    // showError("Erreur lors de l'upload de l'image: " + (data.error || "Erreur inconnue"));
+                     alerte.showError("Erreur lors de l'upload de l'image: " + (data.error || "Erreur inconnue"));
                 }
 
             }).catch(error => {
                 console.error('Erreur:', error);
-                //   showError("Erreur lors de l'upload de l'image");
+                  alerte.showError("Erreur lors de l'upload de l'image");
             })
         } else {
             console.log(userData.id)
@@ -542,22 +536,17 @@ class PopupManager {
                     this.closeAll();
                     this.editUserToList(data.user);
 
-                    showSuccess("Utilisateur modifié avec succès !");
+                    alerte.showSuccess("Utilisateur modifié avec succès !");
                 } else {
-                    console.log('non')
 
-                    if (data.details && Array.isArray(data.details)) {
-                        // displayValidationErrors(data.details);
-                        console.log(data.details)
-                    } else {
-                        //showError(data.error || "Erreur lors de la création de l'utilisateur");
-                    }
+                        alerte.showError(data.error || "Erreur lors de la création de l'utilisateur");
+
                 }
             })
             .catch(error => {
                 console.log('jsp')
                 console.error('Erreur:', error);
-                //showError("Erreur lors de la création de l'utilisateur");
+                alerte.showError("Erreur lors de la création de l'utilisateur");
             });
 
     }
@@ -808,7 +797,7 @@ class PopupManager {
                     this.createUe(ueData, true);
                 } else {
                     console.log("erreur impossible d'upload l'image")
-                    // showError("Erreur lors de l'upload de l'image: " + (data.error || "Erreur inconnue"));
+                    alerte.showError("Erreur lors de l'upload de l'image: " + (data.error || "Erreur inconnue"));
                 }
             }).catch(e => {
                 console.error('Erreur ', e)
@@ -841,26 +830,21 @@ class PopupManager {
                         this.closeAll();
                     }
                     this.addUEToList(data.ue);
-                    showSuccess("Utilisateur créé avec succès !");
+                    alerte.showSuccess("UE créé avec succès !");
                     // Car cette fonction est appelé dasn une fonction on doit voir si elle s'est bien exécuté
                     return { success: true, data: data.ue }; // <-- On retourne un truc clair
                 } else {
-                    // Gestion des erreurs de validation
-                    if (data.details && Array.isArray(data.details)) {
-                        // displayValidationErrors(data.details);
-                        console.log(data.details)
-                    } else {
-                        // Afficher le message d'erreur général
-                        // showError(data.error || "Erreur lors de la création de l'UE");
-                    }
+
+                        alerte.showError(data.error || "Erreur lors de la création de l'UE");
+
                     return { success: false, error: data.error || "Erreur lors de la création de l'UE" }; // <-- Pareil ici
 
                 }
             })
             .catch(error => {
                 console.error('Erreur:', error);
+                alerte.showError("Erreur lors de la création de l'UE");
                 return { success: false, error: error.message || "Erreur lors de la création de l'UE" }; // <-- Même en cas d'exception
-                //showError("Erreur lors de la création de l'UE");
             });
 
     }
@@ -1009,7 +993,7 @@ class PopupManager {
                     this.modifyUE(ueData);
                 } else {
                     console.log("erreur impossible d'upload l'image")
-                    // showError("Erreur lors de l'upload de l'image: " + (data.error || "Erreur inconnue"));
+                    alerte.showError("Erreur lors de l'upload de l'image: " + (data.error || "Erreur inconnue"));
                 }
             }).catch(e => {
                 console.error('Erreur ', e)
@@ -1038,21 +1022,15 @@ class PopupManager {
                     this.closeAll();
                     this.editUEToList(data.ue);
 
-                    showSuccess("UE modifié avec succès !");
+                    alerte.showSuccess("UE modifié avec succès !");
                 } else {
-                    console.log('non')
+                    alerte.showError(data.error || "Erreur lors de la création de l'utilisateur");
 
-                    if (data.details && Array.isArray(data.details)) {
-                        // displayValidationErrors(data.details);
-                        console.log(data.details)
-                    } else {
-                        //showError(data.error || "Erreur lors de la création de l'utilisateur");
-                    }
                 }
             })
             .catch(error => {
                 console.error('Erreur:', error);
-                //showError("Erreur lors de la création de l'utilisateur");
+                alerte.showError("Erreur lors de la création de l'utilisateur");
             });
 
     }
@@ -1098,14 +1076,15 @@ class PopupManager {
                         userCard.remove();
                     }
                     this.editStat();
+                    alerte.showSuccess("Suppresion réussi de l'UE");
                     this.closeAll();
                 } else {
-                    alert('Erreur lors de la suppression');
+                    alerte.showError("Erreur lors de la suppression");
                 }
             })
             .catch(error => {
                 console.error('Erreur:', error);
-                alert('Erreur lors de la suppression');
+                alerte.showError("Erreur lors de la suppression");
             });
     }
 
@@ -1130,23 +1109,6 @@ class PopupManager {
 
     }
 }
-
-/**
- * Affiche un message de succès
- * @param {string} message - Message à afficher
- */
-function showSuccess(message) {
-    // Implémenter selon votre UI
-    const successToast = document.createElement('div');
-    successToast.className = 'success-toast';
-    successToast.textContent = message;
-    document.body.appendChild(successToast);
-
-    setTimeout(() => {
-        successToast.remove();
-    }, 3000);
-}
-
 
 // ELEMENT VISUEL DANS LES POPUP MAJORITAIREMENT DRAG AND DROP ET MULTI SELECT
 

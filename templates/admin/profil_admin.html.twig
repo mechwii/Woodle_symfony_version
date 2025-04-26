@@ -2,28 +2,58 @@
 
 {% block title %}Profil administrateur{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/admin/admin_profil.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/alerte.css') }}">
+
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/admin/profil.js') }}"></script>
+    <script src="{{ asset('js/admin/alerte.js') }}"></script>
+
+{% endblock %}
+
+
+
 {% block content %}
+    <div class="user-profil-page">
+        <div class="form-left">
+            <div class="profil-image-ban">
+            </div>
 
-    <p>Profil</p>
-    <p>Profil</p>
-    <p>Profil</p>
-    <p>Profil</p>
-    <p>Profil</p>
-    <p>Profil</p>
-    <p>Profil</p>
-    <p>Profil</p>
-    <p>Profil</p>
-    <p>Profil</p>
-    <p>Profil</p>
-    <p>Profil</p>
-    <p>Profil</p>
-    <p>Profil</p>
-    <p>Profil</p>
-    <p>Profil</p>
-    <p>Profil</p>
-    <p>Profil</p>
-    <p>Profil</p>
+            <img src="{{ asset('images/profil/'~utilisateur.image)  }}" alt="{{ 'images/profil/'~utilisateur.image  }}">
+        </div>
+
+        <div class="form-right">
+
+            <h1>Profil</h1>
+
+            <div class="user-form-content">
+                <div class="begin-form">
+                    {{ form_row(form.nom, {'attr': {'placeholder' : 'Nom*', 'value' : utilisateur.nom } }) }}
+                    {{ form_row(form.prenom, {'attr': {'placeholder' : 'Prenom*', 'value' : utilisateur.prenom} }) }}
+                </div>
 
 
+                {{ form_row(form.email, {'attr': {'placeholder' : 'Email*', 'value' : utilisateur.email } }) }}
+                {{ form_row(form.password, {'attr': {'placeholder' : 'Mot de passe*', 'value' : utilisateur.password} }) }}
+
+                <div class="button-section">
+                    <button onclick="editProfil({{ utilisateur.id }})" id="edit-profil" >Quoicoubeh
+                    </button>
+                </div>
+
+            </div>
+
+
+        </div>
+        <div id="notification"></div>
+
+
+    </div>
 
 {% endblock %}

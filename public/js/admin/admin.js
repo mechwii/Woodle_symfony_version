@@ -72,7 +72,7 @@ function supprimerUtilisateur(id){
         })
         .catch(error =>{
             console.log('Erreur delete user : ' + error)
-            alert("Impossible de récuper les informations de l'utilisateur")
+            alerte.showError("Impossible de récuper les informations de l'utilisateur")
         })
 }
 
@@ -92,7 +92,7 @@ function supprimerUE(code){
 
         }).catch(error => {
             console.error('Erreur delete ue : ' + error);
-            alert("Impossible de récupere les informations de l'UE")
+        alerte.showError("Impossible de récupere les informations de l'UE")
     })
 
 }
@@ -116,7 +116,7 @@ function modifierUtilisateur(id){
         })
         .catch(error =>{
             console.log('Erreur delete user : ' + error)
-            alert("Impossible de récuper les informations de l'utilisateur")
+            alerte.showError("Impossible de récuper les informations de l'utilisateur")
         })
 
 
