@@ -63,7 +63,7 @@
                                 </div>
                                 <input type="hidden" name="ue_input" id="user-ue-input">
                             </div>
-                            <i class="fa fa-plus-circle add-plus"></i>
+                            <i onclick="showAdditionallUE()" id="display-add-ue-fromuser" class="fa fa-plus-circle add-plus"></i>
                         </div>
 
                     </div>
@@ -90,6 +90,36 @@
                 </div>
             </div>
             <div class="previsualition-add-user">
+                <div class="hidden" id="ue-optionnel" style="margin-bottom: 20px">
+                    <h2>Ajouter UE</h2>
+                <div class="add-form">
+                    <div class="section-user-add-form">
+                        <label for="add-code-ue-inuser">Code UE</label>
+                        <input id="add-code-ue-inuser" type="text" placeholder="Code UE*">
+                    </div>
+
+                    <div class="section-user-add-form">
+                        <label for="add-nom-ue-inuser">Nom UE</label>
+                        <input id="add-nom-ue-inuser" type="text" placeholder="Nom UE*">
+                    </div>
+
+                    <div class="section-user-add-form">
+                        <label for="ue-user_responsable_id">Responsable</label>
+                        <select name="ue-user_responsable_id" id="ue-user_responsable_id"></select>
+                    </div>
+
+                    <div class="user-ue-button">
+                        <button class="button-ue but-delete" id="add-ue-fromuser">Ajouter UE</button>
+                        <button class="button-ue but-cancel" id="cancel-ue-fromuser">Annuler</button>
+                    </div>
+
+
+                </div>
+                </div>
+
+
+
+
                 <h2>Prévisualisation</h2>
                 <div class="prev-form">
                     <div class="prev-section">

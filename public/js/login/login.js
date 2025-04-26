@@ -1,8 +1,35 @@
 // On doit attendre que la page charge sinon marche pas
 document.addEventListener("DOMContentLoaded", function () {
+
+
+    async function getStat() {
+        const result = await fetch('/get-stat');
+        const data = await result.json();
+        return data;
+    }
+
+
+    let words = [];
+
+    async function init() {
+        let word = await getStat();
+        words = [`${word.stat_eleves} étudiants.`, `${word.stat_ues} Unités d'Enseignement.` ,`${word.stat_professeurs} Professeurs.`, `${word.stat_users} Utilisateurs.`]
+        console.log(words);
+
+        type(words[index]);
+
+    }
+
+
+
+
     let placeholder = document.getElementById("text");
-    let words = ["48 étudiants.", "27 Profs.", "26 Unités d'Enseignement.", "1 beau gosse (M'hammed)."];
     let index = 0;
+
+
+
+
+
 
     function type(word) {
         let i = 0;
@@ -34,7 +61,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
-    type(words[index]);
+
+    init();
+
+
 
 
     document.getElementById("togglePassword").addEventListener("click", function () {

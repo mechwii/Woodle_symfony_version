@@ -2,7 +2,12 @@
 let variable_pour_boutton_ajout=1
 
 function SelectUE() {
-    variable_pour_boutton_ajout=2
+    resetFilter();
+
+    setTimeout(()=>{
+        // Comme ça on est sur que on reset bien le filter car on utilise la variable, qu'elle ne change pas avant
+        variable_pour_boutton_ajout=2
+    })
 
     const categorie = document.getElementById('categorie-selected');
     categorie.style.transform = 'translateX(100%)';
@@ -16,7 +21,11 @@ function SelectUE() {
 }
 
 function SelectUser() {
-    variable_pour_boutton_ajout=1
+    resetFilter();
+    setTimeout(()=>{
+        variable_pour_boutton_ajout=1
+    })
+
 
     document.getElementById('categorie-selected').style.transform = 'translateX(0)';
     setTimeout(() => {
@@ -143,5 +152,52 @@ function modifierUE(id){
         });
 }
 
+function showAdditionallUE(){
+    fetch('/admin/get-responsables')
+        .then(res => res.json())
+        .then(data => {
+            popupManager.displayAdditionnalPartOfPopup(data);
+        })
+        .catch(error => {
+            console.error("Erreur lors du chargement des utilisateurs", error);
+        });}
+
+function resetFilter(){
+    document.getElementById('text-filter').value = '';
+    if(variable_pour_boutton_ajout === 1){
+        const users = document.querySelectorAll('#user-content .card-box')
+        users.forEach(user => {
+            user.style.display = 'flex';
+        })
+    } else{
+        const ues = document.querySelectorAll('#ue-content .card-box');
+        ues.forEach(ue => {
+            ue.style.display = 'flex';
+        })
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const filterInput = document.getElementById('text-filter');
+
+    filterInput.addEventListener('input', function () {
+        const filterText = this.value.toLowerCase();
+
+        if (variable_pour_boutton_ajout === 1) {
+            const users = document.querySelectorAll('#user-content .card-box');
+            users.forEach(user => {
+                const name = user.querySelector('#name-firstname-section').textContent.toLowerCase();
+                user.style.display = (name.includes(filterText)) ? 'flex' : 'none';
+            });
+        } else {
+            // Mode UE
+            const ues = document.querySelectorAll('#ue-content .card-box');
+            ues.forEach(ue => {
+                const ueName = ue.querySelector('.card-content h4').textContent.toLowerCase();
+                ue.style.display = ueName.includes(filterText) ? 'flex' : 'none';
+            });
+        }
+    });
+});
 
 

@@ -76,6 +76,9 @@ class PopupManager {
             document.getElementById('fileInput').value = '';
             document.getElementById('prev-picture').src = 'images/profil/default.jpg';
 
+            document.getElementById('ue-optionnel').classList.remove('hidden');
+            document.getElementById('ue-optionnel').classList.add('hidden');
+
             // Réinitialiser la prévisualisation
             document.getElementById('prev-firstname-section').innerHTML = '<strong>[Prénom]</strong>';
             document.getElementById('prev-name-section').innerHTML = '<strong>[Nom de famille]</strong>';
@@ -619,6 +622,74 @@ class PopupManager {
         addButton.onclick = () => this.addUe();
         this.getResponsable();
         this.getUtilisateurAffectable();
+    }
+
+    displayAdditionnalPartOfPopup(data){
+        console.log("HERE")
+
+        document.getElementById('ue-optionnel').classList.remove('hidden');
+
+
+
+        const responsableSelect = document.getElementById('ue-user_responsable_id'); // ID du select
+        responsableSelect.innerHTML = ''; // On vide le select avant d'ajouter les nouvelles options
+
+        const options = document.createElement('option');
+        options.value = '';
+        options.textContent = "Choisissez un responsable";
+        responsableSelect.appendChild(options);
+
+        data.forEach(responsable => {
+            const option = document.createElement('option');
+            option.value = responsable.id;
+            option.textContent = responsable.name;
+            responsableSelect.appendChild(option);
+
+        });
+
+        document.getElementById('cancel-ue-fromuser').addEventListener('click', () => {
+            this.resetAdditionalPartOfPopup()
+        })
+
+        document.getElementById('add-ue-fromuser').addEventListener('click', () => {
+            this.addAddionalUE()
+        })
+
+
+    }
+
+    resetAdditionalPartOfPopup(){
+        document.getElementById('ue-optionnel').classList.add('hidden');
+        document.getElementById('add-code-ue-inuser').value = '';
+        document.getElementById('add-nom-ue-inuser').value = '';
+
+    }
+
+    addAddionalUE(){
+        console.log('CLicked');
+        const code = document.getElementById('add-code-ue-inuser').value;
+        const name = document.getElementById('add-nom-ue-inuser').value;
+        const responsable_id = document.getElementById('ue-user_responsable_id').value;
+
+        if(code !== "" && name !== "" && responsable_id!== ""){
+            const ueData = {
+                id: code,
+                nom: name,
+                responsable_id: responsable_id ,
+                utilisateurs: [],
+                image: 'default-ban.jpg'
+            };
+            this.createUe(ueData, false)
+                .then(result => {
+                    if(result.success){
+                        this.loadUEOptions('user-options-list', 'user');
+                        this.resetAdditionalPartOfPopup();
+                    }
+                })
+
+        } else{
+            console.log('Remplissez tous les champs')
+        }
 
     }
 
@@ -734,7 +805,7 @@ class PopupManager {
             }).then( data => {
                 if(data.success){
                     ueData.image = data.image;
-                    this.createUe(ueData);
+                    this.createUe(ueData, true);
                 } else {
                     console.log("erreur impossible d'upload l'image")
                     // showError("Erreur lors de l'upload de l'image: " + (data.error || "Erreur inconnue"));
@@ -743,14 +814,15 @@ class PopupManager {
                 console.error('Erreur ', e)
             })
         } else {
-            this.createUe(ueData);
+            this.createUe(ueData, true);
 
         }
     }
 
-    createUe(userData){
+    createUe(userData, reset){
+        // Comme à un moment j'appelle createUE dans addUtilisateur, je veux pas que il ferme la popup donc j'ai ajouté le paramètre reset
         console.log(JSON.stringify(userData))
-        fetch('/admin/add-ue', {
+        return fetch('/admin/add-ue', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -765,9 +837,13 @@ class PopupManager {
                     // Fermer la popup
 
                     this.editStat();
-                    this.closeAll();
+                    if(reset){
+                        this.closeAll();
+                    }
                     this.addUEToList(data.ue);
                     showSuccess("Utilisateur créé avec succès !");
+                    // Car cette fonction est appelé dasn une fonction on doit voir si elle s'est bien exécuté
+                    return { success: true, data: data.ue }; // <-- On retourne un truc clair
                 } else {
                     // Gestion des erreurs de validation
                     if (data.details && Array.isArray(data.details)) {
@@ -777,10 +853,13 @@ class PopupManager {
                         // Afficher le message d'erreur général
                         // showError(data.error || "Erreur lors de la création de l'UE");
                     }
+                    return { success: false, error: data.error || "Erreur lors de la création de l'UE" }; // <-- Pareil ici
+
                 }
             })
             .catch(error => {
                 console.error('Erreur:', error);
+                return { success: false, error: error.message || "Erreur lors de la création de l'UE" }; // <-- Même en cas d'exception
                 //showError("Erreur lors de la création de l'UE");
             });
 
@@ -811,7 +890,7 @@ class PopupManager {
             <img id="ue-picture" src="./images/ue/${ue.image}" alt="Image UE">
             <div class="card-content" id="ue-${ue.id}">
                 <h4>${ue.nom}</h4>
-                <h4 class="card-text">Responsable : ${prenomResponsable} ${nomResponsable}</h4>
+                <h4 id="ue-roles-section" class="card-text">Responsable : ${prenomResponsable} ${nomResponsable}</h4>
             </div>
         </div>
         <div class="card-action">
@@ -942,7 +1021,7 @@ class PopupManager {
     }
 
     modifyUE(data){
-        console.log(data);
+        console.log("YAHOUUUUU " + JSON.stringify(data));
         fetch("/admin/edit-ue/" + data.id.trim() , {
             method: 'PUT',
             headers: {

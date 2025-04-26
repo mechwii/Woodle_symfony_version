@@ -21,6 +21,7 @@
 /*MINI POPUP DELETE*/
 
 .mini-popup {
+    overflow-x: hidden ;
     padding: 20px;
     width: 35%;
     height: 300px;
@@ -69,11 +70,7 @@
     cursor: pointer;
 }
 
-.but-cancel:hover{
-    scale: 110%;
-}
-
-.but-delete:hover{
+.bouton:hover{
     scale: 110%;
 }
 
@@ -101,6 +98,7 @@
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     overflow-y: auto;
+    overflow-x: hidden ;
 }
 .popup-content{
     display: flex;
@@ -551,6 +549,19 @@ div.fake-button:hover{
     bottom: 5%;
     z-index: 100;
 }
+.user-ue-button{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.button-ue{
+    height: 35px;
+    width: 30%;
+    border-radius: 10px;
+    border: none;
+}
 
 #picture-popup-ue{
     width: 100%;
@@ -560,16 +571,32 @@ div.fake-button:hover{
 
 }
 
+.button-ue:hover{
+    cursor: pointer;
+    opacity: 90%;
+}
+
+#display-add-ue-fromuser:hover{
+    cursor: pointer;
+    opacity: 90%;
+}
+
 @media only screen
 and (max-width : 1300px) {
     .mini-popup {
-
         width: 45%;
     }
 }
 
 @media only screen
 and (max-width : 800px) {
+    .previsualition-add-user{
+        display: none!important;
+    }
+
+    #display-add-ue-fromuser{
+        display: none;
+    }
 }
 
 

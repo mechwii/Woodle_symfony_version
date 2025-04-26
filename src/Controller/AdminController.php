@@ -767,6 +767,7 @@ final class AdminController extends AbstractController
             $dataUEs = $data['utilisateurs'] ?? [];
 
 
+
             $originalUser = false;
 
             // Récupérer les codes des UEs actuelles
@@ -776,10 +777,18 @@ final class AdminController extends AbstractController
                     $originalUECodes[] = $estAffecte->getUtilisateurId()->getId();
                 }
             }
+            
+
 
 
             if($dataUEs) {
                 $uesToRemove = array_diff($originalUECodes, $dataUEs);
+                // Dans le cas ou j'envoie un tableau vide il faut quand même supprimer toutes les UE
+                if (empty($dataUEs) && !empty($originalUECodes)) {
+                    $uesToRemove = $originalUECodes;
+                }
+
+
                 $uesToAdd = array_diff($dataUEs, $originalUECodes);
                 if (!empty($uesToRemove) || !empty($uesToAdd)) {
                     $originalUser = true;
