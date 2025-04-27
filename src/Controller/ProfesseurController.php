@@ -27,8 +27,12 @@ final class ProfesseurController extends AbstractController
 {
     // Crééation de la route pour arriver sur la page Choix_UE apres le login
     #[Route('/professeur', name: 'app_professeur')]
-    public function index(EntityManagerInterface $BDDManager, NotificationController $notificationController): Response
+    public function index(EntityManagerInterface $BDDManager, NotificationController $notificationController, Request $request): Response
     {
+
+        $session = $request->getSession();
+        $session->set('vue_active', 'professeur');
+
         $user = $this->getUser();
         if (!$user) {
             return $this->redirectToRoute('app_login');
@@ -56,6 +60,8 @@ final class ProfesseurController extends AbstractController
             'controller_name' => 'AdminController',
             'user' => $user,
             'ues' => $ues,
+            'roles' => $roles,
+            'utilisateur' => $this->getUser(),
             'notifications' => $notificationsData['notifications'],
             'showMoreButton' => $notificationsData['hasMore'],
         ]);
@@ -171,7 +177,7 @@ final class ProfesseurController extends AbstractController
 //        dd($publicationsEpingles);
 
 
-        return $this->render('professeur/contenu_ue.html.twig', [
+        return $this->render('contenue-ue/contenu_ue.html.twig', [
             'controller_name' => 'ProfesseurController',
             'ue' => $ue,
             'nb_eleves_ue' => $nb_eleves_ue,
@@ -208,7 +214,7 @@ final class ProfesseurController extends AbstractController
         // Si GET ou erreur dans le form
         return new JsonResponse([
             'status' => 'form',
-            'html' => $this->renderView('professeur/edit_section.html.twig', [
+            'html' => $this->renderView('contenue-ue/edit_section.html.twig', [
                 'form' => $form->createView(),
                 'section' => $section,
             ])
@@ -259,7 +265,7 @@ final class ProfesseurController extends AbstractController
                 'status' => 'success',
                 'section_id' => $section->getId(),
                 'section_nom' => $section->getNom(),
-                'html' => $this->renderView('professeur/partials/_section.html.twig', [
+                'html' => $this->renderView('contenue-ue/partials/_section.html.twig', [
                     'section' => $section,
                     'liste_publications' => $liste_publications,
                 ])
@@ -275,7 +281,7 @@ final class ProfesseurController extends AbstractController
         // Si GET ou erreur dans le form
         return new JsonResponse([
             'status' => 'form',
-            'html' => $this->renderView('professeur/create_section.html.twig', [
+            'html' => $this->renderView('contenue-ue/create_section.html.twig', [
                 'form' => $form->createView(),
                 'section' => $section,
             ])
@@ -348,7 +354,7 @@ final class ProfesseurController extends AbstractController
         // Si GET ou erreur dans le form
         return new JsonResponse([
             'status' => 'form',
-            'html' => $this->renderView('professeur/edit_publication.html.twig', [
+            'html' => $this->renderView('contenue-ue/edit_publication.html.twig', [
                 'form' => $form->createView(),
                 'publication' => $publication,
             ])
@@ -426,7 +432,7 @@ final class ProfesseurController extends AbstractController
                 'utilisateur_id' => $publication->getUtilisateurId()?->getId(),
                 'type_publication_id' => $publication->getTypePublicationId()?->getId(),
                 'code_id' => $publication->getCodeId()?->getId(),
-                'html' => $this->renderView('professeur/partials/_publication.html.twig', [
+                'html' => $this->renderView('contenue-ue/partials/_publication.html.twig', [
                     'id' => $publication->getId(),
                     'titre' => $publication->getTitre(),
                     'description' => $publication->getDescription(),
@@ -446,7 +452,7 @@ final class ProfesseurController extends AbstractController
         // Si le formulaire est GET ou qu'il y a une erreur, on renvoie le formulaire avec les données
         return new JsonResponse([
             'status' => 'form',
-            'html' => $this->renderView('professeur/create_publication.html.twig', [
+            'html' => $this->renderView('contenue-ue/create_publication.html.twig', [
                 'form' => $form->createView(),
                 'publication' => $publication,
                 'type' => $type,

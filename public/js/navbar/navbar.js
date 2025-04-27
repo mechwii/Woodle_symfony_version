@@ -20,7 +20,4 @@ document.addEventListener('click', function (event) {
         profileMenu.style.display = 'none';
     }
 
-    if (event.target !== roles && !valSelect.contains(event.target)) {
-        valSelect.style.display = 'none';
-    }
 });

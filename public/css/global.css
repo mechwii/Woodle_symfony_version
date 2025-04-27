@@ -27,7 +27,8 @@
     margin: 100px 2vw 0 2vw;
 }
 
-.container#content {
+.container, #content  {
     margin-top: 5em;
     margin-left: 400px;
+    transition: margin-left 0.1s ease-in-out;
 }

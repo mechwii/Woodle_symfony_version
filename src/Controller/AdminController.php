@@ -27,6 +27,9 @@ final class AdminController extends AbstractController
     #[Route('/admin', name: 'app_admin')]
     public function index(EntityManagerInterface $BDDManager, Request $request): Response
     {
+        $session = $request->getSession();
+        $session->set('vue_active', 'admin');
+
         /*$elmir = $BDDManager->getRepository(Utilisateur::class)->find(2);
         foreach ($elmir->getEstAffectes() as $estAffecte) {
             dump($BDDManager->getRepository(UE::class)->find($estAffecte->getCodeId())->getNom());

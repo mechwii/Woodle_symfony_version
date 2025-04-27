@@ -1,4 +1,4 @@
-{% extends 'etudiant/base_etudiant.html.twig' %}
+{% extends 'base_eleve_professeur.html.twig' %}
 
 {% block title %}Choix des UE | Etudiant{% endblock %}
 
@@ -13,7 +13,13 @@
         <img src="{{ asset('images/profil/'~user.image) }}" alt="">
         <div class="text">
             <span class="bienvenue">Bienvenue sur votre espace {{ user.prenom }} {{ user.nom }} !</span>
-            <span class="role">Vous êtes {{ user.roles|join(', ') }}</span>
+            <span class="role">Vous êtes                 {{
+                user.roles
+                |map(r => r == 'ROLE_ELEVE' ? 'Élève' : (r == 'ROLE_ADMINISTRATEUR' ? 'Administrateur' : (r == 'ROLE_PROFESSEUR' ? 'Professeur' : r)))
+                |join(' - ')
+                }}</span>
+
+
         </div>
     </div>
 
@@ -45,7 +51,7 @@
     {# Section cours de la page #}
     <div class="cours">
         <h2>Mes cours</h2>
-        <div class="nav-wrapper">
+{#        <div class="nav-wrapper">
             <ul class="selection_cours">
                 <li class="active">Tous</li>
                 <li>Derniers cours consultés</li>
@@ -53,7 +59,7 @@
             </ul>
             <span class="underline"></span> <!-- La barre animée -->
         </div>
-        <hr>
+        <hr>#}
         <div class="liste_ue">
             {% for ue in ues %}
                 <div class="ue favorite-{{ ue.favori ? 'true' : 'false' }}">

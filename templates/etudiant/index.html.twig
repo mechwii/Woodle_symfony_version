@@ -1,4 +1,4 @@
-{% extends 'etudiant/base_etudiant.html.twig' %}
+{% extends 'base_eleve_professeur.html.twig' %}
 
 {% block title %}Choix des UE | Etudiant{% endblock %}
 
@@ -18,31 +18,35 @@
     </div>
 
     {# Section Actualité de la page #}
-    <div class="actualites">
-        <h3>Actualités</h3>
-        <ul id="notifications-list">
+    {% if notifications|length > 0 %}
+        <div class="actualites">
+            <h3>Actualités</h3>
+            <ul id="notifications-list">
 
-        {% for notification in notifications %}
-            {% if notification.type_notification_id == 1 %}
-                <li  class="affectation"><i class="lni lni-books-2"></i><a href="{{ notification.url_destination }}"><b>{{ notification.nom }}</b> {{ notification.contenu }} <b>{{ notification.code_id }}</b></a></li>
-            {% elseif notification.type_notification_id == 3 %}
-                <li class="fichier"><i class="lni lni-file-multiple"></i><a href="{{ notification.url_destination }}"><b>{{ notification.nom }}</b> {{ notification.contenu }} <b>{{ notification.code_id }}</b></a></li>
+                {% for notification in notifications %}
+                    {% if notification.type_notification_id == 1 %}
+                        <li  class="affectation"><i class="lni lni-books-2"></i><a href="{{ notification.url_destination }}"><b>{{ notification.nom }}</b> {{ notification.contenu }} <b>{{ notification.code_id }}</b></a></li>
+                    {% elseif notification.type_notification_id == 5 %}
+                        <li class="fichier"><i class="lni lni-file-multiple"></i><a href="{{ notification.url_destination }}"><b>{{ notification.nom }}</b> {{ notification.contenu }} <b>{{ notification.code_id }}</b></a></li>
 
-            {% else %}
-                <li class="message"><i class="lni lni-comment-1"></i><a href="{{ notification.url_destination }}"><b>{{ notification.nom }}</b> {{ notification.contenu }} <b>{{ notification.code_id }}</b></a></li>
+                    {% else %}
+                        <li class="message"><i class="lni lni-comment-1"></i><a href="{{ notification.url_destination }}"><b>{{ notification.nom }}</b> {{ notification.contenu }} <b>{{ notification.code_id }}</b></a></li>
 
+                    {% endif %}
+
+                {% endfor %}
+            </ul>
+            {% if showMoreButton %}
+                <button onclick="updateNotif()" id="afficherPlus">Afficher plus</button>
             {% endif %}
+        </div>
+    {% endif %}
 
-        {% endfor %}
-        </ul>
-        {% if showMoreButton %}
-            <button onclick="updateNotif()" id="afficherPlus">Afficher plus</button>
-        {% endif %}
-    </div>
     {# Section cours de la page #}
     <div class="cours">
         <h2>Mes cours</h2>
-        <div class="nav-wrapper">
+
+{#        <div class="nav-wrapper">
             <ul class="selection_cours">
                 <li class="active">Tous</li>
                 <li>Derniers cours consultés</li>
@@ -50,7 +54,8 @@
             </ul>
             <span class="underline"></span> <!-- La barre animée -->
         </div>
-        <hr>
+        <hr/>#}
+
         <div class="liste_ue">
             {% for ue in ues %}
                 <div class="ue favorite-{{ ue.favori ? 'true' : 'false' }}">

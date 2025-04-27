@@ -1,44 +1,45 @@
+/*
+document.addEventListener("DOMContentLoaded", () => {
+ // on va recuperer tous les éléments dont a besoin : bouton de nav, element souligné, et le conteneur des éléments pour faire lanimation
+ let items = document.querySelectorAll('.selection_cours li');
+ let underline = document.querySelector('.underline');
+ let wrapper = document.querySelector('.nav-wrapper');
 
+ // la fonction va prendre en parametre lelement actif et va calculer sa distance par rapport au cote gauche de son parent
+ // en gros on recup lespace de gauche par rapport a la page de lelement du menu ex : 100
+ // pareil pour le divwrapper qui est le conteneur ex 50
+ // et je veux donc calculer sa position a linterieur pour ca je fais : espace gacueh de enfant - espace gauche de parent = 100 - 50 ca veut dire quil est distant de 50 a linterieur du parent par rapport a son bord gauche
+
+ function moveUnderline(elementActif) {
+     let rect = elementActif.getBoundingClientRect();
+     let wrapperRect = wrapper.getBoundingClientRect();
+     underline.style.width = `${rect.width}px`;
+     underline.style.left = `${rect.left - wrapperRect.left}px`;
+ }
+
+ // pour chaque item on modifie la classe et on lance la fonction en consequence
+ items.forEach(item => {
+     item.addEventListener('click', () => {
+         document.querySelector('.selection_cours li.active')?.classList.remove('active');
+         item.classList.add('active');
+         moveUnderline(item);
+     });
+ });
+
+ // pour placer la barre au chargement de la page au tout debut quand on a encore cliqué nul part
+ let active = document.querySelector('.selection_cours li.active');
+ if (active) moveUnderline(active);
+
+
+});*/
+
+
+// ici on va gerer laffichage des ue dans la partie "mes cours"
 
 document.addEventListener("DOMContentLoaded", () => {
-
     let offset = 4;
     const limit = 4;
 
-    // on va recuperer tous les éléments dont a besoin : bouton de nav, element souligné, et le conteneur des éléments pour faire lanimation
-    let items = document.querySelectorAll('.selection_cours li');
-    let underline = document.querySelector('.underline');
-    let wrapper = document.querySelector('.nav-wrapper');
-
-    // la fonction va prendre en parametre lelement actif et va calculer sa distance par rapport au cote gauche de son parent
-    // en gros on recup lespace de gauche par rapport a la page de lelement du menu ex : 100
-    // pareil pour le divwrapper qui est le conteneur ex 50
-    // et je veux donc calculer sa position a linterieur pour ca je fais : espace gacueh de enfant - espace gauche de parent = 100 - 50 ca veut dire quil est distant de 50 a linterieur du parent par rapport a son bord gauche
-
-    function moveUnderline(elementActif) {
-        let rect = elementActif.getBoundingClientRect();
-        let wrapperRect = wrapper.getBoundingClientRect();
-        underline.style.width = `${rect.width}px`;
-        underline.style.left = `${rect.left - wrapperRect.left}px`;
-    }
-
-    // pour chaque item on modifie la classe et on lance la fonction en consequence
-    items.forEach(item => {
-        item.addEventListener('click', () => {
-            document.querySelector('.selection_cours li.active')?.classList.remove('active');
-            item.classList.add('active');
-            moveUnderline(item);
-        });
-    });
-
-    // pour placer la barre au chargement de la page au tout debut quand on a encore cliqué nul part
-    let active = document.querySelector('.selection_cours li.active');
-    if (active) moveUnderline(active);
-
-});
-
-// ici on va gerer laffichage des ue dans la partie "mes cours"
-document.addEventListener("DOMContentLoaded", () => {
     // on recupere les boutons qui permettent de filtrer
     const filtres = document.querySelectorAll(".selection_cours li");
     // on recupere le container des numeros de page pour naviguer entre les UE
@@ -95,6 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     };
 
+    /*
     // Filtres
     filtres.forEach((filtre) => {
         filtre.addEventListener("click", () => {
@@ -118,6 +120,8 @@ document.addEventListener("DOMContentLoaded", () => {
             updateDots(0);
         });
     });
+    */
+
 
     // on initialise au début
     const nbPagesInitial = Math.ceil(currentCours.length / coursParPage);
@@ -128,6 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Partie 2 : Gestion du bouton "Afficher plus"
     const afficherPlusBtn = document.getElementById('afficherPlus');
     const notificationsList = document.getElementById('notifications-list');
+
 
     window.updateNotif = function (){
         fetch(`/notifications?offset=${offset}`)
