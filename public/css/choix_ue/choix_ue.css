@@ -41,6 +41,8 @@ div.container > div.actualites {
     display: flex;
     flex-direction: column;
     margin-bottom: 5em;
+    height: 520px;
+    overflow-y: auto;
 }
 
 div.container > div.actualites > h3 {
@@ -285,4 +287,9 @@ div.active-dot {
     background-color: #EF233C;
     transform: scale(1.1);
     box-shadow: 0 4px 12px rgba(239, 35, 60, 0.4);
+}
+
+.actualites a{
+    color: #000000;
+    text-decoration: none;
 }

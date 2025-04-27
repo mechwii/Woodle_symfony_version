@@ -1,10 +1,9 @@
-// Fonction pour afficher plus d'actualités.
-
-// Fonction pour faire une petite animation sur la barre de menu des cours en rouge
-
-document.addEventListener("DOMContentLoaded", (event) => {
 
 
+document.addEventListener("DOMContentLoaded", () => {
+
+    let offset = 4;
+    const limit = 4;
 
     // on va recuperer tous les éléments dont a besoin : bouton de nav, element souligné, et le conteneur des éléments pour faire lanimation
     let items = document.querySelectorAll('.selection_cours li');
@@ -124,5 +123,50 @@ document.addEventListener("DOMContentLoaded", () => {
     const nbPagesInitial = Math.ceil(currentCours.length / coursParPage);
     createDots(nbPagesInitial);
     updateDots(0);
+
+
+    // Partie 2 : Gestion du bouton "Afficher plus"
+    const afficherPlusBtn = document.getElementById('afficherPlus');
+    const notificationsList = document.getElementById('notifications-list');
+
+    window.updateNotif = function (){
+        fetch(`/notifications?offset=${offset}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+
+                data.notifications.forEach(notification => {
+                    const li = document.createElement('li');
+                    let iconClass = 'lni lni-comment-1'; // Par défaut
+
+                    if (notification.type_notification_id === 1) {
+                        iconClass = 'lni lni-books-2';
+                    } else if (notification.type_notification_id === 3) {
+                        iconClass = 'lni lni-file-multiple';
+                    }
+
+                    li.className = notification.type_notification_id === 1 ? 'affectation' :
+                        notification.type_notification_id === 3 ? 'fichier' : 'message';
+
+                    li.innerHTML = `
+                            <i class="${iconClass}"></i>
+                            <a href="${notification.url_destination}">
+                                <b>${notification.nom}</b> ${notification.contenu} <b>${notification.code_id}</b>
+                            </a>
+                        `;
+                    notificationsList.appendChild(li);
+                });
+
+                offset += limit;
+
+                if (!data.showMoreButton) {
+                    afficherPlusBtn.style.display = 'none';
+                }
+            })
+            .catch(error => console.error('Erreur lors du chargement des notifications :', error));
+
+    }
+
 });
+
 

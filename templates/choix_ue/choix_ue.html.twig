@@ -22,18 +22,18 @@
         <h3>Actualités</h3>
         <ul id="notifications-list">
 
-        {% for notification in notifications %}
-            {% if notification.type_notification_id == 1 %}
-                <li  class="affectation"><i class="lni lni-books-2"></i><a href="{{ notification.url_destination }}"><b>{{ notification.nom }}</b> {{ notification.contenu }} <b>{{ notification.code_id }}</b></a></li>
-            {% elseif notification.type_notification_id == 3 %}
-                <li class="fichier"><i class="lni lni-file-multiple"></i><a href="{{ notification.url_destination }}"><b>{{ notification.nom }}</b> {{ notification.contenu }} <b>{{ notification.code_id }}</b></a></li>
+            {% for notification in notifications %}
+                {% if notification.type_notification_id == 1 %}
+                    <li  class="affectation"><i class="lni lni-books-2"></i><a href="{{ notification.url_destination }}"><b>{{ notification.nom }}</b> {{ notification.contenu }} <b>{{ notification.code_id }}</b></a></li>
+                {% elseif notification.type_notification_id == 3 %}
+                    <li class="fichier"><i class="lni lni-file-multiple"></i><a href="{{ notification.url_destination }}"><b>{{ notification.nom }}</b> {{ notification.contenu }} <b>{{ notification.code_id }}</b></a></li>
 
-            {% else %}
-                <li class="message"><i class="lni lni-comment-1"></i><a href="{{ notification.url_destination }}"><b>{{ notification.nom }}</b> {{ notification.contenu }} <b>{{ notification.code_id }}</b></a></li>
+                {% else %}
+                    <li class="message"><i class="lni lni-comment-1"></i><a href="{{ notification.url_destination }}"><b>{{ notification.nom }}</b> {{ notification.contenu }} <b>{{ notification.code_id }}</b></a></li>
 
-            {% endif %}
+                {% endif %}
 
-        {% endfor %}
+            {% endfor %}
         </ul>
         {% if showMoreButton %}
             <button onclick="updateNotif()" id="afficherPlus">Afficher plus</button>

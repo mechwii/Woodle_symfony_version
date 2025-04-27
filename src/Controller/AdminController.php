@@ -176,7 +176,8 @@ final class AdminController extends AbstractController
     public function addUser(
         Request                $request,
         EntityManagerInterface $entityManager,
-        ValidatorInterface     $validator
+        ValidatorInterface     $validator,
+        NotificationController $notificationController
     ): Response
     {
         if (!$request->isXmlHttpRequest()) {
@@ -261,7 +262,7 @@ final class AdminController extends AbstractController
                         $estAffecte->setFavori(false);
                         $entityManager->persist($estAffecte);
 
-                        $this->createAffectationNotification($entityManager, $utilisateur, $ue, $this->getUser());
+                        $notificationController->createAffectationNotification($entityManager, $utilisateur, $ue, $this->getUser());
                     }
                 }
                 $entityManager->flush();
@@ -315,7 +316,8 @@ final class AdminController extends AbstractController
         Request                $request,
         EntityManagerInterface $entityManager,
         ValidatorInterface     $validator,
-        int                    $id
+        int                    $id,
+        NotificationController $notificationController
     ): Response
     {
         if (!$request->isXmlHttpRequest()) {
@@ -406,7 +408,7 @@ final class AdminController extends AbstractController
                             $estAffecte->setFavori(false);
                             $entityManager->persist($estAffecte);
 
-                            $this->createAffectationNotification($entityManager, $utilisateur, $ue, $this->getUser());
+                            $notificationController->createAffectationNotification($entityManager, $utilisateur, $ue, $this->getUser());
 
                         }
                     }
@@ -513,6 +515,7 @@ final class AdminController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
+        NotificationController $notificationController
     ): Response
     {
         if (!$request->isXmlHttpRequest()) {
@@ -574,7 +577,7 @@ final class AdminController extends AbstractController
                         $estAffecte->setDateInscription(new \DateTime());
                         $entityManager->persist($estAffecte);
 
-                        $this->createAffectationNotification($entityManager, $utilisateur, $ue, $this->getUser());
+                        $notificationController->createAffectationNotification($entityManager, $utilisateur, $ue, $this->getUser());
 
                     }
                 }
@@ -759,7 +762,8 @@ final class AdminController extends AbstractController
     public function editUE(
         Request                $request,
         EntityManagerInterface $entityManager,
-        string                    $id
+        string                    $id,
+        NotificationController $notificationController
     ): Response
     {
         if (!$request->isXmlHttpRequest()) {
@@ -827,7 +831,7 @@ final class AdminController extends AbstractController
                                 $estAffecte->setFavori(false);
                                 $entityManager->persist($estAffecte);
 
-                                $this->createAffectationNotification($entityManager, $utilisateur, $ue, $this->getUser());
+                                $notificationController->createAffectationNotification($entityManager, $utilisateur, $ue, $this->getUser());
 
                             }
                         }
@@ -1046,44 +1050,4 @@ final class AdminController extends AbstractController
         }
     }
 
-    /**
-     * Crée une notification lorsqu'un utilisateur est affecté à une UE
-     */
-    private function createAffectationNotification(
-        EntityManagerInterface $entityManager,
-        Utilisateur $utilisateur,
-        UE $ue,
-        Utilisateur $expediteur
-    ): void {
-        $notification = new Notification();
-
-        $notification->setContenu("Vous avez été affecté(e) à l'UE: " . $ue->getNom());
-
-        $roles = $utilisateur->getRoles();
-
-        if(in_array('ROLE_PROFESSEUR', $roles)) {
-            $notification->setUrlDestination('professeur/contenu_ue-' . $ue->getId());
-        }else if(in_array('ROLE_ELEVE', $roles)){
-            $notification->setUrlDestination('etudiant/contenu_ue-' . $ue->getId());
-        }
-
-        $typeNotification = $entityManager->getRepository(TypeNotification::class)->findOneBy(['id' => 1]);
-        if ($typeNotification) {
-            $notification->setTypeNotificationId($typeNotification);
-        }
-
-        $notification->setUtilisateurExpediteurId($expediteur ?? $this->getUser());
-
-        $notification->setUtilisateurDestinataireId($utilisateur);
-
-        $notification->setCodeId($ue);
-
-        $priorite = $entityManager->getRepository(Priorite::class)->findOneBy(['id' => 1]);
-        if ($priorite) {
-            $notification->setPrioriteId($priorite);
-        }
-
-        $entityManager->persist($notification);
-        $entityManager->flush();
-    }
 }

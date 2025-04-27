@@ -36,11 +36,18 @@
                 <div class="begin-form">
                     {{ form_row(form.nom, {'attr': {'placeholder' : 'Nom*', 'value' : utilisateur.nom } }) }}
                     {{ form_row(form.prenom, {'attr': {'placeholder' : 'Prenom*', 'value' : utilisateur.prenom} }) }}
+
+
+                </div>
+                <div>
+                    <label for="user-mail">Email</label>
+                    <input id="user-mail" type="email" value="{{ utilisateur.email }}" disabled>
+
                 </div>
                 {{ form_row(form.password, {'attr': {'placeholder' : 'Mot de passe*', 'value' : utilisateur.password} }) }}
 
                 <div class="button-section">
-                    <button onclick="editProfil({{ utilisateur.id }})" id="edit-profil" >Quoicoubeh
+                    <button onclick="editProfil({{ utilisateur.id }})" id="edit-profil" >Modifier l'utilisateur
                     </button>
                 </div>
 

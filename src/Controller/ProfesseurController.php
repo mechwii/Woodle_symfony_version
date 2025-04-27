@@ -27,33 +27,35 @@ final class ProfesseurController extends AbstractController
 {
     // Crééation de la route pour arriver sur la page Choix_UE apres le login
     #[Route('/professeur', name: 'app_professeur')]
-    public function index(EntityManagerInterface $BDDManager): Response
+    public function index(EntityManagerInterface $BDDManager, NotificationController $notificationController): Response
     {
-
-        // récupération du prof connecté
         $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
 
         $connection = $BDDManager->getConnection();
 
-        $sql = '
-                SELECT ue.code, ue.nom, ue.image,
-                       u.nom AS nom_responsable, u.prenom, est_affecte.favori
-                FROM ue
-                INNER JOIN est_affecte ON est_affecte.code_id = ue.code
-                INNER JOIN utilisateur u ON u.id_utilisateur = est_affecte.utilisateur_id
-                WHERE est_affecte.utilisateur_id = :user_id
-                ';
+        // Récupérer les UE
+        $sqlUe = '
+            SELECT ue.code, ue.nom, ue.image,
+                   u.nom AS nom_responsable, u.prenom, est_affecte.favori
+            FROM ue
+            INNER JOIN est_affecte ON est_affecte.code_id = ue.code
+            INNER JOIN utilisateur u ON u.id_utilisateur = est_affecte.utilisateur_id
+            WHERE est_affecte.utilisateur_id = :user_id
+        ';
+        $ues = $connection->executeQuery($sqlUe, ['user_id' => $user->getId()])->fetchAllAssociative();
 
-        $prepareSQL = $connection->prepare($sql);
-        $resultat = $prepareSQL->executeQuery(['user_id' => $user->getId()]);
+        // Récupérer les premières notifications
+        $notificationsData = $notificationController->getNotificationsData($BDDManager, $user->getId(), 0, 4);
 
-        $ues = $resultat->fetchAllAssociative();
-
-
-        return $this->render('professeur/index.html.twig', [
-            'controller_name' => 'ProfesseurController',
+        return $this->render('choix_ue/choix_ue.html.twig', [
+            'controller_name' => 'AdminController',
             'user' => $user,
             'ues' => $ues,
+            'notifications' => $notificationsData['notifications'],
+            'showMoreButton' => $notificationsData['hasMore'],
         ]);
     }
 
@@ -400,6 +402,8 @@ final class ProfesseurController extends AbstractController
             // Enregistrer la publication dans la base de données
             $entityManager->persist($publication);
             $entityManager->flush();
+
+
 
             return new JsonResponse([
                 'status' => 'success',

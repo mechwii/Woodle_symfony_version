@@ -415,7 +415,7 @@ VALUES
     ('CM annulé', 'Un regard sur l’évolution de.', 'Contenu détaillé de la publication...', '2025-04-19 12:00:00', 3, TRUE, 3, 5, 5, 'IA41');
 
 INSERT INTO Priorite(nom) VALUES
-    ('normale'), ('élevé'), ('suprême');
+    ('normale'),('élevé');
 
 ALTER TABLE epingle
 DROP CONSTRAINT epingle_publication_id_fkey,
