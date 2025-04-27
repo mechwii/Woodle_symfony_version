@@ -108,8 +108,6 @@ function reloadAll() {
             const formData = new FormData(form);
             console.log(form.action);
 
-            // c ici le probleme brotha
-
             fetch(`/professeur/contenu_ue-${codeUe}/section/${sectionId}/publication/create`, {
                 method: "POST",
                 body: formData,
@@ -131,6 +129,7 @@ function reloadAll() {
 
                         console.log(formData);
                         console.log(formData.get('publication[section_id]'));
+                        console.log(formData.get('publication[contenu_texte]'));
                         const section = document.querySelector(`.section[data-section-id="${formData.get('publication[section_id]')}"]`);
                         console.log(section);
 
@@ -332,7 +331,7 @@ function reloadAll() {
     }
 
     // Fermer la popup si on clique sur le fond sombre
-    document.addEventListener('click', () => {
+    background.addEventListener('click', () => {
         popupContainer.classList.add('hidden');
         background.classList.add('hidden');
     });
@@ -533,6 +532,81 @@ function reloadAll() {
         document.getElementById('editPublicationModal').style.display = 'none';
     });
 
+
+    document.querySelectorAll('.epingle_post').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            const codeUe = document.querySelector('span.code').innerHTML;// Stocke le codeUe dans un attribut quelque part
+            console.log(codeUe);
+
+            const publicationId = this.dataset.publicationId;
+
+            fetch(`/professeur/contenu_ue-${codeUe}/publication/` + publicationId + '/epingle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest', // important pour reconnaître que c'est AJAX côté Symfony
+                },
+                body: JSON.stringify({
+                    publicationId: publicationId
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('Publication épinglée !');
+                        // Tu peux aussi faire un reload partiel ou changer l'icône visuellement
+                    } else {
+                        alert('Erreur lors de l\'épinglage.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                });
+        });
+        if (!window.desepingleListenerAdded) {
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.desepingle_post')) {
+                    e.preventDefault();
+                    const codeUe = document.querySelector('span.code').innerHTML;
+                    console.log(codeUe);
+
+                    const button = e.target.closest('.desepingle_post');
+                    const publicationId = button.dataset.publicationId;
+
+                    fetch(`/professeur/contenu_ue-${codeUe}/publication/` + publicationId + '/desepingle', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        body: JSON.stringify({
+                            publicationId: publicationId
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                alert('Publication désépinglée !');
+                                // Exemple : button.closest('.publication-card').remove();
+                            } else {
+                                alert('Erreur lors du désépinglage.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erreur:', error);
+                        });
+                }
+            });
+
+            // Marque que l'event listener a été ajouté
+            window.desepingleListenerAdded = true;
+        }
+
+    });
+
+
 }
 
 
@@ -709,75 +783,6 @@ function attachEditPublicationFormListener(publicationId) {
             });
     });
 }
-
-document.querySelectorAll('.epingle_post').forEach(button => {
-    button.addEventListener('click', function(e) {
-        e.preventDefault();
-
-        const codeUe = document.querySelector('span.code').innerHTML;// Stocke le codeUe dans un attribut quelque part
-        console.log(codeUe);
-
-        const publicationId = this.dataset.publicationId;
-
-        fetch(`/professeur/contenu_ue-${codeUe}/publication/` + publicationId + '/epingle', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest', // important pour reconnaître que c'est AJAX côté Symfony
-            },
-            body: JSON.stringify({
-                publicationId: publicationId
-            })
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    alert('Publication épinglée !');
-                    // Tu peux aussi faire un reload partiel ou changer l'icône visuellement
-                } else {
-                    alert('Erreur lors de l\'épinglage.');
-                }
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-            });
-    });
-    document.addEventListener('click', function(e) {
-        if (e.target.closest('.desepingle_post')) {
-            e.preventDefault();
-            const codeUe = document.querySelector('span.code').innerHTML;// Stocke le codeUe dans un attribut quelque part
-            console.log(codeUe);
-
-            const button = e.target.closest('.desepingle_post');
-            const publicationId = button.dataset.publicationId;
-
-            fetch(`/professeur/contenu_ue-${codeUe}/publication/` + publicationId + '/desepingle', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-                body: JSON.stringify({
-                    publicationId: publicationId
-                })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        // alert('Publication désépinglée !'); pour linstnat en comme car reload infini
-                        // Exemple : supprimer visuellement
-                        // button.closest('.publication-card').remove();
-                    } else {
-                        alert('Erreur lors du désépinglage.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Erreur:', error);
-                });
-        }
-    });
-
-});
 
 
 

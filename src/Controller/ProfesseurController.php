@@ -151,12 +151,13 @@ final class ProfesseurController extends AbstractController
         $liste_publications= $resultat->fetchAllAssociative();
 
 
-        // Les publications épinglées
         $queryEpingle = $BDDManager->createQuery(
             'SELECT p
-         FROM App\Entity\Publication p
-         JOIN App\Entity\Epingle e WITH p.id = e.publication_id'
-        );
+                 FROM App\Entity\Publication p
+                JOIN App\Entity\Epingle e WITH p.id = e.publication_id
+                WHERE p.code_id = :codeUe'
+        )->setParameter('codeUe', $codeUe);
+
 
 
         $publicationsEpingles = $queryEpingle->getResult();
@@ -212,8 +213,16 @@ final class ProfesseurController extends AbstractController
     #[Route('/professeur/contenu_ue-{codeUe}/section/create', name: 'section_create', methods: ['GET', 'POST'])]
     public function createSection(string $codeUe, Request $request, EntityManagerInterface $entityManager, EntityManagerInterface $BDDManager)
     {
-        // création d'une section vide
+        // récupération de l'entité UE correspondant au codeUe
+        $ue = $BDDManager->getRepository(UE::class)->findOneBy(['id' => $codeUe]);
+
+        if (!$ue) {
+            throw $this->createNotFoundException('UE non trouvée pour le code : ' . $codeUe);
+        }
+
+// création d'une section vide
         $section = new Section();
+        $section->setCodeId($ue);
 
         $connection = $BDDManager->getConnection();
 
@@ -292,7 +301,6 @@ final class ProfesseurController extends AbstractController
         }
 
         $form = $this->createForm(PublicationType::class, $publication);
-        $form = $this->createForm(PublicationType::class, $publication);
         $form->add('type', HiddenType::class, [
             'mapped' => false,
             'data' => $type,
@@ -343,10 +351,27 @@ final class ProfesseurController extends AbstractController
     // créer une publication
 
     #[Route('/professeur/contenu_ue-{codeUe}/section/{id_section}/publication/create', name: 'publication_create', methods: ['GET', 'POST'])]
-    public function createPublication(Request $request, EntityManagerInterface $entityManager)
+    public function createPublication(Request $request, EntityManagerInterface $entityManager, string $codeUe, int $id_section)
+
     {
+
+        // récupération de l'entité UE correspondant au codeUe
+        $ue_post = $entityManager->getRepository(UE::class)->findOneBy(['id' => $codeUe]);
+        // Récupération du prof connecté
+        $user_post = $this->getUser();
+
+        // récupération de la section id
+        $section_post  = $entityManager->getRepository(Section::class)->findOneBy(['id' => $id_section]);
+
+
         // création d'une publication vide
         $publication = new Publication();
+        $publication->setCodeId($ue_post);
+        $publication->setUtilisateurId($user_post);
+        $publication->setSectionId($section_post);
+        $publication->setDerniereModif(new \DateTimeImmutable());
+
+
 
         // Récupérer le type de contenu depuis l'URL (ou paramètre GET)
 
@@ -371,8 +396,6 @@ final class ProfesseurController extends AbstractController
                     $contenuFichier->move($this->getParameter('kernel.project_dir') . '/public/uploads', $fileName);
                     $publication->setContenuFichier($fileName);
                 }
-                $publication->setContenuTexte(null);  // On s'assure qu'il n'y a pas de texte attaché
-
 
             // Enregistrer la publication dans la base de données
             $entityManager->persist($publication);
@@ -383,7 +406,8 @@ final class ProfesseurController extends AbstractController
                 'id' => $publication->getId(),
                 'titre' => $publication->getTitre(),
                 'description' => $publication->getDescription(),
-                'contenu' => $type === 'texte' ? $publication->getContenuTexte() : $publication->getContenuFichier(),
+                'contenuTexte' => $publication->getContenuTexte(),
+                'contenuFichier' => $publication->getContenuFichier(),
                 'derniere_modif' => $publication->getDerniereModif()->format('d/m/Y H:i'),
                 'ordre' => $publication->getOrdre(),
                 'visible' => $publication->isVisible(),
@@ -396,7 +420,8 @@ final class ProfesseurController extends AbstractController
                     'titre' => $publication->getTitre(),
                     'description' => $publication->getDescription(),
                     'contenuTexte' => $publication->getContenuTexte(),
-                    'contenuFichier' => $publication->getContenuFichier(),                    'derniere_modif' => $publication->getDerniereModif()->format('d/m/Y H:i'),
+                    'contenuFichier' => $publication->getContenuFichier(),
+                    'derniere_modif' => $publication->getDerniereModif()->format('d/m/Y H:i'),
                     'ordre' => $publication->getOrdre(),
                     'visible' => $publication->isVisible(),
                     'section_id' => $publication->getSectionId()?->getId(),

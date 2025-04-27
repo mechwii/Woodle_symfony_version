@@ -362,11 +362,11 @@ VALUES (2, 'RE4E', TRUE, '2025-04-09 12:05:00');
 
 UPDATE Utilisateur set image='mhammed.jpeg';
 
-INSERT INTO Section (id_section, nom, code_id)
+INSERT INTO Section (nom, code_id)
 VALUES
-    (1, 'Cours Magistraux', 'IA41'),
-    (2, 'TP', 'IA41'),
-    (3, 'TD', 'IA41');
+    ('Cours Magistraux', 'IA41'),
+    ('TP', 'IA41'),
+    ('TD', 'IA41');
 
 INSERT INTO publication (titre, description, contenu, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id)
 VALUES
