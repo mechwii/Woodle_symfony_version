@@ -365,8 +365,17 @@ div.popup-form-container > h3 {
     margin-top: 1em;
 }
 
+label[for="publication_derniere_modif"], label[for="publication_section_id"], label[for="publication_utilisateur_id"], label[for="publication_code_id"] {
+    display: none;
+}
 
-div.popup-form-container input, div.popup-form-container textarea , div.popup-form-container select {
+#publication_derniere_modif, #publication_section_id, #publication_utilisateur_id, #publication_code_id {
+    display: none;
+}
+
+
+
+  form.create-publication-form input, form.create-publication-form  textarea , form.create-publication-form select {
     font-size: 17px;
     padding: 10px 10px;
     width: 100%;
@@ -382,19 +391,19 @@ div.popup-form-container input, div.popup-form-container textarea , div.popup-fo
     resize: none;
 }
 
-div.popup-form-container input:focus, div.popup-form-container textarea:focus{
+.popup input:focus, .popup textarea:focus{
     background: #fff;
     border: 1px solid #db7426;
     border-radius: 10px;
 }
 
-div.popup-form-container input::placeholder, div.popup-form-container textarea::placeholder, div.popup-form-container select::placeholder {
+.popup input::placeholder, .popup textarea::placeholder, .popup select::placeholder {
     color: #CBCBCB;
     font-family: "Sora", sans-serif;
 }
 
 
-div.popup-form-container label.file-deposit {
+.popup label.file-deposit {
     cursor: pointer;
     border: dotted 1px #CBCBCB;
     width: 100%;
@@ -407,22 +416,22 @@ div.popup-form-container label.file-deposit {
     margin-bottom: 1em;
 }
 
-div.popup-form-container label.file-deposit span,  div.popup-form-container label.file-deposit button  {
+.popup label.file-deposit span,  .popup label.file-deposit button  {
     width: 60%;
 }
 
-div.popup-form-container label.file-deposit hr {
+.popup label.file-deposit hr {
     width: 50%;
 }
 
-div.popup-form-container label.file-deposit p {
+.popup label.file-deposit p {
     position: absolute;
     background-color: #fff;
     top: 230px;
     padding: 0.25em;
 }
 
-div.popup-form-container #file-deposit {
+.popup #file-deposit {
     opacity: 0;
     position: absolute;
     z-index: -1;
@@ -724,7 +733,7 @@ div.popupPublication > div.formulaireContainer > form > textarea {
     resize: none;
 }
 
-div.popupPublication > div.formulaireContainer > form > button {
+div.popupPublication > div.formulaireContainer > form > button, .popup button {
     height: 50px;
     border-radius: 8px;
     font-size: 18px;
@@ -860,5 +869,18 @@ div.fake-button {
 }
 
 .hidden {
+    display: none;
+}
+
+
+.popupCreatePublication.fichier #publication_contenuTexte, .popupCreatePublication.fichier label[for="publication_contenuTexte"], .popupCreatePublication.fichier #publication_type_publication_id, .popupCreatePublication.fichier label[for="publication_type_publication_id"] {
+    display: none;
+}
+
+.popupCreatePublication.texte #publication_contenuFichier, .popupCreatePublication.texte label[for="publication_contenuFichier"] {
+    display: none;
+}
+
+.popupCreatePublication.texte #publication_type_publication_id > option:nth-child(2) {
     display: none;
 }

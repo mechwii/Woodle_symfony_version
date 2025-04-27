@@ -1,11 +1,7 @@
-{% extends 'base.html.twig' %}
 
-{% block title %}Créer une publication{% endblock %}
 
 {% block body %}
-    <div class="popupCreatePublication popup">
-        <h1>Créer une publication</h1>
-
+    <div class="popupCreatePublication popup {{ type }}">
         {{ form_start(form, {
             'attr': {
                 'class': 'create-publication-form',
@@ -23,7 +19,12 @@
         {% elseif type == 'fichier' %}
             {{ form_row(form.contenuFichier) }}
         {% endif %}
-            </div>
+
+            {{ form_row(form.type_publication_id, {
+                'value': type == 'fichier' ? 2 : null
+            }) }}
+
+        </div>
         {{ form_row(form.type) }}
         {{ form_row(form._token) }}
 
