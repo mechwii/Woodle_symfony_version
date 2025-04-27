@@ -141,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     if (notification.type_notification_id === 1) {
                         iconClass = 'lni lni-books-2';
-                    } else if (notification.type_notification_id === 3) {
+                    } else if (notification.type_notification_id === 5) {
                         iconClass = 'lni lni-file-multiple';
                     }
 

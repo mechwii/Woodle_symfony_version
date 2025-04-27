@@ -359,7 +359,7 @@ final class ProfesseurController extends AbstractController
     // créer une publication
 
     #[Route('/professeur/contenu_ue-{codeUe}/section/{id_section}/publication/create', name: 'publication_create', methods: ['GET', 'POST'])]
-    public function createPublication(Request $request, EntityManagerInterface $entityManager, string $codeUe, int $id_section)
+    public function createPublication(Request $request, EntityManagerInterface $entityManager, string $codeUe, int $id_section, NotificationController $notificationController)
 
     {
 
@@ -408,6 +408,7 @@ final class ProfesseurController extends AbstractController
             // Enregistrer la publication dans la base de données
             $entityManager->persist($publication);
             $entityManager->flush();
+            $notificationController->createAjoutPublicationNotification($entityManager, $ue_post, $this->getUser(), $publication->getTypePublicationId()->getId(), $publication);
 
 
 
