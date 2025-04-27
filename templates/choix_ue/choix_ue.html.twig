@@ -62,20 +62,22 @@
         <hr>#}
         <div class="liste_ue">
             {% for ue in ues %}
-                <div class="ue favorite-{{ ue.favori ? 'true' : 'false' }}">
-                    <img src="{{ asset('images/ue/' ~ ue.image) }}" alt="">
-                    <div class="infos">
-                        <h5>{{ ue.code }} - {{ ue.nom }}</h5>
-                        <span class="responsable">Responsable : {{ ue.prenom}}  {{ ue.nom_responsable }}</span>
-                        <div class="more">
-                            <div class="lessons">
-                                <i class="lni lni-notebook-1"></i>
-                                <span>12 Lessons</span>
+                {% set route_name = user.roles is iterable and 'ROLE_ELEVE' in user.roles ? 'contenu_ue_etudiant' : 'contenu_ue_professeur' %}
+                <a class="ue-link ue favorite-{{ ue.favori ? 'true' : 'false' }}" href="{{ path(route_name, {'codeUe': ue.code}) }}">
+                        <img src="{{ asset('images/ue/' ~ ue.image) }}" alt="">
+                        <div class="infos">
+                            <h5>{{ ue.code }} - {{ ue.nom }}</h5>
+                            <span class="responsable">Responsable : {{ ue.prenom}}  {{ ue.nom_responsable }}</span>
+                            <div class="more">
+                                <div class="lessons">
+                                    <i class="lni lni-notebook-1"></i>
+                                    <span>12 Lessons</span>
+                                </div>
+                                <i class="lni lni-heart"></i>
                             </div>
-                            <i class="lni lni-heart"></i>
                         </div>
-                    </div>
-                </div>
+            </a>
+
             {% endfor %}
         </div>
         <div class="carousel-dots">

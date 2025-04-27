@@ -41,7 +41,13 @@
                 {#            On utilise ~ pour concaténer#}
                 <img id="admin-picture" src="{{asset("images/profil/" ~ utilisateur.image)}}" alt="Photo de profil admin" onclick="toggleProfileMenu()">
                 <div id="profile-menu">
-                    <a href={{ path('admin_profil')}} ><p>Profil</p></a>
+                    {% if vue_active == 'admin' %}
+                        <a href={{ path('admin_profil')}} ><p>Profil</p></a>
+                    {% elseif vue_active == 'professeur' %}
+                        <a href={{ path('professeur_profil')}} ><p>Profil</p></a>
+                        {% else %}
+                            <a href={{ path('etudiant_profil')}} ><p>Profil</p></a>
+                    {% endif %}
                     <a href={{ path('app_logout') }}><p>Se déconnecter</p></a>
                 </div>
             </div>

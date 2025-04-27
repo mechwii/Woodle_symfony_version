@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Notification;
 use App\Entity\UE;
+use App\Entity\Utilisateur;
+use App\Form\UserProfileType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -32,7 +34,7 @@ final class EtudiantController extends AbstractController
                    u.nom AS nom_responsable, u.prenom, est_affecte.favori
             FROM ue
             INNER JOIN est_affecte ON est_affecte.code_id = ue.code
-            INNER JOIN utilisateur u ON u.id_utilisateur = est_affecte.utilisateur_id
+            INNER JOIN utilisateur u ON u.id_utilisateur = ue.responsable_id
             WHERE est_affecte.utilisateur_id = :user_id
         ';
         $ues = $connection->executeQuery($sqlUe, ['user_id' => $user->getId()])->fetchAllAssociative();
@@ -173,6 +175,25 @@ final class EtudiantController extends AbstractController
             'publicationsEpingles' => $publicationsEpingles,
             'roles' => $roles,
             'utilisateur' => $user,
+        ]);
+    }
+
+    #[Route('/etudiant/profil', name: 'etudiant_profil')]
+    public function profile(EntityManagerInterface $BDDManager, Request $request): Response
+    {
+        $utilisateur = $BDDManager->getRepository(Utilisateur::class)->findOneBy(["email" => $this->getUser()->getUserIdentifier()]);
+        $roles = $utilisateur->getRoles();
+
+        $nouvelUtilisateur = new Utilisateur();
+        $form = $this->createForm(UserProfileType::class, $nouvelUtilisateur);
+        $form->handleRequest($request);
+
+
+        return $this->render('profil/profil.html.twig', [
+            'controller_name' => 'EtudiantController',
+            'utilisateur' => $utilisateur,
+            'roles' => $roles,
+            'form' => $form->createView(),
         ]);
     }
 

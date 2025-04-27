@@ -41,7 +41,7 @@ div.container > div.actualites {
     display: flex;
     flex-direction: column;
     margin-bottom: 5em;
-    max-height: 520px;
+    height: 520px;
     overflow-y: auto;
 }
 
@@ -170,14 +170,14 @@ div.container div.cours > hr {
     border: none;
 }
 
-div.container div.cours > div.liste_ue {
+ div.container div.cours > div.liste_ue {
     display: flex;
     flex-wrap: wrap;
     min-height: 600px;
     transition: min-height 0.3s ease;
 }
 
-div.container div.cours div.ue {
+ div.container div.cours a.ue {
     -webkit-box-shadow: 0px 0px 30px 5px rgba(0,0,0,0.08);
     box-shadow: 0px 0px 30px 5px rgba(0,0,0,0.08);
     border-radius: 18px;
@@ -191,55 +191,55 @@ div.container div.cours div.ue {
     cursor: pointer;
 }
 
-div.container div.cours div.ue:hover {
+ div.container div.cours a.ue:hover {
     background-color: #dedede;
     transition-duration: 500ms;
 }
 
-div.container div.cours div.ue > img {
+ div.container div.cours a.ue > img {
     width: 30%;
     border-radius: 18px;
     margin-right: 1em;
     object-fit: cover;
 }
 
-div.container div.cours div.ue > div.infos {
+div.container div.cours a.ue > div.infos {
     display: flex;
     flex-direction: column;
     align-items: stretch;
     width: 100%;
 }
 
-div.container div.cours div.ue > div.infos > h5 {
+div.container div.cours a.ue > div.infos > h5 {
     font-weight: 300;
     font-size: 19px;
     margin-bottom: 0.5em;
 }
 
-div.container div.cours div.ue > div.infos > .responsable {
+div.container div.cours a.ue > div.infos > .responsable {
     font-weight: 300;
     font-size: 15px;
     color: #4d4d4d;
 }
 
 
-div.container div.cours div.ue > div.infos .more {
+div.container div.cours a.ue > div.infos .more {
     display: flex;
     font-size: 13px;
     margin-top: 1em;
     margin-top: auto;
 }
 
-div.container div.cours div.ue > div.infos .more i {
+div.container div.cours a.ue > div.infos .more i {
     margin-left: auto;
     font-size: 22px;
 }
 
-div.container div.cours div.ue.favorite-true > div.infos .more > i {
+div.container div.cours a.ue.favorite-true > div.infos .more > i {
     color: red;
 }
 
-div.container div.cours div.ue.favorite-false > div.infos .more > i {
+div.container div.cours a.ue.favorite-false > div.infos .more > i {
     color: white;
     text-shadow: 0 0 3px #000;
 }
@@ -292,4 +292,9 @@ div.active-dot {
 .actualites a{
     color: #000000;
     text-decoration: none;
+}
+
+.liste_ue a.ue-link {
+    text-decoration: none;
+    color: inherit;
 }

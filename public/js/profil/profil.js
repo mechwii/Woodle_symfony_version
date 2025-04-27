@@ -13,7 +13,7 @@ function editProfil(id){
     if(nom !== "" && prenom !=="" && password !== ""){
         console.log(id)
 
-        fetch("/admin/edit-profil/" + id , {
+        fetch("/edit-profil/" + id , {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
