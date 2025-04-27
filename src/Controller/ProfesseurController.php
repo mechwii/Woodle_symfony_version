@@ -34,6 +34,8 @@ final class ProfesseurController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
+        $roles = $user->getRoles();
+
         $connection = $BDDManager->getConnection();
 
         // Récupérer les UE
@@ -64,6 +66,8 @@ final class ProfesseurController extends AbstractController
     {
         // Récupération du prof connecté
         $user = $this->getUser();
+
+        $roles = $user->getRoles();
 
         $ue = $BDDManager->getRepository(Ue::class)->findOneBy(['id' => $codeUe]);
 
@@ -177,6 +181,8 @@ final class ProfesseurController extends AbstractController
             'sections_ue' => $sections_ue,
             'liste_publications' => $liste_publications,
             'publicationsEpingles' => $publicationsEpingles,
+            'roles' => $roles,
+            'utilisateur' => $user,
         ]);
     }
 

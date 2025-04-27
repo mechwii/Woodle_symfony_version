@@ -1,9 +1,100 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Hello ProfesseurController!{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/navbar/navbar.css') }}">
+{% endblock %}
+
 
 {% block body %}
-    <div class="container">
-        {% block content %}{% endblock %}
+
+    <div class="{{ app.request.attributes.get('_route') == 'app_admin' ? 'top-page' : 'top-page-out'  }}">
+
+        {# Si il est sur une autre page que admin on lui propose revenir#}
+        {% if app.request.attributes.get('_route') != 'app_admin'  %}
+            <a href="{{ path('app_admin') }}" class="left-admin-part">
+                <i class="lni lni-chevron-left"></i>
+                <p id="return-text">Retourner dashboard</p>
+            </a>
+        {% endif %}
+
+        <div class="right-admin-part">
+            {% if 'ROLE_PROFESSEUR' in roles %}
+                <div class="select-roles">
+                    <p onclick="displaySelectMenu()" id="roles-changes">Vue administrateur</p>
+                    <a href={{ path('app_professeur')}} id="additional-roles">Vue professeur</a>
+                </div>
+
+            {% endif %}
+
+            <div class="profil">
+                {#            On utilise ~ pour concaténer#}
+                <img id="admin-picture" src="{{asset("images/profil/" ~ utilisateur.image)}}" alt="Photo de profil admin" onclick="toggleProfileMenu()">
+                <div id="profile-menu">
+                    <a href={{ path('admin_profil')}} ><p>Profil</p></a>
+                    <a href={{ path('app_logout') }}><p>Se déconnecter</p></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {#Mise en place de la navabr pour professeur#}
+
+    <nav id="navbar">
+        <div class="top-logo">
+            <img src="{{ asset('images/logo/Logo_Woodle.svg') }}" alt="Woodle Logo" class="logo">
+            <h1 class="logo-text">Woodle</h1>
+        </div>
+        <div id="nav-content">
+            <div class="nav-item selected">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                            d="M10 3H4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1zM9 9H5V5h4v4zm11-6h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1zm-1 6h-4V5h4v4zm-9 4H4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1zm-1 6H5v-4h4v4zm11-6h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1zm-1 6h-4v-4h4v4z" />
+                </svg>
+                <span class="nav-text">Dashboard</span>
+            </div>
+            <div class="nav-item">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z" />
+                </svg>
+                <span class="nav-text">Cours</span>
+            </div>
+            <div class="nav-item">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                            d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z" />
+                </svg>
+                <span class="nav-text">Notes</span>
+            </div>
+            <div class="nav-item">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+                <span class="nav-text">Favoris</span>
+            </div>
+        </div>
+
+        <div class="nav-bottom">
+            <svg id="chevron" onclick="toggleNav()" width="60" height="60" viewBox="0 0 16 16"
+                 xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                <path fill-rule="evenodd"
+                      d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
+            </svg>
+        </div>
+    </nav>
+
+    <div class="container" id="content">
+        {% block content %}
+            {% block javascripts %}
+                {{ parent() }}
+                <script src="{{ asset('js/sidebar.js') }}"></script>
+                <script src="{{ asset('js/navbar/navbar.js') }}"></script>
+            {% endblock %}
+        {% endblock %}
     </div>
 {% endblock %}

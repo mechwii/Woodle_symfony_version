@@ -259,8 +259,8 @@ VALUES (6, 1),  -- User 6 is an admin
        (12, 2); -- User 12 is also a professor
 
 INSERT INTO Type_publication (nom)
-VALUES ('Fichier'),
-       ('Message');
+VALUES ('Message'),
+       ('Fichier');
 
 INSERT INTO Type_notification (nom)
 VALUES ('Affectation à l''UE'),
