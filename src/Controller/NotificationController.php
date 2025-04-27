@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\EstAffecte;
 use App\Entity\Notification;
 use App\Entity\Priorite;
+use App\Entity\Publication;
 use App\Entity\TypeNotification;
 use App\Entity\UE;
 use App\Entity\Utilisateur;
@@ -77,7 +79,7 @@ final class NotificationController extends AbstractController
     ): void {
         $notification = new Notification();
 
-        $notification->setContenu("ous avez affecté à l'UE : ");
+        $notification->setContenu("vous avez affecté à l'UE : ");
 
         $roles = $utilisateur->getRoles();
 
@@ -112,47 +114,56 @@ final class NotificationController extends AbstractController
      */
     public function createAjoutPublicationNotification(
         EntityManagerInterface $entityManager,
-        Utilisateur $utilisateur,
         UE $ue,
         Utilisateur $expediteur,
-        int $codeId,
         int $typePublicationId,
+        Publication $publication
     ): void {
-        $notification = new Notification();
+        $utilisateurInUE = $entityManager->getRepository(EstAffecte::class)->findBy(['code_id' => $ue]);
 
-        $notification->setContenu("ous avez affecté à l'UE : ");
+        foreach($utilisateurInUE as $util) {
+            $utilisateur = $util->getUtilisateurId();
+            if($utilisateur !== $expediteur) {
+                $notification = new Notification();
 
-        $roles = $utilisateur->getRoles();
 
-        if($typePublicationId === 1) {
-            $typeNotification = $entityManager->getRepository(TypeNotification::class)->findOneBy(['id' => 1]);
-        } else {
-            $typeNotification = $entityManager->getRepository(TypeNotification::class)->findOneBy(['id' => 1]);
+                $roles = $utilisateur->getRoles();
 
+                if($typePublicationId === 2) {
+                    $typeNotification = $entityManager->getRepository(TypeNotification::class)->findOneBy(['id' => 5]);
+                    $notification->setContenu("a ajouté le document " . $publication->getContenuFichier() . " dans ");
+
+                } else {
+                    $typeNotification = $entityManager->getRepository(TypeNotification::class)->findOneBy(['id' => 3]);
+                    $notification->setContenu("a posté un nouveau message dans ");
+                }
+
+                if(in_array('ROLE_PROFESSEUR', $roles)) {
+                    $notification->setUrlDestination('professeur/contenu_ue-' . $ue->getId());
+
+                }else if(in_array('ROLE_ELEVE', $roles)){
+                    $notification->setUrlDestination('etudiant/contenu_ue-' . $ue->getId());
+                }
+
+                if ($typeNotification) {
+                    $notification->setTypeNotificationId($typeNotification);
+                }
+
+                $notification->setUtilisateurExpediteurId($expediteur ?? $this->getUser());
+
+                $notification->setUtilisateurDestinataireId($utilisateur);
+
+                $notification->setCodeId($ue);
+
+                $priorite = $entityManager->getRepository(Priorite::class)->findOneBy(['id' => 1]);
+                if ($priorite) {
+                    $notification->setPrioriteId($priorite);
+                }
+
+                $entityManager->persist($notification);
+            }
         }
-
-        if(in_array('ROLE_PROFESSEUR', $roles)) {
-            $notification->setUrlDestination('professeur/contenu_ue-' . $ue->getId());
-        }else if(in_array('ROLE_ELEVE', $roles)){
-            $notification->setUrlDestination('etudiant/contenu_ue-' . $ue->getId());
-        }
-
-        if ($typeNotification) {
-            $notification->setTypeNotificationId($typeNotification);
-        }
-
-        $notification->setUtilisateurExpediteurId($expediteur ?? $this->getUser());
-
-        $notification->setUtilisateurDestinataireId($utilisateur);
-
-        $notification->setCodeId($ue);
-
-        $priorite = $entityManager->getRepository(Priorite::class)->findOneBy(['id' => 1]);
-        if ($priorite) {
-            $notification->setPrioriteId($priorite);
-        }
-
-        $entityManager->persist($notification);
         $entityManager->flush();
+
     }
 }

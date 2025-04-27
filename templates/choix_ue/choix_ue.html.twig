@@ -18,6 +18,7 @@
     </div>
 
     {# Section Actualité de la page #}
+    {% if notifications|length > 0 %}
     <div class="actualites">
         <h3>Actualités</h3>
         <ul id="notifications-list">
@@ -25,7 +26,7 @@
             {% for notification in notifications %}
                 {% if notification.type_notification_id == 1 %}
                     <li  class="affectation"><i class="lni lni-books-2"></i><a href="{{ notification.url_destination }}"><b>{{ notification.nom }}</b> {{ notification.contenu }} <b>{{ notification.code_id }}</b></a></li>
-                {% elseif notification.type_notification_id == 3 %}
+                {% elseif notification.type_notification_id == 5 %}
                     <li class="fichier"><i class="lni lni-file-multiple"></i><a href="{{ notification.url_destination }}"><b>{{ notification.nom }}</b> {{ notification.contenu }} <b>{{ notification.code_id }}</b></a></li>
 
                 {% else %}
@@ -39,6 +40,8 @@
             <button onclick="updateNotif()" id="afficherPlus">Afficher plus</button>
         {% endif %}
     </div>
+    {% endif %}
+
     {# Section cours de la page #}
     <div class="cours">
         <h2>Mes cours</h2>

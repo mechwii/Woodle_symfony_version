@@ -41,7 +41,7 @@ div.container > div.actualites {
     display: flex;
     flex-direction: column;
     margin-bottom: 5em;
-    height: 520px;
+    max-height: 520px;
     overflow-y: auto;
 }
 
