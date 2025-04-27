@@ -1,5 +1,8 @@
 <form method="post" id="edit-publication-form">
-    {{ form_start(form) }}
+    {{ form_start(form, {
+        'attr': {
+            'enctype': 'multipart/form-data'
+        }}) }}
     {{ form_widget(form) }}
     {{ form_end(form) }}
 </form>

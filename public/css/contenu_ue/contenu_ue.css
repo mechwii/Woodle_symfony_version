@@ -112,13 +112,13 @@ div.interactions > button.add_post {
 
 /*Style de la partie liste des publications */
 
-div.liste_posts {
+div.liste_posts, div.publications-epingles {
     display: flex;
     flex-direction: column;
     margin-top: 3em;
 }
 
-div.liste_posts > div.post {
+div.post {
     background-color: #fff;
     -webkit-box-shadow: 0px 0px 30px 5px rgba(0,0,0,0.08);
     box-shadow: 0px 0px 30px 5px rgba(0,0,0,0.08);
@@ -127,39 +127,39 @@ div.liste_posts > div.post {
     padding: 2em;
 }
 
-div.liste_posts > div.post > div.top_post {
+div.post > div.top_post {
     display: flex;
     align-items: center;
 }
 
-div.liste_posts > div.post > div.top_post > h5.title_post {
+div.post > div.top_post > h5.title_post {
     font-size: 22px;
     margin-right: 0.5em;
 }
 
-div.liste_posts > div.post > div.top_post > span.date_post {
+div.post > div.top_post > span.date_post {
     font-size: 12px;
 }
 
-div.liste_posts > div.post > div.top_post > div.interactions_post {
+div.post > div.top_post > div.interactions_post {
     margin-left: auto;
 }
 
-div.liste_posts > div.post > div.top_post > div.interactions_post > button {
+div.post > div.top_post > div.interactions_post > button {
     background-color: transparent;
     border: 0;
     margin-left: 1em;
     font-size: 18px;
 }
 
-div.liste_posts > div.post > p.text_post {
+div.post > p.text_post {
     font-size: 18px;
     font-weight: 300;
     margin-top: 1em;
 }
 
 /*Sur PHPStorm les urls vers les images peuvent indiquer une erreur mais ils sont corrects*/
-div.liste_posts > div.post.calendar {
+div.post.calendar {
     background-image: url('/images/background_post_calendar.png'); /* Image en fond */
     background-position: right bottom; /* Place l'image en bas à droite */
     background-repeat: no-repeat; /* Évite la répétition */
@@ -167,7 +167,7 @@ div.liste_posts > div.post.calendar {
     background-color: #CFFFD9 !important;
 }
 
-div.liste_posts > div.post.info {
+div.post.info {
     background-image: url('/images/background_post_info.png'); /* Image en fond */
     background-position: right bottom; /* Place l'image en bas à droite */
     background-repeat: no-repeat; /* Évite la répétition */
@@ -175,7 +175,7 @@ div.liste_posts > div.post.info {
     background-color: #FEFFCF !important;
 }
 
-div.liste_posts > div.post.warning {
+div.post.warning {
     background-image: url('/images/background_post_warning.png'); /* Image en fond */
     background-position: right bottom; /* Place l'image en bas à droite */
     background-repeat: no-repeat; /* Évite la répétition */
@@ -183,7 +183,7 @@ div.liste_posts > div.post.warning {
     background-color: #FFCFCF !important;
 }
 
-div.liste_posts > div.post.file > div.download{
+div.post.file > div.download{
     background-color: #F4F4F4;
     -webkit-box-shadow: 0px 0px 30px 5px rgba(0,0,0,0.1);
     box-shadow: 0px 0px 30px 5px rgba(0,0,0,0.1);
@@ -195,7 +195,7 @@ div.liste_posts > div.post.file > div.download{
     padding: 2em;
 }
 
-div.liste_posts > div.post.file > div.download{
+div.post.file > div.download{
     background-color: #F4F4F4;
     display: flex;
     width: 50%;
@@ -206,13 +206,13 @@ div.liste_posts > div.post.file > div.download{
     margin-top: 1em;
 }
 
-div.liste_posts > div.post.file > div.download > i.fa-file-pdf {
+div.post.file > div.download > i.fa-file-pdf {
     color: red;
     font-size: 25px;
     margin-right: 1em;
 }
 
-div.liste_posts > div.post.file > div.download > i.fa-download {
+div.post.file > div.download > i.fa-download {
     margin-left: auto;
 }
 

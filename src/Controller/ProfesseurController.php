@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Epingle;
 use App\Entity\Publication;
 use App\Form\PublicationType;
 use App\Form\SectionType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,7 +36,7 @@ final class ProfesseurController extends AbstractController
         $connection = $BDDManager->getConnection();
 
         $sql = '
-                SELECT ue.code, ue.nom, ue.description, ue.semestre, ue.image,
+                SELECT ue.code, ue.nom, ue.image,
                        u.nom AS nom_responsable, u.prenom, est_affecte.favori
                 FROM ue
                 INNER JOIN est_affecte ON est_affecte.code_id = ue.code
@@ -139,7 +141,7 @@ final class ProfesseurController extends AbstractController
 
         // recuperation de la lsite des postes
         $sql_liste_publications = '
-                SELECT id_publication as id, titre, description, contenu, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id
+                SELECT id_publication as id, titre, description, contenu_texte, contenu_fichier, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id
                 FROM publication
                 WHERE code_id = :codeUe
                 ';
@@ -148,10 +150,19 @@ final class ProfesseurController extends AbstractController
         $resultat = $prepareSQL->executeQuery(['codeUe' => $codeUe]);
         $liste_publications= $resultat->fetchAllAssociative();
 
-        /*insert epingle
-        insert type_publication
-        */
-//        insert publication
+
+        // Les publications épinglées
+        $queryEpingle = $BDDManager->createQuery(
+            'SELECT p
+         FROM App\Entity\Publication p
+         JOIN App\Entity\Epingle e WITH p.id = e.publication_id'
+        );
+
+
+        $publicationsEpingles = $queryEpingle->getResult();
+
+//        dd($publicationsEpingles);
+
 
         return $this->render('professeur/contenu_ue.html.twig', [
             'controller_name' => 'ProfesseurController',
@@ -162,6 +173,7 @@ final class ProfesseurController extends AbstractController
             'liste_profs_ue' => $liste_profs_ue,
             'sections_ue' => $sections_ue,
             'liste_publications' => $liste_publications,
+            'publicationsEpingles' => $publicationsEpingles,
         ]);
     }
 
@@ -208,7 +220,7 @@ final class ProfesseurController extends AbstractController
 
         // recuperation de la lsite des postes
         $sql_liste_publications = '
-                SELECT titre, description, contenu, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id
+                SELECT titre, description, contenu_texte, contenu_fichier, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id
                 FROM publication
                 WHERE code_id = :codeUe
                 ';
@@ -273,15 +285,29 @@ final class ProfesseurController extends AbstractController
     public function editPublication(int $id_publication, Request $request, EntityManagerInterface $entityManager) {
 
         $publication = $entityManager->getRepository(Publication::class)->find($id_publication);
+        $type = $request->query->get('type', 'texte'); // 'texte' par défaut
 
         if (!$publication) {
             throw $this->createNotFoundException('Publication non trouvée.');
         }
 
         $form = $this->createForm(PublicationType::class, $publication);
+        $form = $this->createForm(PublicationType::class, $publication);
+        $form->add('type', HiddenType::class, [
+            'mapped' => false,
+            'data' => $type,
+        ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $publication->setDerniereModif(new \DateTimeImmutable());
+
+            $contenuFichier = $form->get('contenuFichier')->getData();
+            if ($contenuFichier) {
+                // Traitez l'upload du fichier ici (par exemple en utilisant un service)
+                $fileName = $contenuFichier->getClientOriginalName();
+                $contenuFichier->move($this->getParameter('kernel.project_dir') . '/public/uploads', $fileName);
+                $publication->setContenuFichier($fileName);
+            }
 
             $entityManager->flush();
 
@@ -290,7 +316,8 @@ final class ProfesseurController extends AbstractController
                 'id' => $publication->getId(),
                 'titre' => $publication->getTitre(),
                 'description' => $publication->getDescription(),
-                'contenu' => $publication->getContenu(),
+                'contenu_texte' => $publication->getContenuTexte(),
+                'contenu_fichier' => $publication->getContenuFichier(),
                 'derniere_modif' => $publication->getDerniereModif()->format('d/m/Y H:i'),
                 'ordre' => $publication->getOrdre(),
                 'visible' => $publication->isVisible(),
@@ -321,54 +348,66 @@ final class ProfesseurController extends AbstractController
         // création d'une publication vide
         $publication = new Publication();
 
-        $type = $request->query->get('type');
+        // Récupérer le type de contenu depuis l'URL (ou paramètre GET)
 
+        // Créer le formulaire de publication
+        $type = $request->query->get('type', 'texte');
 
         $form = $this->createForm(PublicationType::class, $publication);
+        $form->add('type', HiddenType::class, [
+            'mapped' => false,
+            'data' => $type,
+        ]);
         $form->handleRequest($request);
 
+        // Si le formulaire est soumis et valide
         if ($form->isSubmitted() && $form->isValid()) {
+
+
+                $contenuFichier = $form->get('contenuFichier')->getData();
+                if ($contenuFichier) {
+                    // Traitez l'upload du fichier ici (par exemple en utilisant un service)
+                    $fileName = $contenuFichier->getClientOriginalName();
+                    $contenuFichier->move($this->getParameter('kernel.project_dir') . '/public/uploads', $fileName);
+                    $publication->setContenuFichier($fileName);
+                }
+                $publication->setContenuTexte(null);  // On s'assure qu'il n'y a pas de texte attaché
+
+
+            // Enregistrer la publication dans la base de données
             $entityManager->persist($publication);
             $entityManager->flush();
-
 
             return new JsonResponse([
                 'status' => 'success',
                 'id' => $publication->getId(),
                 'titre' => $publication->getTitre(),
                 'description' => $publication->getDescription(),
-                'contenu' => $publication->getContenu(),
+                'contenu' => $type === 'texte' ? $publication->getContenuTexte() : $publication->getContenuFichier(),
                 'derniere_modif' => $publication->getDerniereModif()->format('d/m/Y H:i'),
                 'ordre' => $publication->getOrdre(),
                 'visible' => $publication->isVisible(),
                 'section_id' => $publication->getSectionId()?->getId(),
                 'utilisateur_id' => $publication->getUtilisateurId()?->getId(),
-                'type_publication_id' => $publication->getTypePublicationId()?->getId(), // ou ->getTypePublication()->getId() selon ton entité
+                'type_publication_id' => $publication->getTypePublicationId()?->getId(),
                 'code_id' => $publication->getCodeId()?->getId(),
                 'html' => $this->renderView('professeur/partials/_publication.html.twig', [
                     'id' => $publication->getId(),
                     'titre' => $publication->getTitre(),
                     'description' => $publication->getDescription(),
-                    'contenu' => $publication->getContenu(),
-                    'derniere_modif' => $publication->getDerniereModif()->format('d/m/Y H:i'),
+                    'contenuTexte' => $publication->getContenuTexte(),
+                    'contenuFichier' => $publication->getContenuFichier(),                    'derniere_modif' => $publication->getDerniereModif()->format('d/m/Y H:i'),
                     'ordre' => $publication->getOrdre(),
                     'visible' => $publication->isVisible(),
                     'section_id' => $publication->getSectionId()?->getId(),
                     'utilisateur_id' => $publication->getUtilisateurId()?->getId(),
-                    'type_publication_id' => $publication->getTypePublicationId()?->getId(), // ou ->getTypePublication()->getId() selon ton entité
+                    'type_publication_id' => $publication->getTypePublicationId()?->getId(),
                     'code_id' => $publication->getCodeId()?->getId(),
-
                 ])
             ]);
-
-//            return $this->redirectToRoute('contenu_ue_professeur', ['codeUe' => $codeUe]);
         }
 
-//        return $this->render('professeur/create_section.html.twig', [
-
-
-
-        // Si GET ou erreur dans le form
+        // Si le formulaire est GET ou qu'il y a une erreur, on renvoie le formulaire avec les données
         return new JsonResponse([
             'status' => 'form',
             'html' => $this->renderView('professeur/create_publication.html.twig', [
@@ -377,8 +416,10 @@ final class ProfesseurController extends AbstractController
                 'type' => $type,
             ])
         ]);
-
     }
+
+
+
 
     // SUPPRIMER UNE PUBLICATION
 
@@ -399,6 +440,57 @@ final class ProfesseurController extends AbstractController
         return new JsonResponse(['status' => 'success']);
     }
 
+//    Route pour épingler les publications
+    #[Route('/professeur/contenu_ue-{codeUe}/publication/{id}/epingle', name: 'publication_epingle', methods: ['POST'])]
+    public function epinglePublication(
+        Request $request,
+        Publication $publication,
+        EntityManagerInterface $entityManager
+    ): JsonResponse
+    {
+        $user = $this->getUser(); // récupère l'utilisateur connecté
 
+        if (!$user) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Non connecté'], 401);
+        }
+
+        $epingle = new Epingle();
+        $epingle->setPublicationId($publication);
+        $epingle->setUtilisateurId($user);
+        $epingle->setDateEpingle(new \DateTimeImmutable());
+
+        $entityManager->persist($epingle);
+        $entityManager->flush();
+
+        return new JsonResponse(['status' => 'success']);
+    }
+
+// Route pour désépingler un post
+    #[Route('/professeur/contenu_ue-{codeUe}/publication/{id}/desepingle', name: 'publication_desepingle', methods: ['POST'])]
+    public function desepinglePublication(
+        Request $request,
+        Publication $publication,
+        EntityManagerInterface $entityManager
+    ): JsonResponse
+    {
+        $user = $this->getUser();
+
+        if (!$user) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Non connecté'], 401);
+        }
+
+        // Chercher l'épingle existante
+        $epingle = $entityManager->getRepository(Epingle::class)->findOneBy([
+            'publication_id' => $publication,
+            'utilisateur_id' => $user,
+        ]);
+
+        if ($epingle) {
+            $entityManager->remove($epingle);
+            $entityManager->flush();
+        }
+
+        return new JsonResponse(['status' => 'success']);
+    }
 
 }

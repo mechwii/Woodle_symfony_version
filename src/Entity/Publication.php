@@ -22,8 +22,14 @@ class Publication
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(type: 'text')]
-    private ?string $contenu = null;
+//    #[ORM\Column(type: 'text')]
+//    private ?string $contenu = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $contenuTexte = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $contenuFichier = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $derniere_modif = null;
@@ -91,7 +97,7 @@ class Publication
         return $this;
     }
 
-    public function getContenu(): ?string
+    /*public function getContenu(): ?string
     {
         return $this->contenu;
     }
@@ -101,7 +107,31 @@ class Publication
         $this->contenu = $contenu;
 
         return $this;
+    }*/
+
+    public function getContenuTexte(): ?string
+    {
+        return $this->contenuTexte;
     }
+
+    public function setContenuTexte(?string $contenuTexte): self
+    {
+        $this->contenuTexte = $contenuTexte;
+        return $this;
+    }
+
+    public function getContenuFichier(): ?string
+    {
+        return $this->contenuFichier;
+    }
+
+    public function setContenuFichier(?string $contenuFichier): self
+    {
+        $this->contenuFichier = $contenuFichier;
+        return $this;
+    }
+
+
 
     public function getDerniereModif(): ?\DateTimeInterface
     {

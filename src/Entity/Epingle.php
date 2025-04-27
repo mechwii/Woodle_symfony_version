@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Epingle
 {
     #[ORM\Id]
-    #[ORM\JoinColumn(name: "utilisateur_id", referencedColumnName: "id_utilisateur", onDelete: "SET NULL")]
+    #[ORM\JoinColumn(name: "utilisateur_id", referencedColumnName: "id_utilisateur", onDelete: "CASCADE")]
     #[ORM\ManyToOne(inversedBy: 'epingles')]
     private ?Utilisateur $utilisateur_id = null;
 

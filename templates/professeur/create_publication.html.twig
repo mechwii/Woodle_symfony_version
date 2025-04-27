@@ -1,11 +1,32 @@
-<div class="popupCreatePublication popup">
-    {{ form_start(form, {
-        'attr': {
-            'class': 'create-publication-form'
-        }
-    }) }}
-    <div class="container-input">
-        {{ form_widget(form) }}
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer une publication{% endblock %}
+
+{% block body %}
+    <div class="popupCreatePublication popup">
+        <h1>Créer une publication</h1>
+
+        {{ form_start(form, {
+            'attr': {
+                'class': 'create-publication-form',
+                'enctype': 'multipart/form-data'
+            }}) }}
+
+
+        <div class="container-input">
+
+                {{ form_row(form.titre) }}
+        {{ form_row(form.description) }}
+
+            {% if type == 'texte' %}
+        {{ form_row(form.contenuTexte) }}
+        {% elseif type == 'fichier' %}
+            {{ form_row(form.contenuFichier) }}
+        {% endif %}
+            </div>
+        {{ form_row(form.type) }}
+        {{ form_row(form._token) }}
+
+        {{ form_end(form) }}
     </div>
-    {{ form_end(form) }}
-</div>
+{% endblock %}

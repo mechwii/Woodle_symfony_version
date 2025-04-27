@@ -95,6 +95,10 @@ function reloadAll() {
     }
 
     function attachCreatePublicationListener(sectionId) {
+
+        const codeUe = document.querySelector('span.code').innerHTML;// Stocke le codeUe dans un attribut quelque part
+        console.log(codeUe);
+
         const form = document.querySelector(".create-publication-form");
         if (!form) return;
 
@@ -106,7 +110,7 @@ function reloadAll() {
 
             // c ici le probleme brotha
 
-            fetch(`/professeur/contenu_ue-IA41/section/${sectionId}/publication/create`, {
+            fetch(`/professeur/contenu_ue-${codeUe}/section/${sectionId}/publication/create`, {
                 method: "POST",
                 body: formData,
             })
@@ -258,13 +262,16 @@ function reloadAll() {
     const popupContainer = document.querySelector('.popupEditSectionContainer');
     const background = document.querySelector('.darkBackground');
 
+    const codeUe = document.querySelector('span.code').innerHTML;// Stocke le codeUe dans un attribut quelque part
+    console.log(codeUe);
+
     // Ouvrir la popup de modification de la section
     document.querySelectorAll('.edit_section').forEach(btn => {
         btn.addEventListener('click', () => {
             const sectionDiv = btn.closest('.section');
             const sectionId = sectionDiv.classList[1].split('-')[1];
 
-            fetch(`/professeur/contenu_ue-IA41/section/${sectionId}/edit`)
+            fetch(`/professeur/contenu_ue-${codeUe}/section/${sectionId}/edit`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.status === 'form') {
@@ -280,13 +287,15 @@ function reloadAll() {
 
     // Gérer la soumission du formulaire de modification
     function attachEditFormSubmit(sectionId) {
+        const codeUe = document.querySelector('span.code').innerHTML;// Stocke le codeUe dans un attribut quelque part
+        console.log(codeUe);
         const form = document.querySelector('.edit-section-form');
         form.addEventListener('submit', e => {
             e.preventDefault();
 
             const formData = new FormData(form);
 
-            fetch(`/professeur/contenu_ue-IA41/section/${sectionId}/edit`, {
+            fetch(`/professeur/contenu_ue-${codeUe}/section/${sectionId}/edit`, {
                 method: 'POST',
                 body: formData
             })
@@ -360,7 +369,10 @@ function reloadAll() {
     confirmBtn.addEventListener('click', () => {
         if (!sectionIdToDelete) return;
 
-        fetch(`/professeur/contenu_ue-IA41/section/${sectionIdToDelete}/delete`, {
+        const codeUe = document.querySelector('span.code').innerHTML;// Stocke le codeUe dans un attribut quelque part
+        console.log(codeUe);
+
+        fetch(`/professeur/contenu_ue-${codeUe}/section/${sectionIdToDelete}/delete`, {
             method: 'DELETE'
         })
             .then(res => res.json())
@@ -423,7 +435,10 @@ function reloadAll() {
     confirmBtn.addEventListener('click', () => {
         if (!sectionIdToDelete) return;
 
-        fetch(`/professeur/contenu_ue-IA41/section/${sectionIdToDelete}/delete`, {
+        const codeUe = document.querySelector('span.code').innerHTML;// Stocke le codeUe dans un attribut quelque part
+        console.log(codeUe);
+
+        fetch(`/professeur/contenu_ue-${codeUe}/section/${sectionIdToDelete}/delete`, {
             method: 'DELETE'
         })
             .then(res => res.json())
@@ -459,7 +474,10 @@ function reloadAll() {
     confirmBtn_post.addEventListener('click', () => {
         if (!publicationIdToDelete) return;
 
-        fetch(`/professeur/contenu_ue-IA41/section/${sectionIdToDeleteForPublication}/publication/${publicationIdToDelete}/delete`, {
+        const codeUe = document.querySelector('span.code').innerHTML;// Stocke le codeUe dans un attribut quelque part
+        console.log(codeUe);
+
+        fetch(`/professeur/contenu_ue-${codeUe}/section/${sectionIdToDeleteForPublication}/publication/${publicationIdToDelete}/delete`, {
             method: 'GET',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
@@ -531,10 +549,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const popupContainer = document.querySelector('.popupAddSection');
     const background = document.querySelector('.darkBackground');
 
+    const codeUe = document.querySelector('span.code').innerHTML;// Stocke le codeUe dans un attribut quelque part
+    console.log(codeUe);
+
     // Ouvrir la popup de création
     document.querySelector('.add_section').addEventListener('click', () => {
     console.log(document.querySelector('.add_section'));
-            fetch(`/professeur/contenu_ue-IA41/section/create`)
+            fetch(`/professeur/contenu_ue-${codeUe}/section/create`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.status === 'form') {
@@ -562,7 +583,10 @@ function attachCreateFormSubmit() {
 
         const formData = new FormData(form);
 
-        fetch(`/professeur/contenu_ue-IA41/section/create`, {
+        const codeUe = document.querySelector('span.code').innerHTML;// Stocke le codeUe dans un attribut quelque part
+        console.log(codeUe);
+
+        fetch(`/professeur/contenu_ue-${codeUe}/section/create`, {
             method: 'POST',
             body: formData
         })
@@ -589,11 +613,8 @@ function attachCreateFormSubmit() {
                     const newSection = temp.firstElementChild;
                     console.log("HTML reçu :", data.html);
 
-                    // Ajouter à la page
                     sectionContainer.appendChild(newSection);
 
-                    // Rebind des évents JS (pour le bouton "éditer" de cette nouvelle section)
-                    // bindAddPostButtons(); // ← à créer si besoin
                     reloadAll();
 
                     // Fermer la popup
@@ -630,7 +651,11 @@ function attachEditPublicationFormListener(publicationId) {
         const action = form.action;
         console.log("voici le action : " + action);
 
-        fetch(`/professeur/contenu_ue-IA41/section/1/publication/${publicationId}/edit`, {
+
+        const codeUe = document.querySelector('span.code').innerHTML;// Stocke le codeUe dans un attribut quelque part
+        console.log(codeUe);
+
+        fetch(`/professeur/contenu_ue-${codeUe}/section/1/publication/${publicationId}/edit`, {
             method: 'POST',
             body: formData
         })
@@ -649,11 +674,14 @@ function attachEditPublicationFormListener(publicationId) {
                     // Mise à jour contenu
                     const textPost = postDiv.querySelector('.text_post');
                     const nomFichier = postDiv.querySelector('.nom_fichier');
+                    const downloadPost = postDiv.querySelector('div.download > a')
 
                     if (data.type_publication_id === 2 && nomFichier) {
-                        nomFichier.textContent = data.contenu;
+                        nomFichier.textContent = data.contenu_fichier;
+                        downloadPost.setAttribute('href', '../uploads/' + data.contenu_fichier);
+
                     } else if (textPost) {
-                        textPost.textContent = data.contenu;
+                        textPost.textContent = data.contenu_texte;
                     }
 
                     // Mettre à jour les classes
@@ -681,6 +709,76 @@ function attachEditPublicationFormListener(publicationId) {
             });
     });
 }
+
+document.querySelectorAll('.epingle_post').forEach(button => {
+    button.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        const codeUe = document.querySelector('span.code').innerHTML;// Stocke le codeUe dans un attribut quelque part
+        console.log(codeUe);
+
+        const publicationId = this.dataset.publicationId;
+
+        fetch(`/professeur/contenu_ue-${codeUe}/publication/` + publicationId + '/epingle', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest', // important pour reconnaître que c'est AJAX côté Symfony
+            },
+            body: JSON.stringify({
+                publicationId: publicationId
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Publication épinglée !');
+                    // Tu peux aussi faire un reload partiel ou changer l'icône visuellement
+                } else {
+                    alert('Erreur lors de l\'épinglage.');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+            });
+    });
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.desepingle_post')) {
+            e.preventDefault();
+            const codeUe = document.querySelector('span.code').innerHTML;// Stocke le codeUe dans un attribut quelque part
+            console.log(codeUe);
+
+            const button = e.target.closest('.desepingle_post');
+            const publicationId = button.dataset.publicationId;
+
+            fetch(`/professeur/contenu_ue-${codeUe}/publication/` + publicationId + '/desepingle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify({
+                    publicationId: publicationId
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // alert('Publication désépinglée !'); pour linstnat en comme car reload infini
+                        // Exemple : supprimer visuellement
+                        // button.closest('.publication-card').remove();
+                    } else {
+                        alert('Erreur lors du désépinglage.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                });
+        }
+    });
+
+});
+
 
 
 
@@ -761,6 +859,7 @@ function dropZoneLoaded() {
             thumbnailElement.style.backgroundImage = null;
         }
     }
+
 
 
 

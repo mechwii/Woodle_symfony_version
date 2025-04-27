@@ -416,3 +416,14 @@ VALUES
 
 INSERT INTO Priorite(nom) VALUES
     ('normale'), ('élevé'), ('suprême');
+
+ALTER TABLE epingle
+DROP CONSTRAINT epingle_publication_id_fkey,
+ADD CONSTRAINT epingle_publication_id_fkey
+FOREIGN KEY (publication_id) REFERENCES publication(id_publication) ON DELETE CASCADE;
+
+                                                                              -- 1. Renommer la colonne "contenu" en "contenu_texte"
+ALTER TABLE publication RENAME COLUMN contenu TO contenu_texte;
+ALTER TABLE publication ADD COLUMN contenu_fichier VARCHAR(255);
+ALTER TABLE publication ALTER COLUMN contenu_texte DROP NOT NULL;
+

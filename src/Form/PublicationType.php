@@ -9,7 +9,9 @@ use App\Entity\UE;
 use App\Entity\Utilisateur;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -20,7 +22,14 @@ class PublicationType extends AbstractType
         $builder
             ->add('titre')
             ->add('description')
-            ->add('contenu')
+//            ->add('contenu')
+            ->add('contenuTexte', TextType::class, [
+                'required' => false,
+            ])
+            ->add('contenuFichier', FileType::class, [
+                'mapped' => false,
+                'required' => false,
+            ])
             ->add('derniere_modif', null, [
                 'widget' => 'single_text',
             ])
