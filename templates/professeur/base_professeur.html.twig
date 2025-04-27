@@ -10,21 +10,13 @@
 
 {% block body %}
 
-    <div class="{{ app.request.attributes.get('_route') == 'app_admin' ? 'top-page' : 'top-page-out'  }}">
-
-        {# Si il est sur une autre page que admin on lui propose revenir#}
-        {% if app.request.attributes.get('_route') != 'app_admin'  %}
-            <a href="{{ path('app_admin') }}" class="left-admin-part">
-                <i class="lni lni-chevron-left"></i>
-                <p id="return-text">Retourner dashboard</p>
-            </a>
-        {% endif %}
+    <div class="top-page">
 
         <div class="right-admin-part">
-            {% if 'ROLE_PROFESSEUR' in roles %}
+            {% if 'ROLE_ADMINISTRATEUR' in roles %}
                 <div class="select-roles">
-                    <p onclick="displaySelectMenu()" id="roles-changes">Vue administrateur</p>
-                    <a href={{ path('app_professeur')}} id="additional-roles">Vue professeur</a>
+                    <p onclick="displaySelectMenu()" id="roles-changes">Vue professeur</p>
+                    <a href={{ path('app_admin')}} id="additional-roles">Vue Administrateur</a>
                 </div>
 
             {% endif %}
