@@ -518,6 +518,7 @@ function reloadAll() {
                     if (data.status === 'form') {
                         document.getElementById('edit-publication-form-container').innerHTML = data.html;
                         document.getElementById('editPublicationModal').style.display = 'flex';
+                        inputToggleEditPost();
                         attachEditPublicationFormListener(publicationId); // on passe bien l'id ici
                     }
                 })
@@ -713,6 +714,7 @@ function attachCreateFormSubmit() {
 
 function attachEditPublicationFormListener(publicationId) {
     const form = document.querySelector('#edit-publication-form');
+
     if (!form) return;
 
     form.addEventListener('submit', function (e) {
@@ -724,7 +726,6 @@ function attachEditPublicationFormListener(publicationId) {
         }
         const action = form.action;
         console.log("voici le action : " + action);
-
 
         const codeUe = document.querySelector('span.code').innerHTML;// Stocke le codeUe dans un attribut quelque part
         console.log(codeUe);
@@ -868,4 +869,30 @@ function dropZoneLoaded() {
 
 
 
+}
+
+function inputToggleEditPost() {
+    console.log("hello");
+
+    const selectType = document.getElementById('publication_type_publication_id');
+    const contenuTexteRow = document.getElementById('contenuTexteRow');
+    const contenuFichierRow = document.getElementById('contenuFichierRow');
+
+    console.log("résultat = " + selectType.value);
+
+    function toggleContenuFields() {
+        if (selectType.value === '2') {
+            contenuTexteRow.style.display = 'none';
+            contenuFichierRow.style.display = 'block';
+        } else {
+            contenuTexteRow.style.display = 'block';
+            contenuFichierRow.style.display = 'none';
+        }
+    }
+
+    // On appelle la fonction au chargement
+    toggleContenuFields();
+
+    // Et à chaque changement du select
+    selectType.addEventListener('change', toggleContenuFields);
 }

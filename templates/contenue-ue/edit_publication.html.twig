@@ -1,8 +1,26 @@
+<h2>Editer une publication</h2>
+
 <form method="post" id="edit-publication-form">
     {{ form_start(form, {
         'attr': {
             'enctype': 'multipart/form-data'
-        }}) }}
-    {{ form_widget(form) }}
+        }
+    }) }}
+
+    {{ form_row(form.type_publication_id, {'attr': {'id': 'type_publication_id'}}) }}
+
+    {{ form_row(form.titre) }}
+
+    {{ form_row(form.description) }}
+
+
+
+    <div id="contenuTexteRow">
+        {{ form_row(form.contenuTexte) }}
+    </div>
+    <div id="contenuFichierRow">
+        {{ form_row(form.contenuFichier) }}
+    </div>
+
     {{ form_end(form) }}
 </form>

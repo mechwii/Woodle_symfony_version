@@ -370,12 +370,17 @@ label[for="publication_derniere_modif"], label[for="publication_section_id"], la
 }
 
 #publication_derniere_modif, #publication_section_id, #publication_utilisateur_id, #publication_code_id {
+    display: none !important;
+}
+
+
+#edit-publication-form label[for="publication_type_publication_id"], #edit-publication-form #publication_type_publication_id{
     display: none;
 }
 
 
 
-  form.create-publication-form input, form.create-publication-form  textarea , form.create-publication-form select {
+  form.create-publication-form input, form.create-publication-form  textarea , form.create-publication-form select, div.popupAddSection input, div.popupAddSection select, #edit-publication-form-container input, #edit-publication-form-container select {
     font-size: 17px;
     padding: 10px 10px;
     width: 100%;
@@ -389,6 +394,7 @@ label[for="publication_derniere_modif"], label[for="publication_section_id"], la
     align-items: center;
     font-family: "Sora", sans-serif;
     resize: none;
+      margin-bottom: 1em;
 }
 
 .popup input:focus, .popup textarea:focus{
@@ -502,7 +508,7 @@ div.switch-buttons > button.switch-file {
 
 /*Style de la popup ecrire une publication*/
 div.popupPublication, div.popUpListe, div.popupAddSection, div.popupEditSectionContainer {
-    position: absolute;
+    position: fixed;
     left: 10%;
     top: 10%;
     width: 80%;
@@ -691,10 +697,29 @@ div.popupPublication, div.popupAddSection {
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    /*align-items: center;*/
     padding: 2em;
     justify-content: stretch;
-    height: 85%;
+    height: auto;
+}
+
+.popupCreateSection h2 {
+    text-align: center;
+    margin-bottom: 1em;
+}
+
+#publication_visible {
+    width: auto !important;
+    height: 30px;
+}
+
+form.create-publication-form {
+    display: flex;
+    flex-direction: column;
+}
+
+form.create-publication-form input, form.create-publication-form select{
+    margin-bottom: 1em;
 }
 
 div.popupPublication > div.formulaireContainer {
@@ -733,13 +758,19 @@ div.popupPublication > div.formulaireContainer > form > textarea {
     resize: none;
 }
 
-div.popupPublication > div.formulaireContainer > form > button, .popup button {
+div.popupPublication > div.formulaireContainer > form > button, .popup button, #edit-publication-form button {
     height: 50px;
     border-radius: 8px;
     font-size: 18px;
     border: 0px;
     color: white;
     background-color: #EF233C;
+    width: 100%;
+    padding: 0.5em 2em;
+}
+
+#edit-publication-form button {
+    width: 100%;
 }
 
 .drop-zone{
@@ -817,10 +848,14 @@ div.fake-button {
 
 /*Style popup confirmation suppression*/
 
+
+
 .custom-modal, .modal-backdrop, .modal, .custom-modal-post {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     z-index: 100;
+    height: auto;
+    w80%
     display: flex;
     align-items: center;
     justify-content: center;
@@ -834,14 +869,30 @@ div.fake-button {
     background-color: rgba(0, 0, 0, 0.5);
 }
 
-.modal-content {
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-    max-width: 400px;
+.modal-content h2 {
     text-align: center;
-    z-index: 1001;
+    margin-bottom: 1.5em;
+}
+
+.modal-content {
+    position: fixed;
+    left: 10%;
+    top: 10%;
+    width: 80%;
+    height: auto;
+    background-color: white;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    -webkit-box-shadow: 0px 0px 30px 5px rgba(0,0,0,0.08);
+    box-shadow: 0px 0px 30px 5px rgba(0,0,0,0.08);
+    border-radius: 8px;
+}
+
+#edit-publication-form-container {
+    display: flex;
+    flex-direction: column;
+    padding: 3em;
 }
 
 .modal-actions {
@@ -883,4 +934,35 @@ div.fake-button {
 
 .popupCreatePublication.texte #publication_type_publication_id > option:nth-child(2) {
     display: none;
+}
+
+/*Publications épinglées*/
+
+div.epingles {
+    margin-bottom: 5em;
+}
+
+div.epingles h3 {
+    margin-top: 2em;
+    font-size: 36px;
+}
+
+.desepingle_post > i{
+    fill: black;
+}
+
+.epingle_post > i{
+    fill: transparent;
+}
+
+div.publications-epingles {
+    background-color: #ffe7ea;
+    padding: 2em;
+    border-radius: 8px;
+}
+
+span.auteur {
+    margin-left: 1em;
+    font-weight: bold;
+    font-style: italic;
 }

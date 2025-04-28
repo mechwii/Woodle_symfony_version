@@ -14,6 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
 
 class PublicationType extends AbstractType
 {
@@ -27,8 +28,9 @@ class PublicationType extends AbstractType
                 'required' => false,
             ])
             ->add('contenuFichier', FileType::class, [
-                'mapped' => false,
+                'label' => 'Fichier (PDF ou autre)',
                 'required' => false,
+                'mapped' => false, // <- très important : on gère manuellement dans ton controller
             ])
             ->add('derniere_modif', null, [
                 'widget' => 'single_text',

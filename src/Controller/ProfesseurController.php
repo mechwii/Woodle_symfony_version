@@ -166,16 +166,30 @@ final class ProfesseurController extends AbstractController
 
         $queryEpingle = $BDDManager->createQuery(
             'SELECT p
-                 FROM App\Entity\Publication p
-                JOIN App\Entity\Epingle e WITH p.id = e.publication_id
-                WHERE p.code_id = :codeUe'
+     FROM App\Entity\Publication p
+     JOIN App\Entity\Utilisateur u WITH p.utilisateur_id = u.id
+     JOIN App\Entity\Epingle e WITH p.id = e.publication_id
+     WHERE p.code_id = :codeUe'
         )->setParameter('codeUe', $codeUe);
+
+
+
 
 
 
         $publicationsEpingles = $queryEpingle->getResult();
 
-//        dd($publicationsEpingles);
+        // Passer l'ID de l'utilisateur explicitement
+        foreach ($publicationsEpingles as &$publication) {
+            $publication->utilisateur_id_nom = $publication->getUtilisateurId()->getNom();
+            $publication->utilisateur_id_prenom = $publication->getUtilisateurId()->getPrenom();
+        }
+
+        foreach ($publicationsEpingles as &$publication) {
+            $publication->getDerniereModif()->format('d/m/Y H:i');
+        }
+
+        // dd($publicationsEpingles);
 
 
         return $this->render('contenue-ue/contenu_ue.html.twig', [
@@ -306,30 +320,42 @@ final class ProfesseurController extends AbstractController
 
 // EDITER UNE PUBLICATION
     #[Route('/professeur/contenu_ue-{codeUe}/section/{id_section}/publication/{id_publication}/edit', name: 'publication_edit', methods: ['GET', 'POST'])]
-    public function editPublication(int $id_publication, Request $request, EntityManagerInterface $entityManager) {
-
+    public function editPublication(int $id_publication, Request $request, EntityManagerInterface $entityManager)
+    {
         $publication = $entityManager->getRepository(Publication::class)->find($id_publication);
-        $type = $request->query->get('type', 'texte'); // 'texte' par défaut
 
         if (!$publication) {
             throw $this->createNotFoundException('Publication non trouvée.');
         }
+
+        $ancienFichier = $publication->getContenuFichier(); // <-- On stocke l'ancien fichier APRÈS avoir vérifié l'existence
+
+        $type = $request->query->get('type', 'texte'); // 'texte' par défaut
 
         $form = $this->createForm(PublicationType::class, $publication);
         $form->add('type', HiddenType::class, [
             'mapped' => false,
             'data' => $type,
         ]);
+
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
             $publication->setDerniereModif(new \DateTimeImmutable());
 
             $contenuFichier = $form->get('contenuFichier')->getData();
-            if ($contenuFichier) {
-                // Traitez l'upload du fichier ici (par exemple en utilisant un service)
-                $fileName = $contenuFichier->getClientOriginalName();
-                $contenuFichier->move($this->getParameter('kernel.project_dir') . '/public/uploads', $fileName);
+
+            if ($contenuFichier instanceof UploadedFile) {
+                // Un nouveau fichier a été uploadé
+                $fileName = uniqid().'-'.$contenuFichier->getClientOriginalName();
+                $contenuFichier->move(
+                    $this->getParameter('kernel.project_dir') . '/public/uploads',
+                    $fileName
+                );
                 $publication->setContenuFichier($fileName);
+            } else {
+                // Aucun nouveau fichier uploadé, on garde l'ancien
+                $publication->setContenuFichier($ancienFichier);
             }
 
             $entityManager->flush();
@@ -346,13 +372,12 @@ final class ProfesseurController extends AbstractController
                 'visible' => $publication->isVisible(),
                 'section_id' => $publication->getSectionId(),
                 'utilisateur_id' => $publication->getUtilisateurId(),
-                'type_publication_id' => $publication->getTypePublicationId()->getId(), // ou ->getTypePublication()->getId() selon ton entité
+                'type_publication_id' => $publication->getTypePublicationId()->getId(), // Ou adapte selon ton entité
                 'code_id' => $publication->getCodeId(),
             ]);
-
         }
 
-        // Si GET ou erreur dans le form
+        // Si GET ou erreur dans le formulaire
         return new JsonResponse([
             'status' => 'form',
             'html' => $this->renderView('contenue-ue/edit_publication.html.twig', [
@@ -360,7 +385,6 @@ final class ProfesseurController extends AbstractController
                 'publication' => $publication,
             ])
         ]);
-
     }
 
     // créer une publication

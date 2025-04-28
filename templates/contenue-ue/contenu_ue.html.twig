@@ -77,7 +77,7 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
 
 {#    Partie épinglés, ici seront les publications épinglées #}
     <div class="epingles">
-        <h3>Epinglés</h3>
+        <h3>Epinglés 📌</h3>
         {% if publicationsEpingles is not empty %}
             <div class="publications-epingles">
 
@@ -93,9 +93,10 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
 
                             <div class="top_post">
                                 <h5 class="title_post">{{ publication.titre }}</h5>
-                                <span class="date_post">{{ publication.derniereModif.date }}</span>
+                                <span class="date_post">{{ publication.derniereModif.date|date('d/m/Y H:i') }}</span>
+                                <span class="auteur">Epinglé par : {{ publication.utilisateur_id_prenom }} {{ publication.utilisateur_id_nom }}</span>
                                 <div class="interactions_post">
-                                    <button class="desepingle_post" data-publication-id="{{ publication.id }}"><i class="fa-solid fa-paperclip"></i></button>
+                                    <button class="desepingle_post" data-publication-id="{{ publication.id }}"><i class="fa-solid fa-thumbtack"></i></button>
                                 </div>
                                 <!-- Icône trois points -->
                                 <i class="fa-solid fa-ellipsis-h ellipsis_icon"></i>
@@ -172,7 +173,7 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
                                 <i class="fa-solid fa-pen"></i>
                             </button>
                             <button class="delete_post" data-publication-id="{{ publication.id }}"><i class="fa-solid fa-trash"></i></button>
-                            <button class="epingle_post" data-publication-id="{{ publication.id }}"><i class="fa-solid fa-paperclip"></i></button>
+                            <button class="epingle_post" data-publication-id="{{ publication.id }}"><i class="fa-solid fa-thumbtack"></i></button>
                         </div>
                         <!-- Icône trois points -->
                         <i class="fa-solid fa-ellipsis-h ellipsis_icon"></i>
