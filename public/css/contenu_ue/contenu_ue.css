@@ -1012,9 +1012,3 @@ span.auteur {
     border: 0;
     color: white;
 }
-
-<p>Es-tu sûr(e) de vouloir supprimer cette section ?</p>
-<div class="modal-actions">
-<button class="cancel-btn-section">Annuler</button>
-<button class="confirm-btn-section">Supprimer</button>
-</div>
