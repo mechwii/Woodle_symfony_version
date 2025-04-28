@@ -82,6 +82,7 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
             <div class="publications-epingles">
 
                 {% for publication in publicationsEpingles %}
+                    {% if publication.visible %}
                     <div class="publication-epinglee">
                         <div class="post
     {% if publication.typePublicationId.id == 2 %}file
@@ -96,8 +97,11 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
                                 <span class="date_post">{{ publication.derniereModif.date|date('d/m/Y H:i') }}</span>
                                 <span class="auteur">Epinglé par : {{ publication.utilisateur_id_prenom }} {{ publication.utilisateur_id_nom }}</span>
                                 <div class="interactions_post">
+                                    {% if publication.utilisateur_id_id == utilisateur.id %}
                                     <button class="desepingle_post" data-publication-id="{{ publication.id }}"><i class="fa-solid fa-thumbtack"></i></button>
-                                </div>
+                                    {% endif %}
+
+                        </div>
                                 <!-- Icône trois points -->
                                 <i class="fa-solid fa-ellipsis-h ellipsis_icon"></i>
 
@@ -120,6 +124,7 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
                             {% endif %}
                         </div>
                     </div>
+                    {% endif %}
                 {% endfor %}
             </div>
         {% else %}
@@ -130,6 +135,7 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
 {#Partie liste des publications#}
 
 <div class="sections-wrapper">
+    {% set publicationsEpinglesIds = publicationsEpingles|map(p => p.id)|join(',') %}
     {% for section in sections_ue %}
         <div class="section section-{{ section.id }}" data-section-id="{{ section.id }}">
             <div class="head-section">
@@ -147,7 +153,8 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
 
             {% set hasPublications = false %}
             {% for publication in liste_publications %}
-            {% if publication.section_id == section.id %}
+
+            {% if publication.section_id == section.id and publication.visible %}
             {% if not hasPublications %}
             <div class="liste_posts">
                 {% set hasPublications = true %}
@@ -165,6 +172,9 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
                         <h5 class="title_post">{{ publication.titre }}</h5>
                         <span class="date_post">{{ publication.derniere_modif }}</span>
                         <div class="interactions_post">
+
+                            {% if publication.utilisateur_id == utilisateur.id %}
+
                             <button class="edit_post" data-url="{{ path('publication_edit', {
                                 codeUe: ue.id,
                                 id_section: section.id,
@@ -172,8 +182,19 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
                             }) }}">
                                 <i class="fa-solid fa-pen"></i>
                             </button>
+
+
                             <button class="delete_post" data-publication-id="{{ publication.id }}"><i class="fa-solid fa-trash"></i></button>
-                            <button class="epingle_post" data-publication-id="{{ publication.id }}"><i class="fa-solid fa-thumbtack"></i></button>
+
+                            {% endif %}
+
+                            {% if publication.id not in publicationsEpinglesIds %}
+                                <button class="epingle_post" data-publication-id="{{ publication.id }}">
+                                    <i class="fa-solid fa-thumbtack"></i>
+                                </button>
+                            {% else %}
+
+                            {% endif %}
                         </div>
                         <!-- Icône trois points -->
                         <i class="fa-solid fa-ellipsis-h ellipsis_icon"></i>

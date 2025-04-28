@@ -380,7 +380,7 @@ label[for="publication_derniere_modif"], label[for="publication_section_id"], la
 
 
 
-  form.create-publication-form input, form.create-publication-form  textarea , form.create-publication-form select, div.popupAddSection input, div.popupAddSection select, #edit-publication-form-container input, #edit-publication-form-container select {
+  form.create-publication-form input, form.create-publication-form  textarea , form.create-publication-form select, div.popupAddSection input, div.popupAddSection select, #edit-publication-form-container input, #edit-publication-form-container select, .popupEditSection.popup input, .popupEditSection.popup select {
     font-size: 17px;
     padding: 10px 10px;
     width: 100%;
@@ -395,6 +395,14 @@ label[for="publication_derniere_modif"], label[for="publication_section_id"], la
     font-family: "Sora", sans-serif;
     resize: none;
       margin-bottom: 1em;
+}
+
+.popupEditSection.popup {
+    padding: 1em;
+}
+
+.popupEditSectionContainer {
+    border-radius: 8px;
 }
 
 .popup input:focus, .popup textarea:focus{
@@ -924,8 +932,8 @@ div.fake-button {
 }
 
 
-.popupCreatePublication.fichier #publication_contenuTexte, .popupCreatePublication.fichier label[for="publication_contenuTexte"], .popupCreatePublication.fichier #publication_type_publication_id, .popupCreatePublication.fichier label[for="publication_type_publication_id"] {
-    display: none;
+.popupCreatePublication.fichier #publication_contenuTexte, .popupCreatePublication.fichier label[for="publication_contenuTexte"], .popupCreatePublication.fichier #publication_type_publication_id, .popupCreatePublication.fichier label[for="publication_type_publication_id"], #publication_ordre, label[for="publication_ordre"] {
+    display: none !important;
 }
 
 .popupCreatePublication.texte #publication_contenuFichier, .popupCreatePublication.texte label[for="publication_contenuFichier"] {
@@ -965,4 +973,12 @@ span.auteur {
     margin-left: 1em;
     font-weight: bold;
     font-style: italic;
+}
+
+.popupPublication.popup h3 {
+    text-align: center;
+}
+
+.popupPublication.popup .boutonsSwitch {
+    align-self: center;
 }

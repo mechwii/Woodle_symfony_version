@@ -29,6 +29,9 @@ function reloadAll() {
 
         function openPopup(popup) {
             closeAllPopups();
+            switchBg.style.left = "0%";
+            boutonText.style.color = "white";
+            boutonFile.style.color = "black";
             popup.classList.remove("hidden");
             darkBackground.classList.remove("hidden");
             boutonText.style.color = "white";
@@ -86,6 +89,7 @@ function reloadAll() {
             .then(data => {
                 if (data.status === 'form') {
                     formulaireContainer.innerHTML = data.html;
+                    bindUploadValidation();
                     attachCreatePublicationListener(sectionId); // écoute le submit
                 }
             })
@@ -128,14 +132,16 @@ function reloadAll() {
                         console.log("valid");
 
                         console.log(formData);
-                        console.log(formData.get('publication[section_id]'));
-                        console.log(formData.get('publication[contenu_texte]'));
+                        console.log("section id = " + formData.get('publication[section_id]'));
+                        console.log("contenu_texte = " + formData.get('publication[contenuTexte]'));
                         const section = document.querySelector(`.section[data-section-id="${formData.get('publication[section_id]')}"]`);
-                        console.log(section);
+                        console.log("section = " + section);
 
                         if (!section) return;
 
                         let postsContainer = section.querySelector('.liste_posts');
+                        console.log("postcontainer = " + postsContainer);
+
 
                         // Si le container de posts n'existe pas encore (première publication)
                         if (!postsContainer) {
@@ -181,10 +187,9 @@ function reloadAll() {
             boutonText.style.color = "black";
             boutonFile.style.color = "white";
             afficherFormulaire("fichier");
-            dropZoneLoaded();
         });
 
-        afficherFormulaire("texte");
+        // afficherFormulaire("texte");
 
         // ----- POPUP LISTE USERS -----
 
@@ -364,8 +369,9 @@ function reloadAll() {
         sectionIdToDelete = null;
     });
 
-
     confirmBtn.addEventListener('click', () => {
+
+        if (isDeleting) return; // ⛔ Si déjà en suppression, on bloque
         if (!sectionIdToDelete) return;
 
         const codeUe = document.querySelector('span.code').innerHTML;// Stocke le codeUe dans un attribut quelque part
@@ -534,30 +540,185 @@ function reloadAll() {
     });
 
 
+
+
+}
+
+document.querySelectorAll('.epingle_post').forEach(button => {
+    button.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        const codeUe = document.querySelector('span.code').innerHTML;// Stocke le codeUe dans un attribut quelque part
+        console.log(codeUe);
+
+        const publicationId = this.dataset.publicationId;
+
+        fetch(`/professeur/contenu_ue-${codeUe}/publication/` + publicationId + '/epingle', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest', // important pour reconnaître que c'est AJAX côté Symfony
+            },
+            body: JSON.stringify({
+                publicationId: publicationId
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Publication épinglée !');
+
+                    const post = button.closest('.post');
+                    const post_copy = post.cloneNode(true);
+                    const epinglesContainer = document.querySelector('.publications-epingles');
+
+                    // on recupere egalement les boutons d'edit et de suppression pour pouvoir les suppriemr
+                    const editButton = post_copy.querySelector("button.edit_post");
+                    const deleteButton = post_copy.querySelector("button.delete_post");
+                    const epingleButton = post_copy.querySelector("button.epingle_post");
+
+                    // on recupere le bouton de epingle du vrai post pour le desafficher
+                    const epingleButtonOriginal = post.querySelector("button.epingle_post");
+
+                    if (post && epinglesContainer) {
+                        // Déplacer le post dans la partie épinglés
+                        epinglesContainer.appendChild(post_copy);
+
+                        // Remplacer le bouton "épingler" par "désépingler"
+                        epingleButton.classList.remove('epingle_post');
+                        epingleButton.classList.add('desepingle_post');
+                        button.innerHTML = '<i class="fa-solid fa-thumbtack"></i>';
+                        editButton.remove();
+                        deleteButton.remove();
+                        epingleButtonOriginal.remove();
+                    }
+                } else {
+                    alert('Erreur lors de l\'épinglage.');
+                }
+            })
+
+    });
+    if (!window.desepingleListenerAdded) {
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.desepingle_post')) {
+                e.preventDefault();
+                const codeUe = document.querySelector('span.code').innerHTML;
+                console.log(codeUe);
+
+                const button = e.target.closest('.desepingle_post');
+                const publicationId = button.dataset.publicationId;
+
+                fetch(`/professeur/contenu_ue-${codeUe}/publication/` + publicationId + '/desepingle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: JSON.stringify({
+                        publicationId: publicationId
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            alert('Publication désépinglée !');
+
+                            const desepingleButton = e.target.closest('.desepingle_post');
+                            const epinglePost = desepingleButton.closest('.post');
+                            const publicationId = epinglePost.getAttribute('data-id');
+
+                            if (epinglePost) {
+                                // 1. Retrouver l'élément original dans la section
+                                const originalPost = document.querySelector('.sections-wrapper .post[data-id="' + publicationId + '"]');
+
+                                if (originalPost) {
+                                    // 2. Trouver l'interactions_post de ce post
+                                    const interactions = originalPost.querySelector('.interactions_post');
+
+                                    if (interactions) {
+                                        // 3. Vérifier si le bouton epingle existe déjà (éviter les doublons)
+                                        let existingEpingleButton = interactions.querySelector('.epingle_post');
+                                        if (!existingEpingleButton) {
+                                            // 4. Recréer le bouton epingle
+                                            const newEpingleButton = document.createElement('button');
+                                            newEpingleButton.classList.add('epingle_post');
+                                            newEpingleButton.setAttribute('data-publication-id', publicationId);
+                                            newEpingleButton.innerHTML = '<i class="fa-solid fa-thumbtack"></i>';
+
+                                            interactions.appendChild(newEpingleButton);
+
+                                            // 5. (Important) Re-binder l'event listener sur ce nouveau bouton
+                                            rebindAllEpinglePostButtons();
+                                            originalPost.querySelector(".epingle_post").style.display = 'inline';
+                                        }
+                                    }
+                                }
+
+                                // 6. Supprimer l'élément de la liste des épinglés
+                                epinglePost.remove();
+                            }
+                        } else {
+                            alert('Erreur lors du désépinglage.');
+                        }
+                    });
+
+            }
+        });
+
+        // Marque que l'event listener a été ajouté
+        window.desepingleListenerAdded = true;
+    }
+
+});
+
+function rebindAllEpinglePostButtons() {
+    // D'abord, on enlève tous les anciens event listeners (en recréant les boutons)
+    document.querySelectorAll('.epingle_post').forEach(oldButton => {
+        const newButton = oldButton.cloneNode(true);
+        oldButton.parentNode.replaceChild(newButton, oldButton);
+    });
+
+    // Maintenant, on rebinde proprement tous les boutons
     document.querySelectorAll('.epingle_post').forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
 
-            const codeUe = document.querySelector('span.code').innerHTML;// Stocke le codeUe dans un attribut quelque part
-            console.log(codeUe);
-
+            const codeUe = document.querySelector('span.code').innerHTML;
             const publicationId = this.dataset.publicationId;
 
-            fetch(`/professeur/contenu_ue-${codeUe}/publication/` + publicationId + '/epingle', {
+            fetch(`/professeur/contenu_ue-${codeUe}/publication/${publicationId}/epingle`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest', // important pour reconnaître que c'est AJAX côté Symfony
+                    'X-Requested-With': 'XMLHttpRequest',
                 },
-                body: JSON.stringify({
-                    publicationId: publicationId
-                })
+                body: JSON.stringify({ publicationId: publicationId })
             })
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
                         alert('Publication épinglée !');
-                        // Tu peux aussi faire un reload partiel ou changer l'icône visuellement
+
+                        const post = button.closest('.post');
+                        const postCopy = post.cloneNode(true);
+                        const epinglesContainer = document.querySelector('.publications-epingles');
+
+                        // Supprimer les boutons edit/delete du post copié
+                        const editButton = postCopy.querySelector("button.edit_post");
+                        const deleteButton = postCopy.querySelector("button.delete_post");
+                        if (editButton) editButton.remove();
+                        if (deleteButton) deleteButton.remove();
+
+                        if (epinglesContainer) {
+                            epinglesContainer.appendChild(postCopy);
+                        }
+
+                        // Transformer le bouton actuel en bouton désépingler
+                        button.classList.remove('epingle_post');
+                        button.classList.add('desepingle_post');
+                        button.innerHTML = '<i class="fa-solid fa-thumbtack"></i>';
+
+                        // Pas besoin de rebind ici car les désépingles sont écoutés globalement
                     } else {
                         alert('Erreur lors de l\'épinglage.');
                     }
@@ -566,50 +727,8 @@ function reloadAll() {
                     console.error('Erreur:', error);
                 });
         });
-        if (!window.desepingleListenerAdded) {
-            document.addEventListener('click', function(e) {
-                if (e.target.closest('.desepingle_post')) {
-                    e.preventDefault();
-                    const codeUe = document.querySelector('span.code').innerHTML;
-                    console.log(codeUe);
-
-                    const button = e.target.closest('.desepingle_post');
-                    const publicationId = button.dataset.publicationId;
-
-                    fetch(`/professeur/contenu_ue-${codeUe}/publication/` + publicationId + '/desepingle', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest',
-                        },
-                        body: JSON.stringify({
-                            publicationId: publicationId
-                        })
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.status === 'success') {
-                                alert('Publication désépinglée !');
-                                // Exemple : button.closest('.publication-card').remove();
-                            } else {
-                                alert('Erreur lors du désépinglage.');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Erreur:', error);
-                        });
-                }
-            });
-
-            // Marque que l'event listener a été ajouté
-            window.desepingleListenerAdded = true;
-        }
-
     });
-
-
 }
-
 
 
 
@@ -678,31 +797,34 @@ function attachCreateFormSubmit() {
             })
             .then(data => {
                 if (data.status === 'success') {
-                    // Créer un élément DOM à partir du HTML retourné par Symfony
-                    const sectionContainer = document.querySelector('.sections-wrapper'); // ou l'endroit où tu veux insérer
-                    console.log("voici le container : " + sectionContainer);
-                    console.log(data);
+                    const sectionContainer = document.querySelector('.sections-wrapper');
                     const temp = document.createElement('div');
                     temp.innerHTML = data.html;
-                    console.log("HTML reçu :", data.html);
+
                     const newSection = temp.firstElementChild;
-                    console.log("HTML reçu :", data.html);
+
+                    // ➡️ Trouver l'ID à partir de la classe .section-XX
+                    const classList = Array.from(newSection.classList);
+                    const sectionClass = classList.find(cls => cls.startsWith('section-'));
+
+                    if (sectionClass) {
+                        const sectionId = sectionClass.split('-')[1];
+                        newSection.setAttribute('data-section-id', sectionId);
+                        console.log('Section ID attribué :', sectionId);
+                    }
 
                     sectionContainer.appendChild(newSection);
 
                     reloadAll();
 
-                    // Fermer la popup
                     popupContainer.classList.add('hidden');
                     background.classList.add('hidden');
                 } else if (data.status === 'form') {
                     popupContainer.innerHTML = data.html;
-                    attachCreateFormSubmit(); // Réattacher car le DOM a été remplacé
+                    attachCreateFormSubmit();
                 }
             })
-            .catch(err => {
-                console.error("Erreur lors de l'envoi du formulaire :", err);
-            });
+
     });
 
 
@@ -750,6 +872,8 @@ function attachEditPublicationFormListener(publicationId) {
                     const textPost = postDiv.querySelector('.text_post');
                     const nomFichier = postDiv.querySelector('.nom_fichier');
                     const downloadPost = postDiv.querySelector('div.download > a')
+
+
 
                     if (data.type_publication_id === 2 && nomFichier) {
                         nomFichier.textContent = data.contenu_fichier;
@@ -872,9 +996,9 @@ function dropZoneLoaded() {
 }
 
 function inputToggleEditPost() {
-    console.log("hello");
+    console.log("heyyyyyyyy");
 
-    const selectType = document.getElementById('publication_type_publication_id');
+    const selectType = document.querySelector('#publication_type_publication_id.editHelp');
     const contenuTexteRow = document.getElementById('contenuTexteRow');
     const contenuFichierRow = document.getElementById('contenuFichierRow');
 
@@ -895,4 +1019,23 @@ function inputToggleEditPost() {
 
     // Et à chaque changement du select
     selectType.addEventListener('change', toggleContenuFields);
+}
+
+function bindUploadValidation() {
+    const fileInput = document.querySelector('input[type="file"][name$="[contenuFichier]"]');
+
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const extension = file.name.split('.').pop().toLowerCase();
+                const allowedExtensions = ['pdf', 'zip'];
+
+                if (!allowedExtensions.includes(extension)) {
+                    alert('Seuls les fichiers ZIP ou PDF sont acceptés.');
+                    e.target.value = ''; // Vide l'input
+                }
+            }
+        });
+    }
 }

@@ -28,9 +28,12 @@ class PublicationType extends AbstractType
                 'required' => false,
             ])
             ->add('contenuFichier', FileType::class, [
-                'label' => 'Fichier (PDF ou autre)',
+                'label' => 'Fichier (PDF ou ZIP)',
                 'required' => false,
                 'mapped' => false, // <- très important : on gère manuellement dans ton controller
+                'attr' => [
+                    'accept' => '.zip, .pdf' // important pour forcer le type d'upload visuellement
+                ],
             ])
             ->add('derniere_modif', null, [
                 'widget' => 'single_text',
@@ -47,7 +50,8 @@ class PublicationType extends AbstractType
             ])
             ->add('type_publication_id', EntityType::class, [
                 'class' => TypePublication::class,
-                'choice_label' => 'id',
+                'choice_label' => 'nom',
+                'choice_value' => 'id',
             ])
             ->add('code_id', EntityType::class, [
                 'class' => UE::class,

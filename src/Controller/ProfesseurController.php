@@ -181,9 +181,11 @@ final class ProfesseurController extends AbstractController
 
         // Passer l'ID de l'utilisateur explicitement
         foreach ($publicationsEpingles as &$publication) {
+            $publication->utilisateur_id_id = $publication->getUtilisateurId()->getId();
             $publication->utilisateur_id_nom = $publication->getUtilisateurId()->getNom();
             $publication->utilisateur_id_prenom = $publication->getUtilisateurId()->getPrenom();
         }
+
 
         foreach ($publicationsEpingles as &$publication) {
             $publication->getDerniereModif()->format('d/m/Y H:i');
