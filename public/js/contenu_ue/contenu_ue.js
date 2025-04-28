@@ -85,6 +85,11 @@ function openPopup(popup) {
     const boutonFile = document.querySelector(".boutonsSwitch .file");
     const darkBackground = document.querySelector("div.darkBackground");
 
+    darkBackground.addEventListener('click', function (){
+        darkBackground.classList.add('hidden');
+        document.querySelector('div.popupPublication').classList.add('hidden');
+    })
+
 
     switchBg.style.left = "0%";
     boutonText.style.color = "white";
@@ -168,11 +173,18 @@ function ajouterSection() {
                     popupContainer.innerHTML = data.html;
                     popupContainer.classList.remove('hidden');
                     background.classList.remove('hidden');
+
+                    background.addEventListener('click', function () {
+                        background.classList.add('hidden');
+                        popupContainer.classList.add('hidden');
+                    } )
                     attachCreateFormSubmit();
                 }
             });
 
     });
+    background.classList.add('hidden');
+    document.querySelector('.popupAddSection').classList.add('hidden');
 }
 
 
@@ -285,12 +297,18 @@ function bindEditSectionButtons() {
                         popupContainer.innerHTML = data.html;
                         popupContainer.classList.remove('hidden');
                         background.classList.remove('hidden');
+                        background.addEventListener('click', function () {
+                            background.classList.add('hidden');
+                            popupContainer.classList.add('hidden');
+                        })
                         attachEditFormSubmit(sectionId);
                     }
                 });
 
         });
     });
+    background.classList.add('hidden');
+    popupContainer.classList.add('hidden');
 }
 
 
@@ -429,9 +447,13 @@ function ajouterPublication() {
             popupPublication.dataset.sectionId = sectionId;
 
             openPopup(popupPublication);
+
+
+
             afficherFormulaire("texte", sectionId)
         });
     });
+    document.querySelector('div.popupPublication').classList.add('hidden');
 }
 
 
@@ -581,6 +603,11 @@ function editPublication() {
                     if (data.status === 'form') {
                         document.getElementById('edit-publication-form-container').innerHTML = data.html;
                         document.getElementById('editPublicationModal').style.display = 'flex';
+                        document.querySelector('.modal-backdrop').classList.remove('hidden');
+                        document.querySelector('.modal-backdrop').addEventListener('click', function() {
+                            this.classList.add('hidden');
+                            document.getElementById('editPublicationModal').style.display = 'none';
+                        })
                         inputToggleEditPost();
                         attachEditPublicationFormListener(publicationId); // on passe bien l'id ici
                     }
@@ -595,8 +622,8 @@ function editPublication() {
 // document.querySelector('.close-btn').addEventListener('click', function () {
 //     document.getElementById('editPublicationModal').style.display = 'none';
 // });
-
-
+    document.querySelector('.modal-backdrop').classList.add('hidden');
+    document.getElementById('editPublicationModal').style.display = 'none';
 }
 
 function inputToggleEditPost() {

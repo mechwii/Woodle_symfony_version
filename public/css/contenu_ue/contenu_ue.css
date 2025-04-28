@@ -884,9 +884,9 @@ div.fake-button {
 
 .modal-content {
     position: fixed;
-    left: 10%;
-    top: 10%;
-    width: 80%;
+    left: 25%;
+    top: 30%;
+    width: 50%;
     height: auto;
     background-color: white;
     z-index: 5;
@@ -932,7 +932,7 @@ div.fake-button {
 }
 
 
-.popupCreatePublication.fichier #publication_contenuTexte, .popupCreatePublication.fichier label[for="publication_contenuTexte"], .popupCreatePublication.fichier #publication_type_publication_id, .popupCreatePublication.fichier label[for="publication_type_publication_id"], #publication_ordre, label[for="publication_ordre"] {
+.popupCreatePublication.fichier #publication_contenuTexte, .popupCreatePublication.fichier label[for="publication_contenuTexte"], .popupCreatePublication.fichier #publication_type_publication_id, .popupCreatePublication.fichier label[for="publication_type_publication_id"], #publication_ordre, label[for="publication_ordre"], #section_code_id, label[for="section_code_id"] {
     display: none !important;
 }
 
@@ -982,3 +982,39 @@ span.auteur {
 .popupPublication.popup .boutonsSwitch {
     align-self: center;
 }
+
+#editPublicationModal {
+    position: absolute;
+}
+
+.popupEditSectionContainer.popup {
+    height: auto !important;
+    padding: 2em;
+}
+
+.popupEditSectionContainer.popup h2 {
+    text-align: center;
+}
+
+.modal-content {
+    padding: 2em;
+    text-align: center;
+    font-size: 22px;
+    width: 50%;
+}
+
+.modal-content button {
+    background-color: #EF233C;
+    padding: 0.5em 2em;
+    font-size: 18px;
+    font-family: 'Sora', sans-serif;
+    border-radius: 8px;
+    border: 0;
+    color: white;
+}
+
+<p>Es-tu sûr(e) de vouloir supprimer cette section ?</p>
+<div class="modal-actions">
+<button class="cancel-btn-section">Annuler</button>
+<button class="confirm-btn-section">Supprimer</button>
+</div>
