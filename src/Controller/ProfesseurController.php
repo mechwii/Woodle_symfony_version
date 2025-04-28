@@ -307,7 +307,7 @@ final class ProfesseurController extends AbstractController
     }
 
     // supprimer une section
-    #[Route('/professeur/contenu_ue-{codeUe}/section/{id}/delete', name: 'delete_section', methods: ['DELETE'])]
+    #[Route('/professeur/contenu_ue-{codeUe}/section/{id}/delete', name: 'delete_section', methods: ['GET', 'DELETE'])]
     public function deleteSection(Section $section, EntityManagerInterface $entityManager) {
 
         $entityManager->remove($section);
