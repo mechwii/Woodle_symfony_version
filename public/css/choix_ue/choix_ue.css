@@ -10,6 +10,7 @@ div.container > div.banner {
 div.container > div.banner > img {
     width: 120px;
     height: 120px;
+    object-fit: cover;
     border-radius: 100%;
 }
 
@@ -41,7 +42,7 @@ div.container > div.actualites {
     display: flex;
     flex-direction: column;
     margin-bottom: 5em;
-    height: 520px;
+    max-height: 520px;
     overflow-y: auto;
 }
 
@@ -297,4 +298,14 @@ div.active-dot {
 .liste_ue a.ue-link {
     text-decoration: none;
     color: inherit;
+}
+
+.important-notif{
+    background-color: rgba(255, 0, 18, 0.18);
+
+}
+
+#delete-notif-urgent{
+    border: none;
+    margin-left: 30px;
 }

@@ -120,19 +120,21 @@
 
             <div id="ue-content" class="card-container">
                 {% for unite in ue %}
-                <div  id="{{ "ue-"~unite.code}}" class="card-box">
-                    <div class="card-left">
-                        <img id="ue-picture" src="{{"./images/ue/" ~ unite.image}}" alt="Photo de profil admin">
-                        <div class="card-content">
-                            <h4>{{ unite.nom }}</h4>
-                            <h4 class="card-text" id="ue-roles-section">Responsable : {{ unite.prenom_responsable }} {{ unite.nom_responsable }}</h4>
+                        <div  id="{{ "ue-"~unite.code}}" class="card-box">
+                            <div class="card-left">
+                                <img id="ue-picture" src="{{"./images/ue/" ~ unite.image}}" alt="Photo de profil admin">
+                                <div class="card-content">
+                                    <h4>{{ unite.nom }}</h4>
+                                    <h4 class="card-text" id="ue-roles-section">Responsable : {{ unite.prenom_responsable }} {{ unite.nom_responsable }}</h4>
+                                </div>
+                            </div>
+                            <div class="card-action">
+                                <i onclick="modifierUE('{{ unite.code }}')" class="fa-solid fa-pen edit-icon edit"></i>
+                                <i onclick="supprimerUE('{{ unite.code }}')" class="fa-solid fa-trash edit-icon delete"></i>
+                                <a href="{{ path('contenu_ue_admin', {'codeUe': unite.code}) }}"><i class="fa-solid edit-icon fa-computer-mouse"></i></a>
+                            </div>
                         </div>
-                    </div>
-                    <div class="card-action">
-                        <i onclick="modifierUE('{{ unite.code }}')" class="fa-solid fa-pen edit-icon edit"></i>
-                        <i onclick="supprimerUE('{{ unite.code }}')" class="fa-solid fa-trash edit-icon delete"></i>
-                    </div>
-                </div>
+
                 {% endfor %}
         </div>
     </div>

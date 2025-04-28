@@ -201,35 +201,59 @@ CREATE TRIGGER trg_maj_notification
                          FOR EACH ROW
                          EXECUTE FUNCTION maj_dates_notification();
 
+CREATE OR REPLACE FUNCTION maj_ordre_publication()
+RETURNS TRIGGER AS $$
+DECLARE
+max_ordre INT;
+BEGIN
+    -- Trouver l'ordre maximum actuel pour la même section
+SELECT COALESCE(MAX(ordre), 0)
+INTO max_ordre
+FROM Publication
+WHERE section_id = NEW.section_id;
+
+-- Définir le nouvel ordre à max + 1
+NEW.ordre := max_ordre + 1;
+
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Création du trigger
+CREATE TRIGGER trg_maj_ordre_publication
+    BEFORE INSERT ON Publication
+    FOR EACH ROW
+    EXECUTE FUNCTION maj_ordre_publication();
+
 
 
 -- INSERT
 
 INSERT INTO Utilisateur (nom, prenom, email, mot_de_passe, date_creation, date_modification, image)
 VALUES ('San', 'M''hammedu', 'mhammedu.san@example.com', 'password123', '2024-01-15', '2024-01-15',
-        'avatar1.jpg'),
+        'mhammed.jpeg'),
        ('Balonu', 'Elmiru', 'elmiru.balonu@example.com', 'securePass456', '2024-01-20', '2024-02-05',
-        'avatar2.jpg'),
+        'elmir.jpg'),
        ('Alpuren', 'Enessu', 'enessu.alpuren@example.com', 'alpuren2024', '2024-01-25', '2024-01-25',
-        'avatar3.jpg'),
+        'enes.jpg'),
        ('Vazmazz', 'Evrensan', 'evrensan.vazmazz@example.com', 'vazmazz789!', '2024-02-01',
-        '2024-03-10', 'avatar4.jpg'),
+        '2024-03-10', 'evren.jpg'),
        ('Dubois', 'Marie', 'marie.dubois@example.com', 'dubois123', '2024-02-05', '2024-02-05',
-        'avatar5.jpg'),
+        'marie.jpg'),
        ('Martin', 'Thomas', 'thomas.martin@example.com', 'martinPass', '2024-02-10', '2024-02-15',
-        'avatar6.jpg'),
+        'thomas.jpg'),
        ('Bernard', 'Sophie', 'sophie.bernard@example.com', 'sophie2024', '2024-02-15', '2024-02-15',
-        'avatar7.jpg'),
+        'bernard.jpg'),
        ('Petit', 'Lucas', 'lucas.petit@example.com', 'petitLucas!', '2024-02-20', '2024-02-20',
-        'avatar8.jpg'),
+        'lucas.jpg'),
        ('Robert', 'Emma', 'emma.robert@example.com', 'emmaR2024',  '2024-02-25', '2024-03-01',
-        'avatar9.jpg'),
+        'robert.jpeg'),
        ('Richard', 'Hugo', 'hugo.richard@example.com', 'hugoRich456', '2024-03-01', '2024-03-01',
-        'avatar10.jpg'),
+        'hugo.jpeg'),
        ('Kaya', 'Mehmet', 'mehmet.kaya@example.com', 'kayaM2024',  '2024-03-15', '2024-03-15',
-        'avatar13.jpg'),
+        'mehmet.jpg'),
        ('Yilmaz', 'Ayse', 'ayse.yilmaz@example.com', 'yilmazA456!', '2024-03-20', '2024-03-20',
-        'avatar14.jpg');
+        'ayse.jpeg');
 
 INSERT INTO Role (nom)
 VALUES ('ROLE_ADMINISTRATEUR'),
@@ -360,8 +384,6 @@ VALUES (2, 'IA41', FALSE, '2025-04-10 16:00:00');
 INSERT INTO Est_affecte (utilisateur_id, code_id, favori, date_inscription)
 VALUES (2, 'RE4E', TRUE, '2025-04-09 12:05:00');
 
-UPDATE Utilisateur set image='mhammed.jpeg';
-
 INSERT INTO Section (nom, code_id)
 VALUES
     ('Cours Magistraux', 'IA41'),
@@ -408,11 +430,11 @@ VALUES
     (5, 'information');
 
 
-INSERT INTO publication (titre, description, contenu, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id)
+INSERT INTO publication (titre, description, contenu, derniere_modif, visible, section_id, utilisateur_id, type_publication_id, code_id)
 VALUES
-    ( 'Hmmm comment ca va la team', 'Une analyse des ...', 'Contenu détaillé de la publication...', '2025-04-19 10:00:00', 1, TRUE, 1, 2, 3, 'IA41'),
-    ('Absence au prochain TD', 'Une étude approfondie des.', 'Contenu détaillé de la publication...', '2025-04-19 11:00:00', 2, TRUE, 2, 3, 4, 'IA41'),
-    ('CM annulé', 'Un regard sur l’évolution de.', 'Contenu détaillé de la publication...', '2025-04-19 12:00:00', 3, TRUE, 3, 5, 5, 'IA41');
+    ( 'Hmmm comment ca va la team', 'Une analyse des ...', 'Contenu détaillé de la publication...', '2025-04-19 10:00:00', TRUE, 1, 2, 3, 'IA41'),
+    ('Absence au prochain TD', 'Une étude approfondie des.', 'Contenu détaillé de la publication...', '2025-04-19 11:00:00', TRUE, 2, 3, 4, 'IA41'),
+    ('CM annulé', 'Un regard sur l’évolution de.', 'Contenu détaillé de la publication...', '2025-04-19 12:00:00', TRUE, 3, 5, 5, 'IA41');
 
 INSERT INTO Priorite(nom) VALUES
     ('normale'),('élevé');

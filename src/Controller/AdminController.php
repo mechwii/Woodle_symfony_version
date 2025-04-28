@@ -963,4 +963,144 @@ final class AdminController extends AbstractController
         return $this->json(['success' => true], Response::HTTP_OK);
     }
 
+    #[Route('/admin/contenu_ue-{codeUe}', name: 'contenu_ue_admin')]
+    public function contenuUe(string $codeUe, EntityManagerInterface $BDDManager): Response
+    {
+        // Récupération du prof connecté
+        $user = $this->getUser();
+
+        $roles = $user->getRoles();
+
+        $ue = $BDDManager->getRepository(Ue::class)->findOneBy(['id' => $codeUe]);
+
+        $connection = $BDDManager->getConnection();
+
+        // recuperation du nb deleves dans lue
+        $sql_nb_eleves_dans_ue = '
+                SELECT COUNT(est_affecte.utilisateur_id) AS number
+                FROM ue
+                INNER JOIN est_affecte ON est_affecte.code_id = ue.code
+                INNER JOIN utilisateur ON utilisateur.id_utilisateur = est_affecte.utilisateur_id
+                INNER JOIN possede ON possede.utilisateur_id = utilisateur.id_utilisateur
+                WHERE ue.code = :codeUe AND possede.role_id = 3
+                ';
+
+        $prepareSQL = $connection->prepare($sql_nb_eleves_dans_ue);
+        $resultat = $prepareSQL->executeQuery(['codeUe' => $codeUe]);
+        $nb_eleves_ue = $resultat->fetchOne();
+
+        // recupereation de la liste des eleves
+
+        $sql_liste_eleves_dans_ue = '
+                SELECT utilisateur.nom, utilisateur.prenom, utilisateur.email, utilisateur.image
+                FROM ue
+                INNER JOIN est_affecte ON est_affecte.code_id = ue.code
+                INNER JOIN utilisateur ON utilisateur.id_utilisateur = est_affecte.utilisateur_id
+                INNER JOIN possede ON possede.utilisateur_id = utilisateur.id_utilisateur
+                WHERE ue.code = :codeUe AND possede.role_id = 3
+                ';
+
+        $prepareSQL = $connection->prepare($sql_liste_eleves_dans_ue);
+        $resultat = $prepareSQL->executeQuery(['codeUe' => $codeUe]);
+        $liste_eleves_ue = $resultat->fetchAllAssociative();
+
+        // recuperation du nombre denseignants
+        $sql_nb_profs_dans_ue = '
+                SELECT COUNT(est_affecte.utilisateur_id) AS number
+                FROM ue
+                INNER JOIN est_affecte ON est_affecte.code_id = ue.code
+                INNER JOIN utilisateur ON utilisateur.id_utilisateur = est_affecte.utilisateur_id
+                INNER JOIN possede ON possede.utilisateur_id = utilisateur.id_utilisateur
+                WHERE ue.code = :codeUe AND possede.role_id = 2
+                ';
+
+        $prepareSQL = $connection->prepare($sql_nb_profs_dans_ue);
+        $resultat = $prepareSQL->executeQuery(['codeUe' => $codeUe]);
+        $nb_profs_ue = $resultat->fetchOne();
+
+
+        // recupereation de la liste des enseignants
+
+        $sql_liste_profs_dans_ue = '
+                SELECT utilisateur.nom, utilisateur.prenom, utilisateur.email, utilisateur.image
+                FROM ue
+                INNER JOIN est_affecte ON est_affecte.code_id = ue.code
+                INNER JOIN utilisateur ON utilisateur.id_utilisateur = est_affecte.utilisateur_id
+                INNER JOIN possede ON possede.utilisateur_id = utilisateur.id_utilisateur
+                WHERE ue.code = :codeUe AND possede.role_id = 2
+                ';
+
+        $prepareSQL = $connection->prepare($sql_liste_profs_dans_ue);
+        $resultat = $prepareSQL->executeQuery(['codeUe' => $codeUe]);
+        $liste_profs_ue = $resultat->fetchAllAssociative();
+
+
+        // recuperation de la liste des sections
+        $sql_sections_ue = '
+                SELECT id_section as id, nom
+                FROM section
+                WHERE code_id = :codeUe
+                ';
+
+        $prepareSQL = $connection->prepare($sql_sections_ue);
+        $resultat = $prepareSQL->executeQuery(['codeUe' => $codeUe]);
+        $sections_ue = $resultat->fetchAllAssociative();
+
+
+        // recuperation de la lsite des postes
+        $sql_liste_publications = '
+                SELECT id_publication as id, titre, description, contenu_texte, contenu_fichier, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id
+                FROM publication
+                WHERE code_id = :codeUe
+                ORDER BY section_id ASC, ordre ASC 
+                ';
+
+
+        $prepareSQL = $connection->prepare($sql_liste_publications);
+        $resultat = $prepareSQL->executeQuery(['codeUe' => $codeUe]);
+        $liste_publications = $resultat->fetchAllAssociative();
+
+
+        $queryEpingle = $BDDManager->createQuery(
+            'SELECT p
+     FROM App\Entity\Publication p
+     JOIN App\Entity\Utilisateur u WITH p.utilisateur_id = u.id
+     JOIN App\Entity\Epingle e WITH p.id = e.publication_id
+     WHERE p.code_id = :codeUe'
+        )->setParameter('codeUe', $codeUe);
+
+
+        $publicationsEpingles = $queryEpingle->getResult();
+
+        // Passer l'ID de l'utilisateur explicitement
+        foreach ($publicationsEpingles as &$publication) {
+            $publication->utilisateur_id_id = $publication->getUtilisateurId()->getId();
+            $publication->utilisateur_id_nom = $publication->getUtilisateurId()->getNom();
+            $publication->utilisateur_id_prenom = $publication->getUtilisateurId()->getPrenom();
+        }
+
+
+        foreach ($publicationsEpingles as &$publication) {
+            $publication->getDerniereModif()->format('d/m/Y H:i');
+        }
+
+        // dd($publicationsEpingles);
+
+
+        return $this->render('contenue-ue/contenu_ue.html.twig', [
+            'controller_name' => 'AdminController',
+            'ue' => $ue,
+            'nb_eleves_ue' => $nb_eleves_ue,
+            'nb_profs_ue' => $nb_profs_ue,
+            'liste_eleves_ue' => $liste_eleves_ue,
+            'liste_profs_ue' => $liste_profs_ue,
+            'sections_ue' => $sections_ue,
+            'liste_publications' => $liste_publications,
+            'publicationsEpingles' => $publicationsEpingles,
+            'roles' => $roles,
+            'utilisateur' => $user,
+        ]);
+    }
+
+
 }

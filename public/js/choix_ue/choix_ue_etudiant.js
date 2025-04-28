@@ -174,4 +174,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
+function removeUrgentNotif(id){
+    fetch(`notifications/update-priorite/${id}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log('sqd')
+            if(data.success){
+                document.getElementById('notification-'+id).classList.remove('important-notif');
+                const important = document.getElementById('important-'+id);
+                if(important){
+                    important.innerHTML = '';
+                }
+
+                document.querySelector(`#notification-${id} #delete-notif-urgent`).remove();
+            } else {
+                if(data.message){
+                    throw new Error(data.message);
+
+                } else {
+                    throw new Error("Impossible d'update la notification");
+
+                }
+            }
+        })
+        .catch(error => {
+            console.error(error);
+
+        });
+    ///
+
+}
+
 

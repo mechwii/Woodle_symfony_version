@@ -9,6 +9,12 @@
 {% endblock %}
 
 {% block content %}
+    {# Pour savoir si c'est un admin #}
+    {% set is_admin = 'ROLE_ADMINISTRATEUR' in roles %}
+    {% set vue_active = app.session.get('vue_active') %}
+    {% set admin = is_admin and vue_active == 'admin' %}
+
+    <input type="hidden" id="admin-status" value="{{ admin ? 'true' : 'false' }}">
 
     {#    Titre de l'UE pour savoir dans quelle UE on se situe #}
     <div class="title_ue">
@@ -92,7 +98,8 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
     {% elseif publication.typePublicationId.id == 4 %}warning
     {% elseif publication.typePublicationId.id == 5 %}info
     {% endif %}"
-                                 data-id="{{ publication.id }}">
+                            data-id="{{ publication.id }}" >
+
 
                                 <div class="top_post">
                                     <h5 class="title_post">{{ publication.titre }}</h5>
@@ -171,12 +178,14 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
     {% elseif publication.type_publication_id == 4 %}warning
     {% elseif publication.type_publication_id == 5 %}info
     {% endif %}"
-                         data-id="{{ publication.id }}">
+                         data-id="{{ publication.id }}" data-ordre="{{ publication.ordre }}">
 
                         <div class="top_post">
                             <h5 class="title_post">{{ publication.titre }}</h5>
                             <span class="date_post">{{ publication.derniere_modif }}</span>
-                            <div class="interactions_post">
+                            {% if 'ROLE_ELEVE' not in roles %}
+
+                                <div class="interactions_post">
 
                                 {% if publication.utilisateur_id == utilisateur.id %}
 
@@ -203,13 +212,14 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
                                 {% endif %}
                             </div>
                             <!-- Icône trois points -->
-                            <i class="fa-solid fa-ellipsis-h ellipsis_icon"></i>
+                            <i style="margin-left: 10px" class="fa-solid fa-up-down-left-right drag-handle"></i>
 
                             <!-- Menu d'options caché par défaut -->
                             <div class="options_menu">
                                 <button class="edit_post">Modifier</button>
                                 <button class="delete_post">Supprimer</button>
                             </div>
+                            {% endif %}
                         </div>
                         {% if publication.type_publication_id == 2 %}
                             <div class="download">
@@ -310,5 +320,7 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
     {% block javascripts %}
         {{ parent() }}
         <script src="{{ asset('js/contenu_ue/contenu_ue.js') }}"></script>
+        <script src="{{ asset('js/contenu_ue/drag_ordre.js') }}"></script>
+
     {% endblock %}
 {% endblock %}

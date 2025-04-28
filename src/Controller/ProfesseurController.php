@@ -157,6 +157,7 @@ final class ProfesseurController extends AbstractController
                 SELECT id_publication as id, titre, description, contenu_texte, contenu_fichier, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id
                 FROM publication
                 WHERE code_id = :codeUe
+                ORDER BY section_id ASC, ordre ASC 
                 ';
 
         $prepareSQL = $connection->prepare($sql_liste_publications);
@@ -420,11 +421,14 @@ final class ProfesseurController extends AbstractController
         $type = $request->query->get('type', 'texte');
 
         $form = $this->createForm(PublicationType::class, $publication);
+
         $form->add('type', HiddenType::class, [
             'mapped' => false,
             'data' => $type,
         ]);
         $form->handleRequest($request);
+
+        $isAdmin = $request->request->get('admin');
 
         // Si le formulaire est soumis et valide
         if ($form->isSubmitted() && $form->isValid()) {
@@ -441,7 +445,7 @@ final class ProfesseurController extends AbstractController
             // Enregistrer la publication dans la base de données
             $entityManager->persist($publication);
             $entityManager->flush();
-            $notificationController->createAjoutPublicationNotification($entityManager, $ue_post, $this->getUser(), $publication->getTypePublicationId()->getId(), $publication);
+            $notificationController->createAjoutPublicationNotification($entityManager, $ue_post, $this->getUser(), $publication->getTypePublicationId()->getId(), $publication, $isAdmin);
 
 
 
@@ -581,4 +585,107 @@ final class ProfesseurController extends AbstractController
         ]);
     }
 
+    #[Route('/api/publication/update-position', name: 'update_publication_position', methods: ['POST'])]
+    public function updatePublicationPosition(EntityManagerInterface $BDDManager,Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        // Vérifier si les données ont été correctement envoyées
+        $publicationId = $data['id'] ?? null;
+        $newOrdre = $data['ordre'] ?? null;
+        $originalOrdre = $data['originalOrdre'] ?? null;
+        $originalSectionId = $data['originalSectionId'] ?? null;
+        $sectionId = $data['sectionId'] ?? null;
+
+        // Vérifier la validité des données
+        if (empty($publicationId) || empty($sectionId) || empty($newOrdre) || empty($originalOrdre) || empty($originalSectionId)) {
+            return new JsonResponse(['success' => false, 'message' => 'Données manquantes'], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Trouver la publication à mettre à jour
+        $publication = $BDDManager->getRepository(Publication::class)->find($publicationId);
+        if (!$publication) {
+            return new JsonResponse(['success' => false, 'message' => 'Publication non trouvée'], Response::HTTP_NOT_FOUND);
+        }
+
+        // Cas où la publication change de section
+        if ($originalSectionId !== $sectionId) {
+            // Réajuster l'ordre des publications dans la section d'origine (suppression de la publication de l'ancienne section)
+            $this->recalculateOrdreInSection($BDDManager, $originalSectionId);
+
+            // Mettre à jour la section de la publication
+            $publication->setSectionId($BDDManager->getRepository(Section::class)->find($sectionId));
+        }
+
+        // Cas où la publication doit être déplacée tout en bas
+        if ($newOrdre === 'last') {
+            // Récupérer le dernier ordre dans la nouvelle section
+            $publications = $BDDManager->getRepository(Publication::class)->findBy(['section_id' => $sectionId], ['ordre' => 'DESC']);
+            $newOrdre = empty($publications) ? 1 : $publications[0]->getOrdre() + 1;
+        }
+
+        // Cas où la publication change d'ordre dans la même section
+        if ($originalSectionId === $sectionId) {
+            $this->updatePublicationOrderInSection($BDDManager, $publication, $originalOrdre, $newOrdre);
+        }
+
+        // Mettre à jour l'ordre de la publication
+        $publication->setOrdre($newOrdre);
+
+        // Enregistrer les nouvelles positions
+        $BDDManager->flush();
+
+        return new JsonResponse(['success' => true, 'message' => 'Ordre de la publication mis à jour']);
+    }
+
+    private function updatePublicationOrderInSection(EntityManagerInterface $BDDManager, Publication $publication, int $originalOrdre, int $newOrdre)
+    {
+        $section = $publication->getSectionId();
+        $publications = $BDDManager->getRepository(Publication::class)->findBy(['section_id' => $section], ['ordre' => 'ASC']);
+
+        // Cas où la publication est déplacée vers un ordre plus bas
+        if ($newOrdre > $originalOrdre) {
+            foreach ($publications as $pub) {
+                if ($pub->getId() === $publication->getId()) {
+                    continue; // ignorer la publication déplacée
+                }
+                if ($pub->getOrdre() > $originalOrdre && $pub->getOrdre() <= $newOrdre) {
+                    $pub->setOrdre($pub->getOrdre() - 1);
+                }
+            }
+        }
+        // Cas où la publication est déplacée vers un ordre plus haut
+        elseif ($newOrdre < $originalOrdre) {
+            foreach ($publications as $pub) {
+                if ($pub->getId() === $publication->getId()) {
+                    continue; // ignorer la publication déplacée
+                }
+                if ($pub->getOrdre() >= $newOrdre && $pub->getOrdre() < $originalOrdre) {
+                    $pub->setOrdre($pub->getOrdre() + 1);
+                }
+            }
+        }
+
+        // Puis placer la publication à la bonne position
+        $publication->setOrdre($newOrdre);
+
+        $BDDManager->flush();
+    }
+
+
+    private function recalculateOrdreInSection(EntityManagerInterface $BDDManager, int $sectionId)
+    {
+        // Récupérer toutes les publications de la section d'origine, triées par ordre
+        $publications = $BDDManager->getRepository(Publication::class)->findBy(['section_id' => $sectionId], ['ordre' => 'ASC']);
+
+        // Recalculer l'ordre de toutes les publications de la section
+        $ordre = 1;
+        foreach ($publications as $pub) {
+            $pub->setOrdre($ordre);
+            $ordre++;
+        }
+
+        // Enregistrer les nouvelles positions
+        $BDDManager->flush();
+    }
 }

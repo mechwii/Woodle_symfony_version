@@ -119,6 +119,90 @@ function closeAllPopups() {
 
     allPopups.forEach(p => p.classList.add("hidden"));
     darkBackground.classList.add("hidden");
+    const confirmBtn_post = document.querySelector('.confirm-btn-post');
+
+    if(confirmBtn_post){
+        confirmBtn_post.removeEventListener('click', () => {
+            if (!publicationIdToDelete) return;
+
+            const codeUe = document.querySelector('span.code').innerHTML;// Stocke le codeUe dans un attribut quelque part
+            console.log(codeUe);
+
+            fetch(`/professeur/contenu_ue-${codeUe}/section/${sectionIdToDeleteForPublication}/publication/${publicationIdToDelete}/delete`, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    console.log("ici");
+                    if (data.status === 'success' && publicationToDelete) {
+                        publicationToDelete.remove();
+                        console.log("publication supprimée avec succès")
+                    }
+
+                    modal_post.classList.add('hidden');
+                    backdrop_post.classList.add('hidden');
+                    sectionToDeleteForPublication = null;
+                    sectionIdToDeleteForPublication = null;
+                    publicationToDelete = null;
+                    publicationIdToDelete = null;
+                })
+                .catch(err => {
+                    console.log("par la");
+
+                    console.error("Erreur AJAX :", err);
+                });
+        })
+    }
+
+    const confirmBtn = document.querySelector('.confirm-btn-section');
+
+    if(confirmBtn){
+        confirmBtn.removeEventListener('click', () => {
+
+            if (!sectionIdToDelete) return;
+
+            const codeUe = document.querySelector('span.code').innerHTML;// Stocke le codeUe dans un attribut quelque part
+            console.log(codeUe);
+
+            fetch(`/professeur/contenu_ue-${codeUe}/section/${sectionIdToDelete}/delete`, {
+                method: 'DELETE'
+            })
+                .then(res => {
+                    if (!res.ok) {
+                        // Si la réponse n'est pas OK (404, 500 etc)
+                        throw new Error(`HTTP error! status: ${res.status}`);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.status === 'success' && sectionToDelete) {
+                        sectionToDelete.remove();
+                        console.log("section supprimée avec succès");
+                    } else {
+                        console.error("Erreur côté serveur :", data.message || "Erreur inconnue.");
+                    }
+
+                    modal.classList.add('hidden');
+                    backdrop.classList.add('hidden');
+                    sectionToDelete = null;
+                    sectionIdToDelete = null;
+                })
+                .catch(err => {
+                    console.error("Erreur AJAX capturée:", err.message);
+                    modal.classList.add('hidden');
+                    backdrop.classList.add('hidden');
+                    sectionToDelete = null;
+                    sectionIdToDelete = null;
+                });
+
+        });
+    }
+
+
+
 }
 
 
@@ -407,6 +491,7 @@ function deleteSection() {
             .then(data => {
                 if (data.status === 'success' && sectionToDelete) {
                     sectionToDelete.remove();
+                    closeAllPopups();
                     console.log("section supprimée avec succès");
                 } else {
                     console.error("Erreur côté serveur :", data.message || "Erreur inconnue.");
@@ -418,11 +503,11 @@ function deleteSection() {
                 sectionIdToDelete = null;
             })
             .catch(err => {
-                /*console.error("Erreur AJAX capturée:", err.message);
+                console.error("Erreur AJAX capturée:", err.message);
                 modal.classList.add('hidden');
                 backdrop.classList.add('hidden');
                 sectionToDelete = null;
-                sectionIdToDelete = null;*/
+                sectionIdToDelete = null;
             });
 
     });
@@ -481,8 +566,6 @@ function afficherFormulaire(type) {
                 formulaireContainer.innerHTML = data.html;
                 bindUploadValidation();
                 attachCreatePublicationListener(sectionId); // écoute le submit
-
-
             }
         })
         .catch(error => {
@@ -498,10 +581,19 @@ function attachCreatePublicationListener(sectionId) {
     const form = document.querySelector(".create-publication-form");
     if (!form) return;
 
+
+
     form.addEventListener("submit", function (e) {
         e.preventDefault();
+        console.log(document.getElementById('admin-status').value)
 
         const formData = new FormData(form);
+
+        formData.append('admin',document.getElementById('admin-status').value )
+
+        for (let [key, value] of formData.entries()) {
+            console.log( "formdata : " + key + ': ' + value);
+        }
         console.log(form.action);
 
         fetch(`/professeur/contenu_ue-${codeUe}/section/${sectionId}/publication/create`, {

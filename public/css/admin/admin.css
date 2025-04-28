@@ -8,7 +8,9 @@
 
 #photo-welcome {
     width: 110px;
+    height: 110px;
     border-radius: 100px;
+    object-fit: cover;
 }
 
 .welcome-content {
@@ -425,6 +427,7 @@
 
     #photo-welcome {
         width: 80px;
+        height: 80px;
     }
 
     .statistiques-section {

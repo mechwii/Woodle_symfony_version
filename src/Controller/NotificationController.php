@@ -117,12 +117,15 @@ final class NotificationController extends AbstractController
         UE $ue,
         Utilisateur $expediteur,
         int $typePublicationId,
-        Publication $publication
+        Publication $publication,
+        bool $isAdmin
     ): void {
         $utilisateurInUE = $entityManager->getRepository(EstAffecte::class)->findBy(['code_id' => $ue]);
 
         foreach($utilisateurInUE as $util) {
             $utilisateur = $util->getUtilisateurId();
+            // On met les notifs que pour les professeurs
+            // FAIRE EN SORTE PAS EN FONCTION DE ROLE ELEVE MAIS DE ADMIN
             if($utilisateur !== $expediteur) {
                 $notification = new Notification();
 
@@ -138,11 +141,25 @@ final class NotificationController extends AbstractController
                     $notification->setContenu("a posté un nouveau message dans ");
                 }
 
-                if(in_array('ROLE_PROFESSEUR', $roles)) {
-                    $notification->setUrlDestination('professeur/contenu_ue-' . $ue->getId());
+                $priorite = $entityManager->getRepository(Priorite::class)->findOneBy(['id' => 1]);
+                $notification->setPrioriteId($priorite);
 
-                }else if(in_array('ROLE_ELEVE', $roles)){
+
+                if(in_array('ROLE_PROFESSEUR', $roles)) {
+                   $notification->setUrlDestination('professeur/contenu_ue-' . $ue->getId());
+                   if($isAdmin){
+                       $priorite2 = $entityManager->getRepository(Priorite::class)->findOneBy(['id' => 2]);
+                       $notification->setPrioriteId($priorite2);
+
+                   } else{
+                       $notification->setPrioriteId($priorite);
+
+                   }
+                }
+                else if(in_array('ROLE_ELEVE', $roles)){
                     $notification->setUrlDestination('etudiant/contenu_ue-' . $ue->getId());
+                    $notification->setPrioriteId($priorite);
+
                 }
 
                 if ($typeNotification) {
@@ -155,15 +172,42 @@ final class NotificationController extends AbstractController
 
                 $notification->setCodeId($ue);
 
-                $priorite = $entityManager->getRepository(Priorite::class)->findOneBy(['id' => 1]);
-                if ($priorite) {
-                    $notification->setPrioriteId($priorite);
-                }
+
 
                 $entityManager->persist($notification);
             }
         }
         $entityManager->flush();
+    }
+
+    /**
+     * Crée une notification lorsqu'un utilisateur est affecté à une UE
+     */
+    #[Route('/notifications/update-priorite/{notification}', name: 'notifications_update_priorite')]
+    public function updateNotifPriorite(
+        EntityManagerInterface $entityManager,
+        int $notification,
+    ): JSONResponse {
+        $not = $entityManager->getRepository(Notification::class)->find($notification);
+        $priorite = $entityManager->getRepository(Priorite::class)->findOneBy(['id' => 1]);
+
+
+
+        if (!$not || !$priorite) {
+            return new JsonResponse(['success' => false, 'message' => 'Notification ou priorité non trouvée'], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+
+        $not->setPrioriteId($priorite);
+        $entityManager->persist($not);
+        $entityManager->flush();
+
+        return new JSONResponse([
+            'success' => true,
+        ]);
+
 
     }
+
+
 }

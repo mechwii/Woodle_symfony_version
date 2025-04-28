@@ -30,20 +30,41 @@
         <ul id="notifications-list">
 
             {% for notification in notifications %}
+                {% set classes = [] %}
                 {% if notification.type_notification_id == 1 %}
-                    <li  class="affectation"><i class="lni lni-books-2"></i><a href="{{ notification.url_destination }}"><b>{{ notification.nom }}</b> {{ notification.contenu }} <b>{{ notification.code_id }}</b></a></li>
+                    {% set classes = classes|merge(['affectation']) %}
                 {% elseif notification.type_notification_id == 5 %}
-                    <li class="fichier"><i class="lni lni-file-multiple"></i><a href="{{ notification.url_destination }}"><b>{{ notification.nom }}</b> {{ notification.contenu }} <b>{{ notification.code_id }}</b></a></li>
-
+                    {% set classes = classes|merge(['fichier']) %}
                 {% else %}
-                    <li class="message"><i class="lni lni-comment-1"></i><a href="{{ notification.url_destination }}"><b>{{ notification.nom }}</b> {{ notification.contenu }} <b>{{ notification.code_id }}</b></a></li>
-
+                    {% set classes = classes|merge(['message']) %}
                 {% endif %}
 
+                {% if notification.priorite_id == 2 %}
+                    {% set classes = classes|merge(['important-notif']) %}
+                {% endif %}
+
+                <li id="{{ "notification-"~notification.id_notification }}" class="{{ classes|join(' ') }}">
+                    {% if notification.type_notification_id == 1 %}
+                        <i class="lni lni-books-2"></i>
+                    {% elseif notification.type_notification_id == 5 %}
+                        <i class="lni lni-file-multiple"></i>
+                    {% else %}
+                        <i class="lni lni-comment-1"></i>
+                    {% endif %}
+
+                    <a href="{{ notification.url_destination }}">
+                        <b>{{ notification.nom }}</b> {{ notification.contenu }} <b>{{ notification.code_id }}</b>
+                    </a>
+
+                    {% if notification.priorite_id == 2 %}
+                        <p id="{{ "important-"~notification.id_notification }}" style="margin-left: 20px; color: red;">IMPORTANT !</p>
+                        <button  onclick="removeUrgentNotif({{ notification.id_notification }})" id="delete-notif-urgent">X</button>
+                    {% endif %}
+                </li>
             {% endfor %}
         </ul>
         {% if showMoreButton %}
-            <button onclick="updateNotif()" id="afficherPlus">Afficher plus</button>
+            <button onclick="updateNotif(notification.notification_id)" id="afficherPlus">Afficher plus</button>
         {% endif %}
     </div>
     {% endif %}

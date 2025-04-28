@@ -142,7 +142,9 @@ final class EtudiantController extends AbstractController
                 SELECT id_publication as id, titre, description, contenu_texte, contenu_fichier, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id
                 FROM publication
                 WHERE code_id = :codeUe
+                ORDER BY section_id ASC, ordre ASC 
                 ';
+
 
         $prepareSQL = $connection->prepare($sql_liste_publications);
         $resultat = $prepareSQL->executeQuery(['codeUe' => $codeUe]);
@@ -176,7 +178,7 @@ final class EtudiantController extends AbstractController
 
 
         return $this->render('contenue-ue/contenu_ue.html.twig', [
-            'controller_name' => 'ProfesseurController',
+            'controller_name' => 'EtudiantController',
             'ue' => $ue,
             'nb_eleves_ue' => $nb_eleves_ue,
             'nb_profs_ue' => $nb_profs_ue,

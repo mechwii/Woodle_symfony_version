@@ -21,10 +21,11 @@
 }
 
 .form-left img {
-    height: 75%;
-    width: auto;
+    height: 270px;
+    width: 270px;
     border-radius: 200px;
     margin: 20%;
+    object-fit: cover;
     position: absolute;
 }
 
