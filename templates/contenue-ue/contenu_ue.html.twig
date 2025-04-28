@@ -10,20 +10,19 @@
 
 {% block content %}
 
-{#    Titre de l'UE pour savoir dans quelle UE on se situe#}
+    {#    Titre de l'UE pour savoir dans quelle UE on se situe #}
     <div class="title_ue">
         <h2>{{ ue.nom }}</h2>
         <span class="code">{{ ue.id }}</span>
     </div>
 
-{#    Il me faut une liste des utilisateurs qui apparait quand je clique sur un des btn stats
+    {#    Il me faut une liste des utilisateurs qui apparait quand je clique sur un des btn stats
 dedans il me faut un slider pour switch entre les deux eleves/professeurs
+    #}
 
-#}
-
-{#    Partie statistiques liée aux statistiques concernant cette UE, on peut cliquer sur les divs pour voir qui sont spécifiquement les professerus et les étudiants #}
+    {#    Partie statistiques liée aux statistiques concernant cette UE, on peut cliquer sur les divs pour voir qui sont spécifiquement les professerus et les étudiants #}
+    {% if 'ROLE_ELEVE' not in roles %}
     <div class="statistiques">
-
         <div class="statistiques-section eleves">
             <div class="top-statistiques-section">
                 <h4>Nombre d'élèves</h4>
@@ -57,9 +56,11 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
 
         </div>
     </div>
+    {% endif %}
 
-{#    Les interactions possibles avec les Publications situées plus bas#}
+    {#    Les interactions possibles avec les Publications situées plus bas #}
 
+    {% if 'ROLE_ELEVE' not in roles %}
     <div class="interactions">
         <button class="filter_button">
             <i class="fa-solid fa-filter"></i>
@@ -74,56 +75,58 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
             Ajouter une section
         </button>
     </div>
+    {% endif %}
 
-{#    Partie épinglés, ici seront les publications épinglées #}
+    {#    Partie épinglés, ici seront les publications épinglées #}
     <div class="epingles">
         <h3>Epinglés 📌</h3>
         {% if publicationsEpingles is not empty %}
             <div class="publications-epingles">
 
                 {% for publication in publicationsEpingles %}
-                    {% if publication.visible %}
-                    <div class="publication-epinglee">
-                        <div class="post
+                    {% if publication.visible or "ROLE_PROFESSEUR" in roles %}
+                        <div class="publication-epinglee">
+                            <div class="post
     {% if publication.typePublicationId.id == 2 %}file
     {% elseif publication.typePublicationId.id == 3 %}calendar
     {% elseif publication.typePublicationId.id == 4 %}warning
     {% elseif publication.typePublicationId.id == 5 %}info
     {% endif %}"
-                             data-id="{{ publication.id }}">
+                                 data-id="{{ publication.id }}">
 
-                            <div class="top_post">
-                                <h5 class="title_post">{{ publication.titre }}</h5>
-                                <span class="date_post">{{ publication.derniereModif.date|date('d/m/Y H:i') }}</span>
-                                <span class="auteur">Epinglé par : {{ publication.utilisateur_id_prenom }} {{ publication.utilisateur_id_nom }}</span>
-                                <div class="interactions_post">
-                                    {% if publication.utilisateur_id_id == utilisateur.id %}
-                                    <button class="desepingle_post" data-publication-id="{{ publication.id }}"><i class="fa-solid fa-thumbtack"></i></button>
-                                    {% endif %}
+                                <div class="top_post">
+                                    <h5 class="title_post">{{ publication.titre }}</h5>
+                                    <span class="date_post">{{ publication.derniereModif.date|date('d/m/Y H:i') }}</span>
+                                    <span class="auteur">Epinglé par : {{ publication.utilisateur_id_prenom }} {{ publication.utilisateur_id_nom }}</span>
+                                    <div class="interactions_post">
+                                        {% if publication.utilisateur_id_id == utilisateur.id %}
+                                            <button class="desepingle_post" data-publication-id="{{ publication.id }}">
+                                                <i class="fa-solid fa-thumbtack"></i></button>
+                                        {% endif %}
 
-                        </div>
-                                <!-- Icône trois points -->
-                                <i class="fa-solid fa-ellipsis-h ellipsis_icon"></i>
+                                    </div>
+                                    <!-- Icône trois points -->
+                                    <i class="fa-solid fa-ellipsis-h ellipsis_icon"></i>
 
-                                <!-- Menu d'options caché par défaut -->
-                                <div class="options_menu">
-                                    <button class="edit_post">Modifier</button>
-                                    <button class="delete_post">Supprimer</button>
+                                    <!-- Menu d'options caché par défaut -->
+                                    <div class="options_menu">
+                                        <button class="edit_post">Modifier</button>
+                                        <button class="delete_post">Supprimer</button>
+                                    </div>
                                 </div>
+                                {% if publication.typePublicationId.id == 2 %}
+                                    <div class="download">
+                                        <i class="fa-solid fa-file-pdf"></i>
+                                        <a href="{{ asset('/uploads/' ~ publication.contenuFichier) }}" download>
+                                            <span class="nom_fichier">{{ publication.contenuFichier }}</span>
+                                            <i class="fa-solid fa-download"></i>
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <p class="text_post">{{ publication.contenuTexte }}</p>
+                                {% endif %}
                             </div>
-                            {% if publication.typePublicationId.id == 2 %}
-                                <div class="download">
-                                    <i class="fa-solid fa-file-pdf"></i>
-                                    <a href="{{ asset('/uploads/' ~ publication.contenuFichier) }}" download>
-                                        <span class="nom_fichier">{{ publication.contenuFichier }}</span>
-                                        <i class="fa-solid fa-download"></i>
-                                    </a>
-                                </div>
-                            {% else %}
-                                <p class="text_post">{{ publication.contenuTexte }}</p>
-                            {% endif %}
                         </div>
-                    </div>
                     {% endif %}
                 {% endfor %}
             </div>
@@ -132,102 +135,105 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
         {% endif %}
     </div>
 
-{#Partie liste des publications#}
+    {# Partie liste des publications #}
 
-<div class="sections-wrapper">
-    {% set publicationsEpinglesIds = publicationsEpingles|map(p => p.id)|join(',') %}
-    {% for section in sections_ue %}
-        <div class="section section-{{ section.id }}" data-section-id="{{ section.id }}">
-            <div class="head-section">
-                <h3>{{ section.nom }}</h3>
-                <button class="add_post" data-section-id="{{ section.id }}">
-                    <i class="fa-solid fa-feather"></i>
-                </button>
-                <button class="delete_section" data-section-id="{{ section.id }}" >
-                    <i class="fa-solid fa-trash"></i>
-                </button>
-                <button class="edit_section">
-                    <i class="fa-solid fa-edit"></i>
-                </button>
-            </div>
+    <div class="sections-wrapper">
+        {% set publicationsEpinglesIds = publicationsEpingles|map(p => p.id)|join(',') %}
+        {% for section in sections_ue %}
+            <div class="section section-{{ section.id }}" data-section-id="{{ section.id }}">
+                <div class="head-section">
+                    <h3>{{ section.nom }}</h3>
+                    {% if 'ROLE_ELEVE' not in roles %}
+                    <button class="add_post" data-section-id="{{ section.id }}">
+                        <i class="fa-solid fa-feather"></i>
+                    </button>
+                    <button class="delete_section" data-section-id="{{ section.id }}">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                    <button class="edit_section">
+                        <i class="fa-solid fa-edit"></i>
+                    </button>
+                    {% endif %}
+                </div>
 
-            {% set hasPublications = false %}
-            {% for publication in liste_publications %}
+                {% set hasPublications = false %}
+                {% for publication in liste_publications %}
 
-            {% if publication.section_id == section.id and publication.visible %}
-            {% if not hasPublications %}
-            <div class="liste_posts">
-                {% set hasPublications = true %}
-                {% endif %}
+                {% if (publication.section_id == section.id and publication.visible) or (publication.section_id == section.id and 'ROLE_PROFESSEUR' in roles ) %}
+                {% if not hasPublications %}
+                <div class="liste_posts">
+                    {% set hasPublications = true %}
+                    {% endif %}
 
-                <div class="post
+                    <div class="post
     {% if publication.type_publication_id == 2 %}file
     {% elseif publication.type_publication_id == 3 %}calendar
     {% elseif publication.type_publication_id == 4 %}warning
     {% elseif publication.type_publication_id == 5 %}info
     {% endif %}"
-                     data-id="{{ publication.id }}">
+                         data-id="{{ publication.id }}">
 
-                <div class="top_post">
-                        <h5 class="title_post">{{ publication.titre }}</h5>
-                        <span class="date_post">{{ publication.derniere_modif }}</span>
-                        <div class="interactions_post">
+                        <div class="top_post">
+                            <h5 class="title_post">{{ publication.titre }}</h5>
+                            <span class="date_post">{{ publication.derniere_modif }}</span>
+                            <div class="interactions_post">
 
-                            {% if publication.utilisateur_id == utilisateur.id %}
+                                {% if publication.utilisateur_id == utilisateur.id %}
 
-                            <button class="edit_post" data-url="{{ path('publication_edit', {
-                                codeUe: ue.id,
-                                id_section: section.id,
-                                id_publication: publication.id
-                            }) }}">
-                                <i class="fa-solid fa-pen"></i>
-                            </button>
+                                    <button class="edit_post" data-url="{{ path('publication_edit', {
+                                        codeUe: ue.id,
+                                        id_section: section.id,
+                                        id_publication: publication.id
+                                    }) }}">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
 
 
-                            <button class="delete_post" data-publication-id="{{ publication.id }}"><i class="fa-solid fa-trash"></i></button>
+                                    <button class="delete_post" data-publication-id="{{ publication.id }}"><i
+                                                class="fa-solid fa-trash"></i></button>
 
-                            {% endif %}
+                                {% endif %}
 
-                            {% if publication.id not in publicationsEpinglesIds %}
-                                <button class="epingle_post" data-publication-id="{{ publication.id }}">
-                                    <i class="fa-solid fa-thumbtack"></i>
-                                </button>
-                            {% else %}
+                                {% if publication.id not in publicationsEpinglesIds %}
+                                    <button class="epingle_post" data-publication-id="{{ publication.id }}">
+                                        <i class="fa-solid fa-thumbtack"></i>
+                                    </button>
+                                {% else %}
 
-                            {% endif %}
+                                {% endif %}
+                            </div>
+                            <!-- Icône trois points -->
+                            <i class="fa-solid fa-ellipsis-h ellipsis_icon"></i>
+
+                            <!-- Menu d'options caché par défaut -->
+                            <div class="options_menu">
+                                <button class="edit_post">Modifier</button>
+                                <button class="delete_post">Supprimer</button>
+                            </div>
                         </div>
-                        <!-- Icône trois points -->
-                        <i class="fa-solid fa-ellipsis-h ellipsis_icon"></i>
-
-                        <!-- Menu d'options caché par défaut -->
-                        <div class="options_menu">
-                            <button class="edit_post">Modifier</button>
-                            <button class="delete_post">Supprimer</button>
-                        </div>
+                        {% if publication.type_publication_id == 2 %}
+                            <div class="download">
+                                <i class="fa-solid fa-file-pdf"></i>
+                                <a href="{{ asset('/uploads/' ~ publication.contenu_fichier) }}" download>
+                                    <span class="nom_fichier">{{ publication.contenu_fichier }}</span>
+                                    <i class="fa-solid fa-download"></i>
+                                </a>
+                            </div>
+                        {% else %}
+                            <p class="text_post">{{ publication.contenu_texte }}</p>
+                        {% endif %}
                     </div>
-                    {% if publication.type_publication_id == 2 %}
-                        <div class="download">
-                            <i class="fa-solid fa-file-pdf"></i>
-                            <a href="{{ asset('/uploads/' ~ publication.contenu_fichier) }}" download>
-                                <span class="nom_fichier">{{ publication.contenu_fichier }}</span>
-                                <i class="fa-solid fa-download"></i>
-                            </a>
-                        </div>
-                    {% else %}
-                    <p class="text_post">{{ publication.contenu_texte }}</p>
                     {% endif %}
-                </div>
-                {% endif %}
-                {% endfor %}
+                    {% endfor %}
 
-                {% if hasPublications %}
+                    {% if hasPublications %}
+                </div>
+            {% else %}
+                <p>Aucune publication dans cette section.</p>
+                {% endif %}
             </div>
-        {% else %}
-            <p>Aucune publication dans cette section.</p>
-            {% endif %}
-        </div>
-    {% endfor %}
-</div>
+        {% endfor %}
+    </div>
 
     <div class="popUpListe popup hidden">
         <div class="boutonsSwitchListes">
@@ -260,11 +266,11 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
     </div>
 
     <div class="popupEditSectionContainer hidden">
-{#        Ici on mettra le tempalte du formulaire edit#}
+        {#        Ici on mettra le tempalte du formulaire edit #}
     </div>
 
     <div class="popup popupAddSection hidden">
-{#       ici on mettra le tempalte du formulaire create#}
+        {#       ici on mettra le tempalte du formulaire create #}
     </div>
 
     <div class="custom-modal hidden">

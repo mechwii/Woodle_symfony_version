@@ -134,7 +134,7 @@ final class EtudiantController extends AbstractController
 
         $prepareSQL = $connection->prepare($sql_sections_ue);
         $resultat = $prepareSQL->executeQuery(['codeUe' => $codeUe]);
-        $sections_ue= $resultat->fetchAllAssociative();
+        $sections_ue = $resultat->fetchAllAssociative();
 
 
         // recuperation de la lsite des postes
@@ -146,21 +146,33 @@ final class EtudiantController extends AbstractController
 
         $prepareSQL = $connection->prepare($sql_liste_publications);
         $resultat = $prepareSQL->executeQuery(['codeUe' => $codeUe]);
-        $liste_publications= $resultat->fetchAllAssociative();
+        $liste_publications = $resultat->fetchAllAssociative();
 
 
         $queryEpingle = $BDDManager->createQuery(
             'SELECT p
-                 FROM App\Entity\Publication p
-                JOIN App\Entity\Epingle e WITH p.id = e.publication_id
-                WHERE p.code_id = :codeUe'
+     FROM App\Entity\Publication p
+     JOIN App\Entity\Utilisateur u WITH p.utilisateur_id = u.id
+     JOIN App\Entity\Epingle e WITH p.id = e.publication_id
+     WHERE p.code_id = :codeUe'
         )->setParameter('codeUe', $codeUe);
-
 
 
         $publicationsEpingles = $queryEpingle->getResult();
 
-//        dd($publicationsEpingles);
+        // Passer l'ID de l'utilisateur explicitement
+        foreach ($publicationsEpingles as &$publication) {
+            $publication->utilisateur_id_id = $publication->getUtilisateurId()->getId();
+            $publication->utilisateur_id_nom = $publication->getUtilisateurId()->getNom();
+            $publication->utilisateur_id_prenom = $publication->getUtilisateurId()->getPrenom();
+        }
+
+
+        foreach ($publicationsEpingles as &$publication) {
+            $publication->getDerniereModif()->format('d/m/Y H:i');
+        }
+
+        // dd($publicationsEpingles);
 
 
         return $this->render('contenue-ue/contenu_ue.html.twig', [
