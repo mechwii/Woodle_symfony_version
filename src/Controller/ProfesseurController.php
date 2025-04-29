@@ -428,7 +428,13 @@ final class ProfesseurController extends AbstractController
         ]);
         $form->handleRequest($request);
 
-        $isAdmin = $request->request->get('admin');
+        if($request->request->get('admin')){
+            $isAdmin = filter_var($request->request->get('admin'), FILTER_VALIDATE_BOOLEAN);
+        } else{
+            $isAdmin = false;
+        }
+
+
 
         // Si le formulaire est soumis et valide
         if ($form->isSubmitted() && $form->isValid()) {

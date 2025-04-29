@@ -206,20 +206,16 @@ RETURNS TRIGGER AS $$
 DECLARE
 max_ordre INT;
 BEGIN
-    -- Trouver l'ordre maximum actuel pour la même section
 SELECT COALESCE(MAX(ordre), 0)
 INTO max_ordre
 FROM Publication
 WHERE section_id = NEW.section_id;
-
--- Définir le nouvel ordre à max + 1
 NEW.ordre := max_ordre + 1;
 
 RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
--- Création du trigger
 CREATE TRIGGER trg_maj_ordre_publication
     BEFORE INSERT ON Publication
     FOR EACH ROW
@@ -242,7 +238,7 @@ VALUES ('San', 'M''hammedu', 'mhammedu.san@example.com', 'password123', '2024-01
         'marie.jpg'),
        ('Martin', 'Thomas', 'thomas.martin@example.com', 'martinPass', '2024-02-10', '2024-02-15',
         'thomas.jpg'),
-       ('Bernard', 'Sophie', 'sophie.bernard@example.com', 'sophie2024', '2024-02-15', '2024-02-15',
+       ('Bernard', 'Arthur', 'arthur.bernard@example.com', 'arthur2024', '2024-02-15', '2024-02-15',
         'bernard.jpg'),
        ('Petit', 'Lucas', 'lucas.petit@example.com', 'petitLucas!', '2024-02-20', '2024-02-20',
         'lucas.jpg'),

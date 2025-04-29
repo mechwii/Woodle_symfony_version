@@ -142,12 +142,12 @@ final class NotificationController extends AbstractController
                 }
 
                 $priorite = $entityManager->getRepository(Priorite::class)->findOneBy(['id' => 1]);
-                $notification->setPrioriteId($priorite);
+                //$notification->setPrioriteId($priorite);
 
 
                 if(in_array('ROLE_PROFESSEUR', $roles)) {
                    $notification->setUrlDestination('professeur/contenu_ue-' . $ue->getId());
-                   if($isAdmin){
+                   if($isAdmin && $isAdmin == true){
                        $priorite2 = $entityManager->getRepository(Priorite::class)->findOneBy(['id' => 2]);
                        $notification->setPrioriteId($priorite2);
 

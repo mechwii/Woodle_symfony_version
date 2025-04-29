@@ -714,8 +714,7 @@ function editPublication() {
 // document.querySelector('.close-btn').addEventListener('click', function () {
 //     document.getElementById('editPublicationModal').style.display = 'none';
 // });
-    document.querySelector('.modal-backdrop').classList.add('hidden');
-    document.getElementById('editPublicationModal').style.display = 'none';
+
 }
 
 function inputToggleEditPost() {
@@ -772,6 +771,7 @@ function attachEditPublicationFormListener(publicationId) {
             .then(data => {
                 if (data.status === 'success') {
                     document.getElementById('editPublicationModal').style.display = 'none';
+                    document.querySelector('.modal-backdrop').classList.add('hidden');
 
                     const postDiv = document.querySelector(`.post[data-id="${data.id}"]`);
                     if (!postDiv) return;
@@ -809,6 +809,7 @@ function attachEditPublicationFormListener(publicationId) {
                     setTimeout(() => {
                         postDiv.style.backgroundColor = '';
                     }, 1000);
+
 
                 } else if (data.status === 'form') {
                     document.getElementById('edit-publication-form-container').innerHTML = data.html;
