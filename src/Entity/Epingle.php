@@ -15,7 +15,7 @@ class Epingle
     private ?Utilisateur $utilisateur_id = null;
 
     #[ORM\Id]
-    #[ORM\JoinColumn(name: "publication_id", referencedColumnName: "id_publication")]
+    #[ORM\JoinColumn(name: "publication_id", referencedColumnName: "id_publication", onDelete: "CASCADE")]
     #[ORM\ManyToOne(inversedBy: 'epingles')]
     private ?Publication $publication_id = null;
 

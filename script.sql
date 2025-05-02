@@ -79,7 +79,8 @@ CREATE TABLE Publication
     id_publication      SERIAL PRIMARY KEY,
     titre               VARCHAR(50) NOT NULL,
     description         VARCHAR(50),
-    contenu             TEXT NOT NULL,
+    contenu_texte       TEXT,
+    contenu_fichier     VARCHAR(255),
     derniere_modif      TIMESTAMP,
     ordre               INT,
     visible             BOOLEAN NOT NULL,
@@ -147,8 +148,8 @@ CREATE TABLE Epingle
     publication_id INT,
     date_epingle   TIMESTAMP,
     PRIMARY KEY (utilisateur_id, publication_id),
-    FOREIGN KEY (utilisateur_id) REFERENCES Utilisateur (id_utilisateur) ON DELETE SET NULL,
-    FOREIGN KEY (publication_id) REFERENCES Publication (id_publication)
+    FOREIGN KEY (utilisateur_id) REFERENCES Utilisateur (id_utilisateur) ON DELETE CASCADE,
+    FOREIGN KEY (publication_id) REFERENCES Publication (id_publication) ON DELETE CASCADE
 );
 
 CREATE OR REPLACE FUNCTION maj_dates_utilisateur()
@@ -386,7 +387,7 @@ VALUES
     ('TP', 'IA41'),
     ('TD', 'IA41');
 
-INSERT INTO publication (titre, description, contenu, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id)
+INSERT INTO publication (titre, description, contenu_texte, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id)
 VALUES
     ('Salut la team zer', 'Une analyse des ...', 'Contenu détaillé de la publication...', '2025-04-19 10:00:00', 1, TRUE, 1, 2, 1, 'IA41'),
     ('Apaya', 'Une étude approfondie des.', 'Contenu détaillé de la publication...', '2025-04-19 11:00:00', 2, TRUE, 2, 3, 2, 'IA41'),
@@ -426,7 +427,7 @@ VALUES
     (5, 'information');
 
 
-INSERT INTO publication (titre, description, contenu, derniere_modif, visible, section_id, utilisateur_id, type_publication_id, code_id)
+INSERT INTO publication (titre, description, contenu_texte, derniere_modif, visible, section_id, utilisateur_id, type_publication_id, code_id)
 VALUES
     ( 'Hmmm comment ca va la team', 'Une analyse des ...', 'Contenu détaillé de la publication...', '2025-04-19 10:00:00', TRUE, 1, 2, 3, 'IA41'),
     ('Absence au prochain TD', 'Une étude approfondie des.', 'Contenu détaillé de la publication...', '2025-04-19 11:00:00', TRUE, 2, 3, 4, 'IA41'),
@@ -434,14 +435,3 @@ VALUES
 
 INSERT INTO Priorite(nom) VALUES
     ('normale'),('élevé');
-
-ALTER TABLE epingle
-DROP CONSTRAINT epingle_publication_id_fkey,
-ADD CONSTRAINT epingle_publication_id_fkey
-FOREIGN KEY (publication_id) REFERENCES publication(id_publication) ON DELETE CASCADE;
-
-                                                                              -- 1. Renommer la colonne "contenu" en "contenu_texte"
-ALTER TABLE publication RENAME COLUMN contenu TO contenu_texte;
-ALTER TABLE publication ADD COLUMN contenu_fichier VARCHAR(255);
-ALTER TABLE publication ALTER COLUMN contenu_texte DROP NOT NULL;
-

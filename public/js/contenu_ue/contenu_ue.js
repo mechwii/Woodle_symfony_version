@@ -652,6 +652,7 @@ function attachCreatePublicationListener(sectionId) {
                     console.log("hi");
                     editPublication();
                     supprimerPublication();
+                    epinglement();
                 } else if (data.status === "form") {
                     console.log("no valid");
                     formulaireContainer.innerHTML = data.html;
@@ -928,7 +929,21 @@ function epinglement() {
 
                         const post = button.closest('.post');
                         const post_copy = post.cloneNode(true);
+
+                        if(data.data){
+                            console.log('DATA');
+                            console.log(data.data)
+                            const span_title = document.createElement("span")
+                            span_title.classList.add('auteur');
+                            span_title.innerHTML = `Epinglé par : ${data.data.nom} ${data.data.prenom}`;
+                            post_copy.querySelector('.top_post').appendChild(span_title);
+                        } else {
+                            console.log("pas data");
+                        }
+
+                        //                                    <span class="auteur"></span>
                         const epinglesContainer = document.querySelector('.publications-epingles');
+
 
                         // on recupere egalement les boutons d'edit et de suppression pour pouvoir les suppriemr
                         const editButton = post_copy.querySelector("button.edit_post");

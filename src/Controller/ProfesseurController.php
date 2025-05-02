@@ -52,6 +52,8 @@ final class ProfesseurController extends AbstractController
             INNER JOIN utilisateur u ON u.id_utilisateur = ue.responsable_id
             WHERE est_affecte.utilisateur_id = :user_id
         ';
+
+
         $ues = $connection->executeQuery($sqlUe, ['user_id' => $user->getId()])->fetchAllAssociative();
 
         // Récupérer les premières notifications
@@ -168,8 +170,8 @@ final class ProfesseurController extends AbstractController
         $queryEpingle = $BDDManager->createQuery(
             'SELECT p
      FROM App\Entity\Publication p
-     JOIN App\Entity\Utilisateur u WITH p.utilisateur_id = u.id
      JOIN App\Entity\Epingle e WITH p.id = e.publication_id
+     JOIN App\Entity\Utilisateur u WITH u.id = e.utilisateur_id
      WHERE p.code_id = :codeUe'
         )->setParameter('codeUe', $codeUe);
 
@@ -182,18 +184,16 @@ final class ProfesseurController extends AbstractController
 
         // Passer l'ID de l'utilisateur explicitement
         foreach ($publicationsEpingles as &$publication) {
-            $publication->utilisateur_id_id = $publication->getUtilisateurId()->getId();
-            $publication->utilisateur_id_nom = $publication->getUtilisateurId()->getNom();
-            $publication->utilisateur_id_prenom = $publication->getUtilisateurId()->getPrenom();
+            $epingle = $BDDManager->getRepository(Epingle::class)->findOneBy(['publication_id' => $publication->getId()]);
+            $publication->utilisateur_id_id = $epingle->getUtilisateurId()->getId();
+            $publication->utilisateur_id_nom = $epingle->getUtilisateurId()->getNom();
+            $publication->utilisateur_id_prenom = $epingle->getUtilisateurId()->getPrenom();
         }
 
 
         foreach ($publicationsEpingles as &$publication) {
             $publication->getDerniereModif()->format('d/m/Y H:i');
         }
-
-        // dd($publicationsEpingles);
-
 
         return $this->render('contenue-ue/contenu_ue.html.twig', [
             'controller_name' => 'ProfesseurController',
@@ -538,10 +538,16 @@ final class ProfesseurController extends AbstractController
         $epingle->setUtilisateurId($user);
         $epingle->setDateEpingle(new \DateTimeImmutable());
 
+        $epingle_data =
+            [
+                "nom" => $epingle->getUtilisateurId()->getNom(),
+                "prenom" => $epingle->getUtilisateurId()->getPrenom(),
+            ];
+
         $entityManager->persist($epingle);
         $entityManager->flush();
 
-        return new JsonResponse(['status' => 'success']);
+        return new JsonResponse(['status' => 'success', 'data' => $epingle_data ]);
     }
 
 // Route pour désépingler un post

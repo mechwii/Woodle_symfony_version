@@ -885,7 +885,7 @@ div.fake-button {
 .modal-content {
     position: fixed;
     left: 25%;
-    top: 30%;
+    top: 10%;
     width: 50%;
     height: auto;
     background-color: white;

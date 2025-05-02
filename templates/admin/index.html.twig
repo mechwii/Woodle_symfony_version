@@ -131,8 +131,13 @@
                             <div class="card-action">
                                 <i onclick="modifierUE('{{ unite.code }}')" class="fa-solid fa-pen edit-icon edit"></i>
                                 <i onclick="supprimerUE('{{ unite.code }}')" class="fa-solid fa-trash edit-icon delete"></i>
-                                <a href="{{ path('contenu_ue_admin', {'codeUe': unite.code}) }}"><i class="fa-solid edit-icon fa-computer-mouse"></i></a>
+                                {% if unite.code is defined and unite.code is not empty %}
+                                    <a href="{{ path('contenu_ue_admin', {'codeUe': unite.code}) }}">
+                                        <i class="fa-solid edit-icon fa-computer-mouse"></i>
+                                    </a>
+                                {% endif %}
                             </div>
+
                         </div>
 
                 {% endfor %}
