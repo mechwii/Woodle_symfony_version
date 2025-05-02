@@ -16,8 +16,15 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
         $this->router = $router;
     }
 
+    /**
+     * Quand l'authentification est réussi on redirige l'utilsiateur à sa page respective
+     * @param Request $request
+     * @param TokenInterface $token
+     * @return RedirectResponse
+     */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token): RedirectResponse
     {
+        // Une fois que l'utilisateur est authentifié, on se charge de directement le rediriger à sa bonne page
         $user = $token->getUser();
         $roles = $user->getRoles();
 
@@ -33,7 +40,7 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
             return new RedirectResponse($this->router->generate('app_etudiant'));
         }
 
-        // fallback
+        // Dans le cas ou l'utilisateur n'a pas de role on le renvoie sur la page d'accueil
         return new RedirectResponse($this->router->generate('app_home'));
     }
 }

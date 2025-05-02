@@ -32,6 +32,7 @@
 
     </div>
 
+    {# Ici on affiche les statistiques #}
 <div class="statistiques">
     {% for stat in statistiques %}
         <div class="statistiques-section">
@@ -49,6 +50,7 @@
 </div>
 
     <div class="dashboard">
+        {# Ici c'est ce qui nous permet de choisir nos catégories, donc utilisateur ou admins #}
         <div class="dashboard-select" id="dashboard-selects">
             <h4 class="center-dashboard-content" onclick="SelectUser()">
                 Utilisateurs</h4>
@@ -81,6 +83,7 @@
             </div>
         </div>
 
+        {# Ici on a un seul bouton ajouter mais qui peut appeler 2 fonctions différentes grâce à handleAjout #}
         <div id="add-section" class="add-section" >
                     <div onclick="handleAjout()" class="add-button button">
                         <i class="fa-solid fa-plus"></i>
@@ -90,7 +93,7 @@
 
         <div id="dashboard-content" class="dashboard-content">
             <div id="user-content" class="card-container">
-
+            {# Ici j'affiche tous mes utilisateurs et en bas toutes mes UE #}
             {% for user in allUtilisateur %}
                 <div id="{{ "user-"~user.id}}" class="card-box">
                     <div class="card-left">
@@ -131,6 +134,9 @@
                             <div class="card-action">
                                 <i onclick="modifierUE('{{ unite.code }}')" class="fa-solid fa-pen edit-icon edit"></i>
                                 <i onclick="supprimerUE('{{ unite.code }}')" class="fa-solid fa-trash edit-icon delete"></i>
+                                {# C'est ici qui a posé problème lors de la soutenance, enfaite en supprimant
+                                des fois ça supprimait pas réellement, ducoup quand je cherchaid le code l'item n'existait plus
+                                mais été toujours présent dans la bdd (Je ne comprends toujours pas)#}
                                 {% if unite.code is defined and unite.code is not empty %}
                                     <a href="{{ path('contenu_ue_admin', {'codeUe': unite.code}) }}">
                                         <i class="fa-solid edit-icon fa-computer-mouse"></i>
@@ -145,13 +151,14 @@
     </div>
 
         {# Le code de ces classes sera dans admin.js plusieurs solutions s'offraient à nous
-        mais on a préféré simplifier le code#}
+        mais on a préféré simplifier le code, et ducoup chaque partie est une popup#}
         <div class="hidden" id="overlay" >
             {% include 'admin/popup/_delete_user.html.twig' %}
             {% include 'admin/popup/_add_edit_user.html.twig' %}
             {% include 'admin/popup/_add_edit_ue.html.twig' %}
             {% include 'admin/popup/_delete_ue.html.twig' %}
         </div>
+        {# Ici c'est vide mais des fonction js se chargent des notifications #}
         <div id="notification"></div>
 
     </div>

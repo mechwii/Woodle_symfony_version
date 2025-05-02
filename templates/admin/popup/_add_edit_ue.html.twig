@@ -3,8 +3,10 @@
 {% endblock %}
 
 
-
+{# Cette popup sert à ajouter/supprimer une popup
+initialement la popup est masqué d'ou la présence de hidden#}
 <div class="popup hidden" id="add-ue-popup">
+    {# La croix nous sert à fermer la popup #}
     <p class="close-popup" data-action="close-popup">X</p>
     <div class="popup-content">
         <div class="popup-content-add">
@@ -13,22 +15,28 @@
                 {{ form_start(form2) }}
                 <div class="add-form">
 
-
+                    {# Ici c'est nos champs de formulaire donc surtout nom et code #}
                     {{ form_row(form2.id, {'attr': {'placeholder' : 'Code*'} }) }}
                     {{ form_row(form2.nom, {'attr': {'placeholder' : 'Nom*'} }) }}
                     {{ form_end(form2) }}
 
                 <div class="section-user-add-form">
 
+                    {# Ici on a select mais vide, car on récupère directement nos données
+                    depuis popupManager.js et on insert automatiquement comme ça si on a un nouvel ajout
+                    pas besoin de refresh#}
                     <label for="ue_responsable_id">Responsable</label>
                     <select name="ue_responsable_id" id="ue_responsable_id"></select>
 
                 </div>
 
+                    {# Difficulté -> implémentation dy multiselect
+                    C'est un select fais à la main qui nous permet d'ajouter plusieur utilisatuer#}
                     <div class="section-user-add-form">
                         <label for="ue-input">Sélectionner des utilisateurs</label>
                         <div class="user-ue-add">
                             <div class="custom-select" id="ue-ue-select">
+                                {# Ici on abaisse le menu (le paramètre sert à spécifier que c'est le multiselect de l'ue) #}
                                 <div class="select-box" onclick="toggleDropdown('ue')">
                                     <div class="selected-options" id="ue-selected-options"></div>
                                     <div class="select-arrow">▼</div>
@@ -36,8 +44,11 @@
 
                                 <div id="ue-option-container" class="options-container hidden">
                                     <div class="filter-container">
+                                        {# Ici c'est notre filtre qui nous permet de rechercher par nom #}
                                         <input type="text" id="ue-option-filter" placeholder="Rechercher une UE..." onkeyup="filterOptions('ue')">
                                     </div>
+                                    {# Pour les options c'est pareil qu'au dessus, ici c'est vide mais dans mon fichier
+                                    popupAdmin j'ai une fonction qui va fetch et insérer les données#}
                                     <div class="options-list" id="ue-options-list">
                                         {#    {% for utilisateur_ in allUtilisateur %}
                                           <div class="option" onclick="toggleOption(this, 'ue' )" data-value="{{ utilisateur_.id }}">
@@ -47,12 +58,14 @@
                                         {% endfor %}#}
                                     </div>
                                 </div>
+                                {# Ce ue_input il nous permet d'afficher les valeurs du multiselect #}
                                 <input type="hidden" name="ue_input" id="ue-ue-input">
                             </div>
                         </div>
 
                     </div>
 
+                    {# Code du drag and drop file, tout est gérer dasn le fichier js respectif #}
                     <div class="drop-zone">
                         <span class="drop-zone__prompt">Déposer le fichier</span>
                         <div class="separator">
@@ -67,6 +80,9 @@
                 </div>
 
             </div>
+
+            {# Prévisualisation également géré dans popupManager
+            Mais en soit on remplace juste les champs par ce qui est tapé dans les inputs#}
             <div class="previsualition-add-user">
                 <h2>Prévisualisation</h2>
                 <div class="prev-form">
@@ -80,6 +96,7 @@
                             <p id="prev-nomUe-section"><strong>[Nom de l'UE]</strong></p>
                     </div>
 
+                    {# La ou on voit les utilisateurs ajotuer depuis le multiselect #}
                     <div class="prev-section">
                         <p>Liste des Utilisateurs :</p>
                         <div class="previ-user" id="ue-prev-ue">

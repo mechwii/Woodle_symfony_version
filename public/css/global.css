@@ -29,6 +29,7 @@
 
 .container, #content  {
     margin-top: 5em;
+    margin-bottom: 4em;
     margin-right: 2em;
     margin-left: 400px;
     transition: margin-left 0.1s ease-in-out;

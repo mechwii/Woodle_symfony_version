@@ -14,6 +14,9 @@
 
 {% block body %}
 
+    {# PLUS UTLISE #}
+
+
     {# Etant donnée qu'on a pas de side bar, si l'admin change de page on lui propose de revenir, donc pour ça au lieu de mettre les
     éléments à droite on prend toute la hauteur#}
     <div class="{{ app.request.attributes.get('_route') == 'app_admin' ? 'top-page' : 'top-page-out'  }}">
@@ -27,6 +30,7 @@
         {% endif %}
 
         <div class="right-admin-part">
+            {# Si en plus d'admin on est professeur  #}
             {% if 'ROLE_PROFESSEUR' in roles %}
                 <div class="select-roles">
                     <p onclick="displaySelectMenu()" id="roles-changes">Vue administrateur</p>

@@ -21,10 +21,12 @@ class LoginController extends AbstractController
             // Récupérer les rôles
             $roles = $this->getUser()->getRoles();
 
-            // Rediriger en fonction du rôle
+            // En fonction du rôle, on redirige vers le bon tableau de bord
+            // Priorité à l'admin si jamais un prof a aussi ce rôle
             if (in_array('ROLE_ADMINISTRATEUR', $roles)) {
                 return $this->redirectToRoute('app_admin');
             }
+
 
             if (in_array('ROLE_PROFESSEUR', $roles)) {
                 return $this->redirectToRoute('app_professeur');
@@ -38,12 +40,13 @@ class LoginController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-        // get the login error if there is one
+        // Si il y'a une erreur lors de la notificaiton on la récupère
         $error = $authenticationUtils->getLastAuthenticationError();
 
-        // last username entered by the user
+        // On récupère l'identifiant utilisé lors de la dernière tentative de connexion
         $lastUsername = $authenticationUtils->getLastUsername();
 
+        // On renvoie à la vue du formulaire de login avec les infos nécessaires
         return $this->render('login/login.html.twig', [
             'last_username' => $lastUsername,
             'error' => $error,
@@ -56,13 +59,17 @@ class LoginController extends AbstractController
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 
-    // Contrôleur
+    // Contrôleur pour récupérer les statistiques (UE, utilisateurs, profs, élèves)
     #[Route('/get-stat', name: 'get-stat')]
     public function getResponsables(EntityManagerInterface $em): JsonResponse
     {
+        // Nombre total d'UE (Unités d’Enseignement)
         $countUE = $em->getRepository(UE::class)->count();
+
+        // Nombre total d'utilisateurs (tous rôles confondus)
         $countUser = $em->getRepository(Utilisateur::class)->count();
 
+        // Nombre de professeurs (on filtre selon le rôle Professeur)
         $countProfesseur = $em->getRepository(Utilisateur::class)
             ->createQueryBuilder('u')
             ->select('COUNT(DISTINCT u.id)')
@@ -73,6 +80,7 @@ class LoginController extends AbstractController
 
 
 
+        // Nombre de professeurs (on filtre selon le rôle Elève)
         $countEleve = $em->getRepository(Utilisateur::class)
             ->createQueryBuilder('u')
             ->select('COUNT(DISTINCT u.id)')
@@ -82,6 +90,7 @@ class LoginController extends AbstractController
             ->getSingleScalarResult();
 
 
+        // On prépare la réponse JSON à renvoyer au frontend
         $response = [
             'stat_users' =>$countUser,
             'stat_ues' => $countUE,

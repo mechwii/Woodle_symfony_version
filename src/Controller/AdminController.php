@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controller;
+
 use App\Entity\Priorite;
 
 use App\Entity\EstAffecte;
@@ -24,17 +25,22 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class AdminController extends AbstractController
 {
+    /**
+     * Page principale
+     * @param EntityManagerInterface $BDDManager
+     * @param Request $request
+     * @return Response
+     * @throws \Doctrine\DBAL\Exception
+     */
     #[Route('/admin', name: 'app_admin')]
     public function index(EntityManagerInterface $BDDManager, Request $request): Response
     {
         $session = $request->getSession();
+
+        // Sur la sessions on met la variable 'vue_active' à admin -> car certains utilisateurs ont plusieurs roles, il nous faut donc un moyen de différencier le role actuel
         $session->set('vue_active', 'admin');
 
-        /*$elmir = $BDDManager->getRepository(Utilisateur::class)->find(2);
-        foreach ($elmir->getEstAffectes() as $estAffecte) {
-            dump($BDDManager->getRepository(UE::class)->find($estAffecte->getCodeId())->getNom());
-        }
-        */
+
         $connection = $BDDManager->getConnection();
 
         // Récupération des UE avec Nom Responsable
@@ -43,9 +49,11 @@ final class AdminController extends AbstractController
         $resultat = $prepareSQL->executeQuery();
         $ue = $resultat->fetchAllAssociative();
 
+        // On récupère l'utilisateur courant
         $utilisateur = $this->getUser();
         $roles = $utilisateur->getRoles();
 
+        // On  récupère les statistiques depuis une méthode de classe
         $statistiques = $this->getStatisticsData($BDDManager);
 
         $allUtilisateur = $BDDManager->getRepository(Utilisateur::class)->findAll();
@@ -72,18 +80,27 @@ final class AdminController extends AbstractController
         ]);
     }
 
+    /**
+     * Fonction pour pouvoir produire un appel externe et récupère les statistiques
+     * @param EntityManagerInterface $BDDManager
+     * @return JsonResponse
+     */
     #[Route('/admin/get-stat', name: 'get_admin_stat')]
     public function getStat(EntityManagerInterface $BDDManager): JsonResponse
     {
-        // Return JSON response using the same private method
+        // On retourne un JSON qui contient les statistiques (utiles pour les appel GET) afin d'avoir un site reactif
         return new JsonResponse($this->getStatisticsData($BDDManager));
     }
 
     /**
-     * Private method that contains the actual statistics logic
+     * Méthode privée pour avoir différentes statistiques
+     * @param EntityManagerInterface $BDDManager
+     * @return array[]
      */
     private function getStatisticsData(EntityManagerInterface $BDDManager): array
     {
+        // On retourne un JSON avec toutes nos statistiques
+        // DOnc elle se retrouve globaleemnt sur la même forme, et ça compte le nbr d'élèves, de professeure et d'UE
         return [
             [
                 "id_stat" => "nb_eleve",
@@ -117,16 +134,27 @@ final class AdminController extends AbstractController
             ]
         ];
     }
+
+    /**
+     * page profile coté admin (on a une seule page profile qu'on render juste depuis plusieurs controller)
+     * @param EntityManagerInterface $BDDManager
+     * @param Request $request
+     * @return Response
+     */
     #[Route('/admin/profil', name: 'admin_profil')]
     public function profile(EntityManagerInterface $BDDManager, Request $request): Response
     {
+        // Etant donnée que le mail est unique et ne peut être changé on récupère par mail (on aurait pu également récupérer par l'ID)
         $utilisateur = $BDDManager->getRepository(Utilisateur::class)->findOneBy(["email" => $this->getUser()->getUserIdentifier()]);
         $roles = $utilisateur->getRoles();
 
+
+        // Même si on fait des requeêtes AJAX on génère des formulaires afin de vérifier les entrées
         $nouvelUtilisateur = new Utilisateur();
         $form = $this->createForm(UserProfileType::class, $nouvelUtilisateur);
         $form->handleRequest($request);
 
+        // Et ducoup on retourne l'utilisateur, ses roles ainsi que le formulaire
 
         return $this->render('profil/profil.html.twig', [
             'controller_name' => 'AdminController',
@@ -136,19 +164,31 @@ final class AdminController extends AbstractController
         ]);
     }
 
+    /**
+     * Getter pour avoir un utilisateur grâce à son ID
+     * @param int $id
+     * @param EntityManagerInterface $BDDManager
+     * @return JsonResponse
+     * @throws \Doctrine\DBAL\Exception
+     */
     #[Route('/admin/get-user/{id}', name: 'admin_get_user', methods: ['GET'])]
     public function getUtilisateur(int $id, EntityManagerInterface $BDDManager): JsonResponse
     {
+        // Etant donnée les instructions on initialise une connexion dans le but de pouvoir aussi faire des requetes SQL
         $connection = $BDDManager->getConnection();
 
+        // On récupère l'utilisateur avec l'id donnée
         $user = $BDDManager->getRepository(Utilisateur::class)->find($id);
 
+        // Ensuite on récupère toutes les UE liées à cette utilisateur
         $sql = 'SELECT u.code, u.nom
         FROM est_affecte
         INNER JOIN ue u on u.code = est_affecte.code_id
         WHERE est_affecte.utilisateur_id= :id;';
         $ue = $connection->prepare($sql)->executeQuery(['id' => $user->getId()])->fetchAllAssociative();
 
+
+        // Pareil ici on récupère ces roles
         $sql2 = 'SELECT r.id_role, r.nom
          from possede 
          INNER JOIN Role r on r.id_role = possede.role_id 
@@ -156,6 +196,7 @@ final class AdminController extends AbstractController
         $roles = $connection->prepare($sql2)->executeQuery(['id' => $user->getId()])->fetchAllAssociative();
 
 
+        // Et dans le cas où on ne trouve pas l'utilsiateur on renvoie une erreur
         if (!$user) {
             return new JsonResponse(['error' => 'Utilisateur non trouvé'], 404);
         }
@@ -174,6 +215,11 @@ final class AdminController extends AbstractController
 
     /**
      * Ajoute un utilisateur avec Ajax et validation de formulaire
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param ValidatorInterface $validator
+     * @param NotificationController $notificationController
+     * @return Response
      */
     #[Route('/admin/add-user', name: 'admin_add_user', methods: ['POST'])]
     public function addUser(
@@ -183,6 +229,7 @@ final class AdminController extends AbstractController
         NotificationController $notificationController
     ): Response
     {
+        // On vérifie bien que c'est une requête HTTP
         if (!$request->isXmlHttpRequest()) {
             return $this->json(['error' => 'Requête non autorisée'], Response::HTTP_BAD_REQUEST);
         }
@@ -203,13 +250,13 @@ final class AdminController extends AbstractController
 
             // Soumission manuelle des données au formulaire
             $form->submit([
-                'nom' => $data['nom'],
+                'noutilisateurm' => $data['nom'],
                 'prenom' => $data['prenom'],
                 'email' => $data['email'],
                 'password' => $data['password']
             ]);
 
-            // Validation du formulaire
+            // Validation du formulaire (on vérifie que chaque champs est valide)
             if (!$form->isValid()) {
                 $errors = [];
                 foreach ($form->getErrors(true) as $error) {
@@ -224,8 +271,9 @@ final class AdminController extends AbstractController
                 return $this->json(['error' => 'Cet email est déjà utilisé'], Response::HTTP_CONFLICT);
             }
 
-            // Générer un mot de passe par défaut password
-            if($data['password'] === ""){
+            // Si il y'a pas de mot de passe fournit on génère un mot de passe par défaut
+            if ($data['password'] === "") {
+                // Mot de passe composé du de la première lettre du prenom suivi du nom et de @123
                 $defaultPassword = strtolower(substr($data['prenom'], 0, 1) . $data['nom'] . '@123');
                 $utilisateur->setPassword($defaultPassword);
             } else {
@@ -237,7 +285,7 @@ final class AdminController extends AbstractController
             // $imageName = $data['image'] ?? 'default.jpg';
             $utilisateur->setImage($imageName);
 
-            // Ajouter les rôles
+            // Ici on va ajouter des rôles, comme on crée des rôles on a pas besoin de vérifier les rôles existants
             if (!empty($data['roles'])) {
                 foreach ($data['roles'] as $roleId) {
                     $role = $entityManager->getRepository(Role::class)->find($roleId);
@@ -250,21 +298,24 @@ final class AdminController extends AbstractController
             }
 
 
-            // Persister l'utilisateur
+            // Avec persist on s'assure que ça persite
             $entityManager->persist($utilisateur);
             $entityManager->flush();
 
             // Ajouter les UE sélectionnées
             if (!empty($data['ues'])) {
+                // Pareil dans ce cas si il y'a des UE on s'occupe uniquement de les ajouter
                 foreach ($data['ues'] as $ueCode) {
                     $ue = $entityManager->getRepository(UE::class)->find($ueCode);
                     if ($ue) {
+                        // Si un utilisateur est affecté on crée un nouvel enregistrement et on lui rentre les valeurs
                         $estAffecte = new EstAffecte();
                         $estAffecte->setUtilisateurId($utilisateur);
                         $estAffecte->setCodeId($ue);
                         $estAffecte->setFavori(false);
                         $entityManager->persist($estAffecte);
 
+                        // Ici on crée une notification pour l'utilsateur, pour lui dire qu'il a été affecté à une nouvelle UE
                         $notificationController->createAffectationNotification($entityManager, $utilisateur, $ue, $this->getUser());
                     }
                 }
@@ -289,23 +340,34 @@ final class AdminController extends AbstractController
         }
     }
 
+    /**
+     *  Ici on supprime un utilisateur pour un id donnée
+     * @param int $id
+     * @param EntityManagerInterface $BDDManager
+     * @return Response
+     */
     #[Route('/admin/delete-user/{id}', name: 'admin_delete_user', methods: ['DELETE'])]
     public function deleteUser(int $id, EntityManagerInterface $BDDManager): Response
     {
+        // On récupère l'utilisateur avec un id donnée
         $utilisateur = $BDDManager->getRepository(Utilisateur::class)->find($id);
 
+        // Si l'utilisateur n'existe pas on renvoie un 'non success'
         if (!$utilisateur) {
             return $this->json(['success' => false, 'message' => 'Utilisateur introuvable'], Response::HTTP_NOT_FOUND);
         }
 
+        // On s'occupe également de supprimer sa photo depuis le dossier
         if ($utilisateur && $utilisateur->getImage() !== 'default.jpg') {
             $oldImagePath = $this->getParameter('kernel.project_dir') . '/public/images/profil/' . $utilisateur->getImage();
 
             if (file_exists($oldImagePath)) {
+                // Donc si un fichier existe on supprime l'image associé à l'utilisateur
                 unlink($oldImagePath);
             }
         }
 
+        // Et finalement on supprime l'utilisateur
         $BDDManager->remove($utilisateur);
         $BDDManager->flush();
         return $this->json(['success' => true], Response::HTTP_OK);
@@ -348,10 +410,10 @@ final class AdminController extends AbstractController
                 $originalRoleIds[] = $role->getId();
             }
 
-            // Les rôles du formulaire sont des IDs (nombres)
+            // On récupère si ils existent les rôles depuis les paramètres
             $dataRoles = $data['roles'] ?? [];
 
-            // Comparaison correcte
+            // Ensuite on compare si il y'a des différences entre les 2 tableaux
             $rolesModified = count(array_diff($dataRoles, $originalRoleIds)) > 0 ||
                 count(array_diff($originalRoleIds, $dataRoles)) > 0;
 
@@ -371,7 +433,7 @@ final class AdminController extends AbstractController
                 }
             }
 
-            // Récupérer les codes des UEs actuelles
+            // Même processus pour les UE
             $originalUECodes = [];
             foreach ($utilisateur->getEstAffectes() as $estAffecte) {
                 if ($estAffecte->getCodeId()) {
@@ -379,7 +441,6 @@ final class AdminController extends AbstractController
                 }
             }
 
-            // Les UEs du formulaire sont des codes (chaînes)
             $dataUEs = $data['ues'] ?? [];
 
             // Trouver les UEs à supprimer (celles qui sont dans originalUECodes mais pas dans dataUEs)
@@ -388,9 +449,10 @@ final class AdminController extends AbstractController
             // Trouver les UEs à ajouter (celles qui sont dans dataUEs mais pas dans originalUECodes)
             $uesToAdd = array_diff($dataUEs, $originalUECodes);
 
+            // Cette fois-ci on fait une vérification bidirectionnelle pour ne pas changer la date d'affectation des UE
             // Si des modifications sont nécessaires
             if (!empty($uesToRemove) || !empty($uesToAdd)) {
-                // Supprimer uniquement les affectations qui ne sont plus dans la liste
+                // Supprime uniquement les affectations qui ne sont plus dans la liste
                 if (!empty($uesToRemove)) {
                     foreach ($utilisateur->getEstAffectes() as $estAffecte) {
                         $ueCode = $estAffecte->getCodeId()->getId();
@@ -400,7 +462,7 @@ final class AdminController extends AbstractController
                     }
                 }
 
-                // Ajouter uniquement les nouvelles affectations
+                // Ajoute uniquement les nouvelles affectations
                 if (!empty($uesToAdd)) {
                     foreach ($uesToAdd as $ueCode) {
                         $ue = $entityManager->getRepository(UE::class)->find($ueCode);
@@ -416,14 +478,11 @@ final class AdminController extends AbstractController
                         }
                     }
                 }
-
-                // Assurez-vous que les changements sont bien sauvegardés
                 $entityManager->flush();
             }
 
 
             // Sauvegarde des valeurs originales pour comparaison
-
             $originalEmail = $utilisateur->getEmail();
             $originalNom = $utilisateur->getNom();
             $originalPrenom = $utilisateur->getPrenom();
@@ -450,7 +509,7 @@ final class AdminController extends AbstractController
                 return $this->json(['error' => 'Erreurs de validation', 'details' => $errors], Response::HTTP_BAD_REQUEST);
             }
 
-            // Vérifier si l'email existe déjà (si l'email a été modifié)
+            // Vérifier si l'email existe déjà (si l'email a été modifié) -> comme c'est côté admin on part du principe que l'email peut être modfié
             if ($originalEmail !== $data['email']) {
                 $existingUser = $entityManager->getRepository(Utilisateur::class)->findOneBy(['email' => $data['email']]);
                 if ($existingUser && $existingUser->getId() !== $id) {
@@ -476,6 +535,7 @@ final class AdminController extends AbstractController
 
             // Persister les modifications uniquement si nécessaire
             if ($informationsModifiees) {
+                // Ici à l'avenir on rajoutera une notification ou quelque chose comme ça c'est pour ça qu'on a différencié
                 $entityManager->flush();
                 return $this->json([
                     'success' => true,
@@ -511,13 +571,18 @@ final class AdminController extends AbstractController
     }
 
     /**
-     * Ajoute une UE avec Ajax et validation de formulaire
+     *  Ajoute une UE avec Ajax et validation de formulaire
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param ValidatorInterface $validator
+     * @param NotificationController $notificationController
+     * @return Response
      */
     #[Route('/admin/add-ue', name: 'admin_add_ue', methods: ['POST'])]
     public function addUE(
-        Request $request,
+        Request                $request,
         EntityManagerInterface $entityManager,
-        ValidatorInterface $validator,
+        ValidatorInterface     $validator,
         NotificationController $notificationController
     ): Response
     {
@@ -525,15 +590,17 @@ final class AdminController extends AbstractController
             return $this->json(['error' => 'Requête non autorisée'], Response::HTTP_BAD_REQUEST);
         }
 
-        try{
+        try {
+            // Comme d'habitude on extrait les données de la requête
             $data = $request->toArray();
 
             if (!$data) {
                 return $this->json(['error' => 'Données invalides'], Response::HTTP_BAD_REQUEST);
             }
 
-            $ue = new UE();
 
+            // Pareil que les autrs méthodes on crée un nouvel objet, et on récupère les champs de la requete
+            $ue = new UE();
             $id = $data['id'];
             $nom = $data['nom'];
             $responsable_id = $data['responsable_id'];
@@ -548,6 +615,7 @@ final class AdminController extends AbstractController
                 'nom' => $data['nom'],
             ]);
 
+            // On vérifie les entrées pour le schamps
             if (!$form->isValid()) {
                 $errors = [];
                 foreach ($form->getErrors(true) as $error) {
@@ -556,12 +624,15 @@ final class AdminController extends AbstractController
                 return $this->json(['error' => 'Erreurs de validation', 'details' => $errors], Response::HTTP_BAD_REQUEST);
             }
 
+            // On vérifie aussi que pour l'id, donc le code donnée n'existe pas -> car c'est à l'utilisateur de le rentrer
             $existingUE = $entityManager->getRepository(UE::class)->find($id);
 
+            // Si il existe étant donnée que le code de l'UE est unique, on renvoie une erreur
             if ($existingUE) {
                 return $this->json(['error' => 'Cette UE existe déjà'], Response::HTTP_CONFLICT);
             }
 
+            // Sinon on initialise les attributs de notre UE
             $ue->setId($id);
             $ue->setNom($nom);
             $ue->setImage($image);
@@ -569,7 +640,9 @@ final class AdminController extends AbstractController
             $ue->setResponsableId($responsable);
             $entityManager->persist($ue);
 
+
             if (!empty($utilisateurs)) {
+                // Ensuite étant donnée qu'on peut affecter des utilisateurs, on regardes si des utilisateurs ont été affectés et comme d'habitude on les affecte un par un
                 foreach ($utilisateurs as $utilisateurId) {
                     $utilisateur = $entityManager->getRepository(Utilisateur::class)->find($utilisateurId);
                     if ($utilisateur) {
@@ -577,9 +650,11 @@ final class AdminController extends AbstractController
                         $estAffecte->setUtilisateurId($utilisateur);
                         $estAffecte->setCodeId($ue);
                         $estAffecte->setFavori(false);
+                        // Ici pour la date on aurait pu faire un trigger
                         $estAffecte->setDateInscription(new \DateTime());
                         $entityManager->persist($estAffecte);
 
+                        // Sans oublier la date d'inscription
                         $notificationController->createAffectationNotification($entityManager, $utilisateur, $ue, $this->getUser());
 
                     }
@@ -589,7 +664,7 @@ final class AdminController extends AbstractController
             $entityManager->flush();
 
 
-            // Préparation de la réponse
+            // Si tout s'est bien déroulé on renvoie les données, avec un champs succés qui nous indique que tout s'est bien déroulé
             $responseData = [
                 'success' => true,
                 'message' => 'UE créée avec succès',
@@ -604,7 +679,7 @@ final class AdminController extends AbstractController
             ];
             return $this->json($responseData, Response::HTTP_CREATED);
 
-        } catch (\Exception $e){
+        } catch (\Exception $e) {
             return $this->json(['error' => 'Une erreur est survenue: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
@@ -612,36 +687,53 @@ final class AdminController extends AbstractController
 
 
     /**
-     * Upload d'image pour un utilisateur
+     *  Upload d'image pour un utilisateur
+     * @param Request $request
+     * @param EntityManagerInterface $em
+     * @return Response
      */
     #[Route('/admin/upload-image', name: 'admin_upload_image', methods: ['POST'])]
     public function uploadImage(Request $request, EntityManagerInterface $em): Response
     {
         try {
+            // au départ on extrait toutes les données de la requête
+
+            // Ici on récupère le fichier
             $uploadedFile = $request->files->get('file');
+
+            // Ici on récupère l'user qui est lié à cette image ducoup
             $userId = $request->request->get('id_user');
+
+            // dest est plutôt import car ik permet de différencier les dossiers ue des dossiers images car on utilise la même fonction pour l'upload de ces 2 types
             $dest = $request->request->get('dest');
+
+            // Et code nous permet juste de savoir si l'image est lié à une UE
             $code = $request->request->get('code');
 
+            // Ici on récupère le nom de l'image ainsi que son extension pour pouvoir la renommer
             $realName = $uploadedFile->getClientOriginalName();
             $extension = $uploadedFile->getClientOriginalExtension();
 
+            // Enfaite ici on va pouvoir supprimer les anciennes images si il y'en a
             if ($userId) {
                 $user = $em->getRepository(Utilisateur::class)->find($userId);
 
-                if ($user && $user->getImage() !== 'default.jpg' && $user->getImage() !== $realName  && $user->getImage() !== "") {
+                // L'image attribué par défaut pour les utilisateurs est default.jpg, donc on vérifie que ce n'est pas cette image, que l'image est différente de la nouvelle et que c'est différent de vide
+                if ($user && $user->getImage() !== 'default.jpg' && $user->getImage() !== $realName && $user->getImage() !== "") {
                     $oldImagePath = $this->getParameter('kernel.project_dir') . $dest . $user->getImage();
 
+                    // Et dans ce cas la on enlève l'ancienne image
                     if (file_exists($oldImagePath)) {
                         unlink($oldImagePath);
                     }
                 }
             }
 
-            if($code){
+            if ($code) {
+                // Même logique que user mais cette fois ci pour l'UE
                 $ue = $em->getRepository(UE::class)->find($code);
 
-                if($ue && $ue->getImage() !== $realName && $ue->getImage() !=='default-ban.jpg' && $ue->getImage() !== "") {
+                if ($ue && $ue->getImage() !== $realName && $ue->getImage() !== 'default-ban.jpg' && $ue->getImage() !== "") {
                     $oldImagePath = $this->getParameter('kernel.project_dir') . $dest . $ue->getImage();
 
                     if (file_exists($oldImagePath)) {
@@ -651,9 +743,8 @@ final class AdminController extends AbstractController
 
             }
 
-
-            // $defaultPassword = strtolower(substr($prenom, 0, 1) . $nom . '_picture' .  '.' . $extension);
-            $uploadedFile->move($this->getParameter('kernel.project_dir') . $dest , $realName);
+            // Et quand tout est bon on rajoute juste l'image dans el bon répertoire
+            $uploadedFile->move($this->getParameter('kernel.project_dir') . $dest, $realName);
 
 
             return $this->json([
@@ -668,10 +759,15 @@ final class AdminController extends AbstractController
         }
     }
 
-    // Contrôleur
+    /**
+     * Ici c'est pour la popup d'UE on récupère tous les professeurs afin qu'un soit le responsable
+     * @param EntityManagerInterface $em
+     * @return JsonResponse
+     */
     #[Route('/admin/get-responsables', name: 'admin_get_responsables')]
     public function getResponsables(EntityManagerInterface $em): JsonResponse
     {
+        // Donc ici requête basique pour récupèrer tous les utilsateurs du groupe professeur
         $responsables = $em->getRepository(Utilisateur::class)
             ->createQueryBuilder('u')
             ->join('u.roles', 'r')
@@ -692,18 +788,25 @@ final class AdminController extends AbstractController
         return new JsonResponse($response);
     }
 
+    /**
+     * Ici on récupère élève et professeur pour les affecter à des UE
+     * @param EntityManagerInterface $em
+     * @return JsonResponse
+     */
     #[Route('/admin/get-utilisateurs-affectable', name: 'admin_get_utilisateurs-affectable')]
     public function getUtilisateurAffectable(EntityManagerInterface $em): JsonResponse
     {
+        // On récupère tous les utilsiateurs du groupe 1 et 2
         $utilisateurs = $em->getRepository(Utilisateur::class)
             ->createQueryBuilder('u')
             ->join('u.roles', 'r')
             ->where('r.id = :id OR r.id = :id2')
-            ->setParameter('id', 2, )
-            ->setParameter('id2', 3, )
+            ->setParameter('id', 2)
+            ->setParameter('id2', 3)
             ->getQuery()
             ->getResult();
 
+        // Et comme précédemment on on renvoie dans un tableau
         $response = [];
         foreach ($utilisateurs as $utilisateur) {
             $response[] = [
@@ -715,6 +818,11 @@ final class AdminController extends AbstractController
         return new JsonResponse($response);
     }
 
+    /**
+     * Ici on récupère toutes les UE
+     * @param EntityManagerInterface $em
+     * @return JsonResponse
+     */
     #[Route('/admin/get-ue', name: 'admin_get_ue', methods: ['GET'])]
     public function getUe(EntityManagerInterface $em): JsonResponse
     {
@@ -722,6 +830,7 @@ final class AdminController extends AbstractController
 
         $response = [];
 
+        // Comme d'habitude on met ça dans un tableau
         foreach ($ues as $ue) {
             $response[] = [
                 'code' => $ue->getId(),
@@ -732,13 +841,22 @@ final class AdminController extends AbstractController
         return new JsonResponse($response);
     }
 
+    /**
+     * Cette Ue sert notamment pour le edit pour récupèrer les informations d'une UE
+     * @param EntityManagerInterface $repo
+     * @param string $id
+     * @return JsonResponse
+     * @throws \Doctrine\DBAL\Exception
+     */
     #[Route('/admin/get-one-ue/{id}', name: 'admin_get_one_ue', methods: ['GET'])]
     public function getUeById(EntityManagerInterface $repo, string $id): JsonResponse
     {
+        // Cette fois ci on reformule une requête SQL
         $connection = $repo->getConnection();
 
         $ue = $repo->getRepository(UE::class)->find($id);
 
+        // Dons on sélectionne tous les utilisateurs affectés à une UE
         $sql = 'SELECT u.id_utilisateur as id , u.nom as nom, u.prenom as prenom
                 FROM Est_affecte e
                 INNER JOIN Utilisateur u ON u.id_utilisateur = e.utilisateur_id
@@ -746,6 +864,7 @@ final class AdminController extends AbstractController
 
         $affectations = $connection->prepare($sql)->executeQuery(['id' => $id])->fetchAllAssociative();
 
+        // Et on renvoie toutes les données
         $response = [
             'code' => $ue->getId(),
             'nom' => $ue->getNom(),
@@ -759,13 +878,18 @@ final class AdminController extends AbstractController
     }
 
     /**
-     * Modifie un utilisateur existant avec Ajax et validation de formulaire
+     * Modifie une ue donnée
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param string $id
+     * @param NotificationController $notificationController
+     * @return Response
      */
     #[Route('/admin/edit-ue/{id}', name: 'admin_edit_ue', methods: ['PUT'])]
     public function editUE(
         Request                $request,
         EntityManagerInterface $entityManager,
-        string                    $id,
+        string                 $id,
         NotificationController $notificationController
     ): Response
     {
@@ -781,17 +905,17 @@ final class AdminController extends AbstractController
                 return $this->json(['error' => 'Données invalides'], Response::HTTP_BAD_REQUEST);
             }
 
-            // Récupération de l'utilisateur existant
+            // Récupération de l'ue existante
             $ue = $entityManager->getRepository(UE::class)->find($id);
 
             if (!$ue) {
                 return $this->json(['error' => 'Utilisateur non trouvé'], Response::HTTP_NOT_FOUND);
             }
 
+            // Maintenant inverse de utilisateur, cette fois-ci on vérifie si des utilisateurs sont données
             $dataUEs = $data['utilisateurs'] ?? [];
 
-
-
+            // Cette variable nous permet de savoir si un utilisateur a été affecté, c'est juste pour savoir si il y'a des modifs
             $originalUser = false;
 
             // Récupérer les codes des UEs actuelles
@@ -801,77 +925,77 @@ final class AdminController extends AbstractController
                     $originalUECodes[] = $estAffecte->getUtilisateurId()->getId();
                 }
             }
-            
 
-
-
-            if($dataUEs) {
-                $uesToRemove = array_diff($originalUECodes, $dataUEs);
-                // Dans le cas ou j'envoie un tableau vide il faut quand même supprimer toutes les UE
-                if (empty($dataUEs) && !empty($originalUECodes)) {
-                    $uesToRemove = $originalUECodes;
-                }
-
-
-                $uesToAdd = array_diff($dataUEs, $originalUECodes);
-                if (!empty($uesToRemove) || !empty($uesToAdd)) {
-                    $originalUser = true;
-                    if (!empty($uesToRemove)) {
-                        foreach ($ue->getEstAffectes() as $estAffecte) {
-                            $idUtilisateur = $estAffecte->getUtilisateurId()->getId();
-                            if (in_array($idUtilisateur, $uesToRemove)) {
-                                $entityManager->remove($estAffecte);
-                            }
-                        }
-                    }
-                    if (!empty($uesToAdd)) {
-                        foreach ($uesToAdd as $idUtilisateur) {
-                            $utilisateur = $entityManager->getRepository(Utilisateur::class)->find($idUtilisateur);
-                            if ($ue) {
-                                $estAffecte = new EstAffecte();
-                                $estAffecte->setUtilisateurId($utilisateur);
-                                $estAffecte->setCodeId($ue);
-                                $estAffecte->setFavori(false);
-                                $entityManager->persist($estAffecte);
-
-                                $notificationController->createAffectationNotification($entityManager, $utilisateur, $ue, $this->getUser());
-
-                            }
-                        }
-                    }
-                    $entityManager->flush();
-                }
-
+            // Ici on met également les UE qui ne sont plus dans le tableau afin de les supprimer
+            $uesToRemove = array_diff($originalUECodes, $dataUEs);
+            // Dans le cas ou j'envoie un tableau vide il faut quand même supprimer toutes les UE
+            if (empty($dataUEs) && !empty($originalUECodes)) {
+                $uesToRemove = $originalUECodes;
             }
 
+            // Ici comme pour tout a l'heure on vérifie les ue a ajouter
+            $uesToAdd = array_diff($dataUEs, $originalUECodes)
+            ;
+            if (!empty($uesToRemove) || !empty($uesToAdd)) {
+                // un changement est donc detecté
+                $originalUser = true;
+                if (!empty($uesToRemove)) {
+                    foreach ($ue->getEstAffectes() as $estAffecte) {
+                        $idUtilisateur = $estAffecte->getUtilisateurId()->getId();
+                        if (in_array($idUtilisateur, $uesToRemove)) {
+                            // une ue est absente on la supprime
+                            $entityManager->remove($estAffecte);
+                        }
+                    }
+                }
+                if (!empty($uesToAdd)) {
+                    foreach ($uesToAdd as $idUtilisateur) {
+                        $utilisateur = $entityManager->getRepository(Utilisateur::class)->find($idUtilisateur);
+                        if ($ue) {
+                            // Ici on ajouteles UE manquantes
+                            $estAffecte = new EstAffecte();
+                            $estAffecte->setUtilisateurId($utilisateur);
+                            $estAffecte->setCodeId($ue);
+                            $estAffecte->setFavori(false);
+                            $entityManager->persist($estAffecte);
+
+                            // Comme d'habitude on envoie la notification
+                            $notificationController->createAffectationNotification($entityManager, $utilisateur, $ue, $this->getUser());
+
+                        }
+                    }
+                }
+                $entityManager->flush();
+            }
+
+
+            // Ensite on récupère les champs
             $originalCode = $ue->getId();
             $originalNom = $ue->getNom();
             $orginalResponsable = $ue->getResponsableId()->getId();
             $originalImage = $ue->getImage();
 
 
+            // Création d'un formulaire sans le lier à une requête (car on utilise JSON)
+            $form = $this->createForm(UeType::class, $ue);
 
-             // Création d'un formulaire sans le lier à une requête (car on utilise JSON)
-             $form = $this->createForm(UeType::class, $ue);
+            // Soumission manuelle des données au formulaire
+            $form->submit([
+                'id' => $data['id'],
+                'nom' => $data['nom']
+            ]);
 
-             // Soumission manuelle des données au formulaire
-             $form->submit([
-                 'id' => $data['id'],
-                 'nom' => $data['nom']
-             ]);
-
-             // Validation du formulaire
-             if (!$form->isValid()) {
-                 $errors = [];
-                 foreach ($form->getErrors(true) as $error) {
-                     $errors[] = $error->getMessage();
-                 }
-                 return $this->json(['error' => 'Erreurs de validation', 'details' => $errors], Response::HTTP_BAD_REQUEST);
-             }
-
+            // Validation du formulaire
+            if (!$form->isValid()) {
+                $errors = [];
+                foreach ($form->getErrors(true) as $error) {
+                    $errors[] = $error->getMessage();
+                }
+                return $this->json(['error' => 'Erreurs de validation', 'details' => $errors], Response::HTTP_BAD_REQUEST);
+            }
 
 
-            // Vérifier si l'email existe déjà (si l'email a été modifié)
+            // Initialement on pouvait modifié le code de l'UE mais plus maintenant, c'était une sorte de vérification
             if ($originalCode !== $data['id']) {
                 $existingUE = $entityManager->getRepository(UE::class)->find($data['id']);
                 if ($existingUE && $existingUE->getId() !== $id) {
@@ -885,6 +1009,7 @@ final class AdminController extends AbstractController
             $imageName = $data['image'];
             // $imageName = $data['image'] ?? 'default-ban.jpg';
 
+            // Si les champs varient, on les met à jour
             if ($imageName !== $originalImage && $imageName !== "") {
                 $ue->setImage($imageName);
             }
@@ -941,11 +1066,18 @@ final class AdminController extends AbstractController
         }
     }
 
+    /**
+     * Ici on supprime une UE
+     * @param string $code
+     * @param EntityManagerInterface $BDDManager
+     * @return Response
+     */
     #[Route('/admin/delete-ue/{code}', name: 'admin_delete_ue', methods: ['DELETE'])]
     public function deleteUE(string $code, EntityManagerInterface $BDDManager): Response
     {
         $ue = $BDDManager->getRepository(UE::class)->find($code);
 
+        // Si l'ue n'existe pas on renvoie une erreur
         if (!$ue) {
             return $this->json(['success' => false, 'message' => 'UE introuvable'], Response::HTTP_NOT_FOUND);
         }
@@ -963,10 +1095,17 @@ final class AdminController extends AbstractController
         return $this->json(['success' => true], Response::HTTP_OK);
     }
 
+    /**
+     * L'admin peut modifier également une UE donc on le renvoie sur la page
+     * @param string $codeUe
+     * @param EntityManagerInterface $BDDManager
+     * @return Response
+     * @throws \Doctrine\DBAL\Exception
+     */
     #[Route('/admin/contenu_ue-{codeUe}', name: 'contenu_ue_admin')]
     public function contenuUe(string $codeUe, EntityManagerInterface $BDDManager): Response
     {
-        // Récupération du prof connecté
+        // Cette page nécessite beaucoup d'informations
         $user = $this->getUser();
 
         $roles = $user->getRoles();

@@ -20,6 +20,7 @@
         <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     {% endif %}#}
 
+    {# Si l'utilisateur est connecté on lui propose de se déconnecter mais ça ne devrait pas arriver grâce à nos redirections de route #}
     {% if app.user %}
         <div class="mb-3">
             You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
@@ -33,6 +34,7 @@
         <div class="connexion">
             <h3>Connexion</h3>
 
+            {# En cas d'erreur on cette classe apprait donc renvoyé depuis notre controller #}
             {% if error %}
                 <p class="error">Email/Mot de passe incorrect veuillez réssayer</p>
             {% endif %}

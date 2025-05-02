@@ -622,11 +622,11 @@ final class ProfesseurController extends AbstractController
 
         // Cas où la publication change de section
         if ($originalSectionId !== $sectionId) {
-            // Réajuster l'ordre des publications dans la section d'origine (suppression de la publication de l'ancienne section)
-            $this->recalculateOrdreInSection($BDDManager, $originalSectionId);
-
             // Mettre à jour la section de la publication
             $publication->setSectionId($BDDManager->getRepository(Section::class)->find($sectionId));
+
+            // Réajuster l'ordre des publications dans la section d'origine (suppression de la publication de l'ancienne section)
+            $this->recalculateOrdreInSection($BDDManager, $originalSectionId);
         }
 
         // Cas où la publication doit être déplacée tout en bas

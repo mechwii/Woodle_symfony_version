@@ -10,7 +10,9 @@
 
 {% block body %}
 
+    {# Certains ont plusieurs roles, donc on a besoin de savoir si on est sur la page admin, professeur et eleve #}
     {% set vue_active = app.session.get('vue_active') %}
+    {# Dashboard url permet de rediriger sur la bonne page d'accueil #}
     {% set dashboard_url = '' %}
 
     {% if vue_active == 'admin' %}
@@ -24,6 +26,7 @@
     <div class="top-page">
 
         <div class="right-admin-part">
+            {# Etant donnée qu'on peut etre admin et professeur il nous faut la possiblité de switch d'un espace à un autre #}
             {% if 'ROLE_ADMINISTRATEUR' in roles and 'ROLE_PROFESSEUR' in roles %}
                 <div class="select-roles">
                     {% if vue_active == 'admin' %}
@@ -41,6 +44,7 @@
                 {#            On utilise ~ pour concaténer#}
                 <img id="admin-picture" src="{{asset("images/profil/" ~ utilisateur.image)}}" alt="Photo de profil admin" onclick="toggleProfileMenu()">
                 <div id="profile-menu">
+                    {# Donc toujours les bon liens de redirection même si c'est la même page, les liens sont différent #}
                     {% if vue_active == 'admin' %}
                         <a href={{ path('admin_profil')}} ><p>Profil</p></a>
                     {% elseif vue_active == 'professeur' %}
@@ -55,14 +59,14 @@
     </div>
 
 
-    {#Mise en place de la navabr pour professeur#}
-
+    {#Mise en place de la navabr #}
     <nav id="navbar">
         <div class="top-logo">
             <img src="{{ asset('images/logo/Logo_Woodle.svg') }}" alt="Woodle Logo" class="logo">
             <h1 class="logo-text">Woodle</h1>
         </div>
         <div id="nav-content">
+            {# La dashboard url est le lien mentionné plus haut #}
                 <a href="{{ dashboard_url }}">
                     <div class="nav-item selected">
                     <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
@@ -97,6 +101,7 @@
         </div>
 
         <div class="nav-bottom">
+            {# Ouvrir fermer la navbar #}
             <svg id="chevron" onclick="toggleNav()" width="60" height="60" viewBox="0 0 16 16"
                  xmlns="http://www.w3.org/2000/svg" fill="currentColor">
                 <path fill-rule="evenodd"
@@ -105,6 +110,7 @@
         </div>
     </nav>
 
+    {# Ici sera la ou toutes les pages mettront leur code  #}
     <div class="container" id="content">
         {% block content %}
             {% block javascripts %}

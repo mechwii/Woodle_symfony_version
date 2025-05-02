@@ -21,6 +21,12 @@ class AccessDeniedHandler implements AccessDeniedHandlerInterface
         $this->security = $security;
     }
 
+    /**
+     * Ici on gère les redirections
+     * @param Request $request
+     * @param AccessDeniedException $accessDeniedException
+     * @return Response|null
+     */
     public function handle(Request $request, AccessDeniedException $accessDeniedException): ?Response
     {
         $user = $this->security->getUser();
@@ -29,6 +35,7 @@ class AccessDeniedHandler implements AccessDeniedHandlerInterface
             return new RedirectResponse($this->router->generate('app_login'));
         }
 
+        // Ici on rcupère le role de l'utilisateur, et en fonction de son rôle on le redirige
         $roles = $user->getRoles();
 
         if (in_array('ROLE_ADMINISTRATEUR', $roles)) {

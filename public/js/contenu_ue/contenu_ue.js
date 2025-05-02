@@ -645,7 +645,7 @@ function attachCreatePublicationListener(sectionId) {
                     newPost.innerHTML = data.html;
 
                     // On ajoute la nouvelle publication en haut de la liste
-                    postsContainer.prepend(newPost.firstElementChild);
+                    postsContainer.append(newPost);
 
                     // Ferme la popup
                     closeAllPopups();
@@ -687,6 +687,7 @@ function editPublication() {
     document.querySelectorAll('.edit_post').forEach(button => {
         button.addEventListener('click', function () {
             const url = this.dataset.url;
+            console.log(url)
             const publicationId = this.closest('.post').dataset.id; // On récupère l'ID directement du DOM
             console.log("Publication ID :", publicationId);
 
