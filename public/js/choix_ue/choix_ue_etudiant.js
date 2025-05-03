@@ -1,41 +1,3 @@
-/*
-document.addEventListener("DOMContentLoaded", () => {
- // on va recuperer tous les éléments dont a besoin : bouton de nav, element souligné, et le conteneur des éléments pour faire lanimation
- let items = document.querySelectorAll('.selection_cours li');
- let underline = document.querySelector('.underline');
- let wrapper = document.querySelector('.nav-wrapper');
-
- // la fonction va prendre en parametre lelement actif et va calculer sa distance par rapport au cote gauche de son parent
- // en gros on recup lespace de gauche par rapport a la page de lelement du menu ex : 100
- // pareil pour le divwrapper qui est le conteneur ex 50
- // et je veux donc calculer sa position a linterieur pour ca je fais : espace gacueh de enfant - espace gauche de parent = 100 - 50 ca veut dire quil est distant de 50 a linterieur du parent par rapport a son bord gauche
-
- function moveUnderline(elementActif) {
-     let rect = elementActif.getBoundingClientRect();
-     let wrapperRect = wrapper.getBoundingClientRect();
-     underline.style.width = `${rect.width}px`;
-     underline.style.left = `${rect.left - wrapperRect.left}px`;
- }
-
- // pour chaque item on modifie la classe et on lance la fonction en consequence
- items.forEach(item => {
-     item.addEventListener('click', () => {
-         document.querySelector('.selection_cours li.active')?.classList.remove('active');
-         item.classList.add('active');
-         moveUnderline(item);
-     });
- });
-
- // pour placer la barre au chargement de la page au tout debut quand on a encore cliqué nul part
- let active = document.querySelector('.selection_cours li.active');
- if (active) moveUnderline(active);
-
-
-});*/
-
-
-// ici on va gerer laffichage des ue dans la partie "mes cours"
-
 document.addEventListener("DOMContentLoaded", () => {
     let offset = 4;
     const limit = 4;
@@ -134,12 +96,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const notificationsList = document.getElementById('notifications-list');
 
 
+    /**
+     * Ici c'est pour récuperer les notifs et les mettre à jour, ou en charger polus
+     */
     window.updateNotif = function (){
         fetch(`/notifications?offset=${offset}`)
             .then(response => response.json())
             .then(data => {
-                console.log(data);
 
+                // Si la réponse est bonne on ajoute chaque notification
                 data.notifications.forEach(notification => {
                     const li = document.createElement('li');
                     let iconClass = 'lni lni-comment-1'; // Par défaut
@@ -164,6 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 offset += limit;
 
+                // Si on ne peut pas en afficher plus on masque le boutton
                 if (!data.showMoreButton) {
                     afficherPlusBtn.style.display = 'none';
                 }
@@ -174,18 +140,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
+/**
+ * Ce boutton permet de passer en normale les notifs considérés comme urgentes
+ * @param id
+ */
 function removeUrgentNotif(id){
     fetch(`notifications/update-priorite/${id}`)
         .then(response => response.json())
         .then(data => {
-            console.log('sqd')
             if(data.success){
+                // SI la requête s'exécute bien on passe la notif en normal, mm visuellement
                 document.getElementById('notification-'+id).classList.remove('important-notif');
                 const important = document.getElementById('important-'+id);
                 if(important){
                     important.innerHTML = '';
                 }
 
+                // Et on enlève l'importance
                 document.querySelector(`#notification-${id} #delete-notif-urgent`).remove();
             } else {
                 if(data.message){
@@ -201,8 +172,6 @@ function removeUrgentNotif(id){
             console.error(error);
 
         });
-    ///
-
 }
 
 

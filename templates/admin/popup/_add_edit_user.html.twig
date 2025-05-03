@@ -2,8 +2,9 @@
     <script src="{{ asset('js/admin/composant/multiselect.js') }}"></script>
 {% endblock %}
 
-
+{# Ici le hidden est présent car de base la popup est caché #}
 <div class="popup hidden" id="add-user-popup">
+    {# Comme pour le add_edit_ue la croix sert à fermer la popup #}
     <p class="close-popup" data-action="close-popup">X</p>
     <div class="popup-content">
         <div class="popup-content-add">
@@ -13,6 +14,7 @@
                 {{ form_start(form) }}
                 <div class="add-form">
 
+                    {# Ici on a nos différents champs de forumlaire #}
                     {{ form_row(form.nom, {'attr': {'placeholder' : 'Nom*'} }) }}
                     {{ form_row(form.prenom, {'attr': {'placeholder' : 'Prenom*'} }) }}
                     {{ form_row(form.email, {'attr': {'placeholder' : 'Email*'} }) }}
@@ -24,10 +26,12 @@
                     <div class="section-user-add-form">
                         <p>Sélectionner un ou plusieurs rôles</p>
                         <div class="role-section">
+                            {# Ici c'est les checkbox pour choisir nos rôles #}
                             {% for role in allRoles %}
                                 <div id="check-button">
                                     <label class="toggle-btn">
                                         <input type="checkbox" value="{{ role.id }}">
+                                        {# Pour l'aspect visuel on renomme nos roles en nom qui passe mieu #}
                                         <span>{{ role.nom == "ROLE_ADMINISTRATEUR" ? "Administrateur" : ( role.nom == "ROLE_PROFESSEUR" ? "Professeur" : "Élève" )  }}</span>
                                     </label>
                                 </div>
@@ -40,6 +44,7 @@
 
 
                     <div class="section-user-add-form">
+                        {# Même multiselect que pour le fichier add_edit_ue #}
                         <label for="ue-input">Sélectionner les UE</label>
                         <div class="user-ue-add">
                             <div class="custom-select" id="user-ue-select">
@@ -52,6 +57,7 @@
                                     <div class="filter-container">
                                         <input type="text" id="user-option-filter" placeholder="Rechercher une UE..." onkeyup="filterOptions('user')">
                                     </div>
+                                    {# Pareil on récupère dans le popup-manager les données et on les insert #}
                                     <div class="options-list" id="user-options-list">
 {#                                        {% for unite in ue %}
                                             <div class="option" onclick="toggleOption(this, 'user')" data-value="{{ unite.code }}" data-nom="{{ unite.nom }}">
@@ -63,14 +69,13 @@
                                 </div>
                                 <input type="hidden" name="ue_input" id="user-ue-input">
                             </div>
+                            {# Ce boutton appel une fonction qui va mettre le champs pour créer une UE #}
                             <i onclick="showAdditionallUE()" id="display-add-ue-fromuser" class="fa fa-plus-circle add-plus"></i>
                         </div>
 
                     </div>
 
-
-
-
+                    {# Drag and drop fichier le même que add_edit_user #}
                     <div class="drop-zone">
                         <span class="drop-zone__prompt">Déposer le fichier</span>
                         <div class="separator">
@@ -83,13 +88,12 @@
                         <input type="file" id="fileInput" name="myFile" class="drop-zone__input">
                     </div>
 
-
-
-
-
                 </div>
             </div>
+
+
             <div class="previsualition-add-user">
+                {# Ici c'est le champs optionnel pour potentiellement ajouter une UE #}
                 <div class="hidden" id="ue-optionnel" style="margin-bottom: 20px">
                     <h2>Ajouter UE</h2>
                 <div class="add-form">
@@ -121,6 +125,7 @@
 
 
                 <h2>Prévisualisation</h2>
+                {# Comme ajouter UE c'est la prévisualisation qui est actualisé dans le js #}
                 <div class="prev-form">
                     <div class="prev-section">
                         <img src="images/profil/default.jpg" id="prev-picture">
@@ -151,6 +156,7 @@
             </div>
         </div>
         <button id="add-user-button" class="add-button-popup"></button>
+        {# Ici ça nous permet de récupérer l'id de l'utilisateur on le mettra ici #}
         <input type="hidden" id="utilisateur_id" name="utilisateur[id]" value="">
     </div>
 </div>
