@@ -15,9 +15,18 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class EtudiantController extends AbstractController
 {
+    /**
+     * Rend sur la page principale -> chopix_ue de l'etudiant
+     * @param EntityManagerInterface $BDDManager
+     * @param NotificationController $notificationController
+     * @param Request $request
+     * @return Response
+     * @throws \Doctrine\DBAL\Exception
+     */
     #[Route('/etudiant', name: 'app_etudiant')]
     public function index(EntityManagerInterface $BDDManager, NotificationController $notificationController, Request $request): Response
     {
+        // On met à jour la valeur de vue active pour savoir sur quelle espace on est
         $session = $request->getSession();
         $session->set('vue_active', 'etudiant');
 
@@ -53,6 +62,13 @@ final class EtudiantController extends AbstractController
         ]);
     }
 
+    /**
+     * Même méthode que pour professeur ou admin dans contenu-ue
+     * @param string $codeUe
+     * @param EntityManagerInterface $BDDManager
+     * @return Response
+     * @throws \Doctrine\DBAL\Exception
+     */
     #[Route('/etudiant/contenu_ue-{codeUe}', name: 'contenu_ue_etudiant')]
     public function contenuUe(string $codeUe, EntityManagerInterface $BDDManager): Response
     {
@@ -192,9 +208,16 @@ final class EtudiantController extends AbstractController
         ]);
     }
 
+    /**
+     * Rend sur la page profil de étudiant
+     * @param EntityManagerInterface $BDDManager
+     * @param Request $request
+     * @return Response
+     */
     #[Route('/etudiant/profil', name: 'etudiant_profil')]
     public function profile(EntityManagerInterface $BDDManager, Request $request): Response
     {
+        // Ici on récupère les informations de l'étudiant et on affiche la page
         $utilisateur = $BDDManager->getRepository(Utilisateur::class)->findOneBy(["email" => $this->getUser()->getUserIdentifier()]);
         $roles = $utilisateur->getRoles();
 

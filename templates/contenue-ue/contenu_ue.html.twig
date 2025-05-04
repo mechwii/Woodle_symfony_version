@@ -194,7 +194,7 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
 
                                 <div class="interactions_post">
 
-                                {% if publication.utilisateur_id == utilisateur.id %}
+                               {# {% if publication.utilisateur_id == utilisateur.id %} #}
 
                                     <button class="edit_post" data-url="{{ path('publication_edit', {
                                         codeUe: ue.id,
@@ -208,7 +208,7 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
                                     <button class="delete_post" data-publication-id="{{ publication.id }}"><i
                                                 class="fa-solid fa-trash"></i></button>
 
-                                {% endif %}
+                                    {# {% endif %}  #}
 
 {#                                    Si la publication n'est pas épinglée alors le bouton pour l'épingler s'affiche#}
                                 {% if publication.id not in publicationsEpinglesIds %}
