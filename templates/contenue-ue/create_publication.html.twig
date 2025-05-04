@@ -1,6 +1,8 @@
 
 {% block body %}
+{#    Popup de création de publication qui prend en une classe en fonction du type envoyé depuis le controller. Si c'est une publication de type message alors on donne acces au contenu textuel à écrire. Si c'est une publication de type fichier alors on donne acces a l'input pour deposer un fichier dedans#}
     <div class="popupCreatePublication popup {{ type }}">
+{#        Modification des attributs de formulaire pour lui donner une classe pour le styliser mais surtout pour permettre de pouvoir déposer des fichiers dans le formulaire#}
         {{ form_start(form, {
             'attr': {
                 'class': 'create-publication-form',
@@ -19,6 +21,7 @@
             {{ form_row(form.contenuFichier) }}
         {% endif %}
 
+{#            Si c'est un message alors on lui permet de changer de type de message, ex : "important" | "information" | "evenement", mais pas fichier donc on cache "fichier"#}
             {{ form_row(form.type_publication_id, {
                 'value': type == 'fichier' ? 2 : null
             }) }}
@@ -31,21 +34,32 @@
     </div>
 
     <script>
-        console.log("ca marche")
+{#        fonction permettant de vérifier que les fichiers déposés sont bien des zip ou pdf sinon renvoie un message d'erreur#}
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('enter');
+            // console.log('enter');
+
+            // on recupere l'input de contenu fichier
             const fileInput = document.querySelector('input[type="file"][name$="[contenuFichier]"]');
 
+            // si l'input existe bien dans la page
             if (fileInput) {
+                // on ajoute un lsitener sur le changement de fichier
                 fileInput.addEventListener('change', function(e) {
+                    // on recupere le premier fichier selectionné
                     const file = e.target.files[0];
+
+                    // si un fichier a été selectionné
                     if (file) {
+                        // on recupere son extension apres le dernier point et on met en minuscule
                         const extension = file.name.split('.').pop().toLowerCase();
+
+                        // on definit les extensions autorisées
                         const allowedExtensions = ['pdf', 'zip'];
 
+                        // si l'extension n'est pas autorisée, on envoie une alert et on vide linput pour que le fichier ne soit pas envoyé
                         if (!allowedExtensions.includes(extension)) {
                             alert('Seuls les fichiers ZIP ou PDF sont acceptés.');
-                            e.target.value = ''; // Vide l'input
+                            e.target.value = '';
                         }
                     }
                 });

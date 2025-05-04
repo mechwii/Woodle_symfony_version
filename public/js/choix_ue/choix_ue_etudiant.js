@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /**
-     * Ici c'est pour récuperer les notifs et les mettre à jour, ou en charger polus
+     * Ici c'est pour récuperer les notifs et les mettre à jour, ou en charger plus
      */
     window.updateNotif = function (){
         fetch(`/notifications?offset=${offset}`)

@@ -21,7 +21,7 @@ class SectionType extends AbstractType
                 'choice_label' => 'id',
             ])
             ->add('save', SubmitType::class, [
-                'label' => 'Enregistrer',
+                'label' => 'Enregistrer', // bouton pour pouvoir soumettre le formulaire
             ])
         ;
     }

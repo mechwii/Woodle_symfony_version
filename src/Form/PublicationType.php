@@ -30,9 +30,9 @@ class PublicationType extends AbstractType
             ->add('contenuFichier', FileType::class, [
                 'label' => 'Fichier (PDF ou ZIP)',
                 'required' => false,
-                'mapped' => false, // <- très important : on gère manuellement dans ton controller
+                'mapped' => false, // <- pour gérer manuellement dans le controller
                 'attr' => [
-                    'accept' => '.zip, .pdf' // important pour forcer le type d'upload visuellement
+                    'accept' => '.zip, .pdf' // pour forcer le type d'upload visuellement : dans l'explorateur de fichier on ne verra que ces fichiers zip et pdf
                 ],
             ])
             ->add('derniere_modif', null, [
@@ -58,7 +58,7 @@ class PublicationType extends AbstractType
                 'choice_label' => 'id',
             ])
             ->add('save', SubmitType::class, [
-                'label' => 'Enregistrer',
+                'label' => 'Enregistrer', // ajouter d'un bouton pour soumettre le formulaire
             ])
         ;
     }

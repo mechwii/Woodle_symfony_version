@@ -26,7 +26,7 @@ use Twig\Environment;
 
 final class ProfesseurController extends AbstractController
 {
-    // Crééation de la route pour arriver sur la page Choix_UE apres le login
+    // Création de la route pour arriver sur la page Choix_UE apres le login
     #[Route('/professeur', name: 'app_professeur')]
     public function index(EntityManagerInterface $BDDManager, NotificationController $notificationController, Request $request): Response
     {
@@ -34,13 +34,17 @@ final class ProfesseurController extends AbstractController
         $session = $request->getSession();
         $session->set('vue_active', 'professeur');
 
+//        on recupere l'utilisateur connecté
+
         $user = $this->getUser();
         if (!$user) {
             return $this->redirectToRoute('app_login');
         }
 
+//        On recupere les roles de la personne connectée
         $roles = $user->getRoles();
 
+//        on se connecte a la base de données
         $connection = $BDDManager->getConnection();
 
         // Récupérer les UE
@@ -70,19 +74,23 @@ final class ProfesseurController extends AbstractController
         ]);
     }
 
+//    Route quand on est a cliqué pour aller dans une UE
     #[Route('/professeur/contenu_ue-{codeUe}', name: 'contenu_ue_professeur')]
     public function contenuUe(string $codeUe, EntityManagerInterface $BDDManager): Response
     {
         // Récupération du prof connecté
         $user = $this->getUser();
 
+//        recuperation de ses roles
         $roles = $user->getRoles();
 
+//        on recupere l'UE en fonction du code affiché dans l'URL
         $ue = $BDDManager->getRepository(Ue::class)->findOneBy(['id' => $codeUe]);
 
+//        connexion a la bdd
         $connection = $BDDManager->getConnection();
 
-        // recuperation du nb deleves dans lue
+        // recuperation du nombre d'eleves dans l'UE
         $sql_nb_eleves_dans_ue = '
                 SELECT COUNT(est_affecte.utilisateur_id) AS number
                 FROM ue
@@ -154,7 +162,7 @@ final class ProfesseurController extends AbstractController
         $sections_ue= $resultat->fetchAllAssociative();
 
 
-        // recuperation de la lsite des postes
+        // recuperation de la liste des posts
         $sql_liste_publications = '
                 SELECT id_publication as id, titre, description, contenu_texte, contenu_fichier, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id
                 FROM publication
@@ -166,7 +174,7 @@ final class ProfesseurController extends AbstractController
         $resultat = $prepareSQL->executeQuery(['codeUe' => $codeUe]);
         $liste_publications= $resultat->fetchAllAssociative();
 
-
+// recuperation des publications epinglées dans une UE
         $queryEpingle = $BDDManager->createQuery(
             'SELECT p
      FROM App\Entity\Publication p
@@ -174,11 +182,6 @@ final class ProfesseurController extends AbstractController
      JOIN App\Entity\Utilisateur u WITH u.id = e.utilisateur_id
      WHERE p.code_id = :codeUe'
         )->setParameter('codeUe', $codeUe);
-
-
-
-
-
 
         $publicationsEpingles = $queryEpingle->getResult();
 
@@ -190,7 +193,7 @@ final class ProfesseurController extends AbstractController
             $publication->utilisateur_id_prenom = $epingle->getUtilisateurId()->getPrenom();
         }
 
-
+//        formater le format de la date et de l'heure pour mieux afficher sur le site
         foreach ($publicationsEpingles as &$publication) {
             $publication->getDerniereModif()->format('d/m/Y H:i');
         }
@@ -216,12 +219,18 @@ final class ProfesseurController extends AbstractController
     public function editSection(string $codeUe, Section $section, Request $request, EntityManagerInterface $entityManager) {
 
 
+//        creation du formulaire d'edition de la section
         $form = $this->createForm(SectionType::class, $section);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
 
+//        traitement de la requete (remplit le formulaire avec les données POST si envoyées)
+        $form->handleRequest($request);
+
+//        si le formulaire est soumis et valide
+        if ($form->isSubmitted() && $form->isValid()) {
+// on sauvegarde les modifs dans la BDD
             $entityManager->flush();
 
+//            on retourne une reponse JSON qui indique le succes avec les infos mises a jour
             return new JsonResponse([
                 'status' => 'success',
                 'section_id' => $section->getId(),
@@ -254,12 +263,13 @@ final class ProfesseurController extends AbstractController
 
 // création d'une section vide
         $section = new Section();
+//        on lui attribue automatiquement le code de l'ue dans laquelle on est
         $section->setCodeId($ue);
 
+//        connexion a la BDD
         $connection = $BDDManager->getConnection();
 
-
-        // recuperation de la lsite des postes
+        // recuperation de la liste des posts de l'UE
         $sql_liste_publications = '
                 SELECT titre, description, contenu_texte, contenu_fichier, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id
                 FROM publication
@@ -270,7 +280,7 @@ final class ProfesseurController extends AbstractController
         $resultat = $prepareSQL->executeQuery(['codeUe' => $codeUe]);
         $liste_publications= $resultat->fetchAllAssociative();
 
-
+// creation du formualire de création de section
         $form = $this->createForm(SectionType::class, $section);
         $form->handleRequest($request);
 
@@ -278,7 +288,7 @@ final class ProfesseurController extends AbstractController
             $entityManager->persist($section);
             $entityManager->flush();
 
-
+// On renvoie un retour JSON avec le HTML de la nouvelle section rendue
             return new JsonResponse([
                 'status' => 'success',
                 'section_id' => $section->getId(),
@@ -311,6 +321,7 @@ final class ProfesseurController extends AbstractController
     #[Route('/professeur/contenu_ue-{codeUe}/section/{id}/delete', name: 'delete_section', methods: ['GET', 'DELETE'])]
     public function deleteSection(Section $section, EntityManagerInterface $entityManager) {
 
+//        on supprime la section dans la BDD
         $entityManager->remove($section);
         $entityManager->flush();
 
@@ -325,17 +336,20 @@ final class ProfesseurController extends AbstractController
     #[Route('/professeur/contenu_ue-{codeUe}/section/{id_section}/publication/{id_publication}/edit', name: 'publication_edit', methods: ['GET', 'POST'])]
     public function editPublication(int $id_publication, Request $request, EntityManagerInterface $entityManager)
     {
+//        on retrouve la publication a éditer
         $publication = $entityManager->getRepository(Publication::class)->find($id_publication);
 
         if (!$publication) {
             throw $this->createNotFoundException('Publication non trouvée.');
         }
 
-        $ancienFichier = $publication->getContenuFichier(); // <-- On stocke l'ancien fichier APRÈS avoir vérifié l'existence
+        $ancienFichier = $publication->getContenuFichier(); // <-- On stocke l'ancien fichier apres avoir verifie son existence
 
         $type = $request->query->get('type', 'texte'); // 'texte' par défaut
 
         $form = $this->createForm(PublicationType::class, $publication);
+
+//        ajout du champ caché type non liée à l'entité publication
         $form->add('type', HiddenType::class, [
             'mapped' => false,
             'data' => $type,
@@ -344,17 +358,20 @@ final class ProfesseurController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+//            maj de la derniere modification
             $publication->setDerniereModif(new \DateTimeImmutable());
 
+//             on recupere le fichier uploadé
             $contenuFichier = $form->get('contenuFichier')->getData();
 
             if ($contenuFichier instanceof UploadedFile) {
-                // Un nouveau fichier a été uploadé
+                // Un nouveau fichier a été uploadé, on le renomme et on le deplace
                 $fileName = uniqid().'-'.$contenuFichier->getClientOriginalName();
                 $contenuFichier->move(
                     $this->getParameter('kernel.project_dir') . '/public/uploads',
                     $fileName
                 );
+//                si pas de nouveau fichier, on garde l'ancien fichier
                 $publication->setContenuFichier($fileName);
             } else {
                 // Aucun nouveau fichier uploadé, on garde l'ancien
@@ -408,6 +425,7 @@ final class ProfesseurController extends AbstractController
 
         // création d'une publication vide
         $publication = new Publication();
+//        on lui attribue des donnéeés par défaut
         $publication->setCodeId($ue_post);
         $publication->setUtilisateurId($user_post);
         $publication->setSectionId($section_post);
@@ -415,13 +433,13 @@ final class ProfesseurController extends AbstractController
 
 
 
-        // Récupérer le type de contenu depuis l'URL (ou paramètre GET)
 
         // Créer le formulaire de publication
         $type = $request->query->get('type', 'texte');
 
         $form = $this->createForm(PublicationType::class, $publication);
 
+//        ajout d'une ligne dans le formualire type non liée à publication
         $form->add('type', HiddenType::class, [
             'mapped' => false,
             'data' => $type,
@@ -439,10 +457,9 @@ final class ProfesseurController extends AbstractController
         // Si le formulaire est soumis et valide
         if ($form->isSubmitted() && $form->isValid()) {
 
-
+//on recupere le fichier
                 $contenuFichier = $form->get('contenuFichier')->getData();
                 if ($contenuFichier) {
-                    // Traitez l'upload du fichier ici (par exemple en utilisant un service)
                     $fileName = $contenuFichier->getClientOriginalName();
                     $contenuFichier->move($this->getParameter('kernel.project_dir') . '/public/uploads', $fileName);
                     $publication->setContenuFichier($fileName);
@@ -506,13 +523,14 @@ final class ProfesseurController extends AbstractController
     public function deletePublication($id_publication, EntityManagerInterface $entityManager): JsonResponse
     {
 
-
+//        on recupere la publication
         $publication = $entityManager->getRepository(Publication::class)->find($id_publication);
 
         if (!$publication) {
             return new JsonResponse(['status' => 'error', 'message' => 'Publication introuvable'], 404);
         }
 
+//        on supprime la publication
         $entityManager->remove($publication);
         $entityManager->flush();
 
@@ -532,7 +550,7 @@ final class ProfesseurController extends AbstractController
         if (!$user) {
             return new JsonResponse(['status' => 'error', 'message' => 'Non connecté'], 401);
         }
-
+//        creation d'une epingle vide et on lui attribue des valeurss par dééfaut
         $epingle = new Epingle();
         $epingle->setPublicationId($publication);
         $epingle->setUtilisateurId($user);
@@ -627,6 +645,9 @@ final class ProfesseurController extends AbstractController
 
             // Réajuster l'ordre des publications dans la section d'origine (suppression de la publication de l'ancienne section)
             $this->recalculateOrdreInSection($BDDManager, $originalSectionId);
+
+            // Mettre à jour la section de la publication
+            $publication->setSectionId($BDDManager->getRepository(Section::class)->find($sectionId));
         }
 
         // Cas où la publication doit être déplacée tout en bas

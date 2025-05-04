@@ -1,7 +1,8 @@
 {% extends 'base_eleve_professeur.html.twig' %}
 
-{% block title %}Contenu UE | Professeur{% endblock %}
+{% block title %}Contenu UE{% endblock %}
 
+{#Appel vers les feuilles de styles CSS#}
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('css/contenu_ue/contenu_ue.css') }}">
@@ -26,7 +27,7 @@
 dedans il me faut un slider pour switch entre les deux eleves/professeurs
     #}
 
-    {#    Partie statistiques liée aux statistiques concernant cette UE, on peut cliquer sur les divs pour voir qui sont spécifiquement les professerus et les étudiants #}
+    {#    Partie statistiques liée aux statistiques concernant cette UE, on peut cliquer sur les divs pour voir qui sont spécifiquement les professeurs et les étudiants #}
     <div class="statistiques">
         <div class="statistiques-section eleves">
             <div class="top-statistiques-section">
@@ -62,7 +63,7 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
         </div>
     </div>
 
-    {#    Les interactions possibles avec les Publications situées plus bas #}
+    {#    Les interactions possibles avec les Publications et Sections situées plus bas #}
 
     {% if 'ROLE_ELEVE' not in roles %}
     <div class="interactions">
@@ -103,6 +104,7 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
                                     <h5 class="title_post">{{ publication.titre }}</h5>
                                     <span class="date_post">{{ publication.derniereModif.date|date('d/m/Y H:i') }}</span>
                                     <span class="auteur">Epinglé par : {{ publication.utilisateur_id_prenom }} {{ publication.utilisateur_id_nom }}</span>
+{#                                    Les interactions liées au posts épinglés, on peut uniquement desepinglé#}
                                     <div class="interactions_post">
                                         {% if publication.utilisateur_id_id == utilisateur.id %}
                                             <button class="desepingle_post" data-publication-id="{{ publication.id }}">
@@ -110,15 +112,16 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
                                         {% endif %}
 
                                     </div>
-                                    <!-- Icône trois points -->
+{#                                    <!-- Icône trois points -->  censée être utilisée dans une ancienne version du responsive#}
                                     <i class="fa-solid fa-ellipsis-h ellipsis_icon"></i>
 
-                                    <!-- Menu d'options caché par défaut -->
+                                    <!-- Menu d'options caché par défaut, censé être utilisé pour une ancienne version du responsive -->
                                     <div class="options_menu">
                                         <button class="edit_post">Modifier</button>
                                         <button class="delete_post">Supprimer</button>
                                     </div>
                                 </div>
+{#                                Si la publication est un fichier alors au lieu d'afficher le texte du contenu on affiche le bouton de téléchargement pour le fichier#}
                                 {% if publication.typePublicationId.id == 2 %}
                                     <div class="download">
                                         <i class="fa-solid fa-file-pdf"></i>
@@ -127,6 +130,7 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
                                             <i class="fa-solid fa-download"></i>
                                         </a>
                                     </div>
+{#                                    Sinon on affiche le contenu texte et ca veut dire qu'il n'y a pas de fichier dans la publication#}
                                 {% else %}
                                     <p class="text_post">{{ publication.contenuTexte }}</p>
                                 {% endif %}
@@ -136,6 +140,7 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
                 {% endfor %}
             </div>
         {% else %}
+{#            Message par défaut si aucune publication n'a été épinglée#}
             <p>Aucune publication épinglée.</p>
         {% endif %}
     </div>
@@ -143,11 +148,13 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
     {# Partie liste des publications #}
 
     <div class="sections-wrapper">
+        {# On extrait les ID des publications épinglées et on les transforme en une chaîne séparée par des virgules #}
         {% set publicationsEpinglesIds = publicationsEpingles|map(p => p.id)|join(',') %}
         {% for section in sections_ue %}
             <div class="section section-{{ section.id }}" data-section-id="{{ section.id }}">
                 <div class="head-section">
                     <h3>{{ section.nom }}</h3>
+{#                    Toutes les interactions possibles concernant une section en particulier : y ajouter un post | supprimer la section | editer le nom de la section #}
                     {% if 'ROLE_ELEVE' not in roles %}
                     <button class="add_post" data-section-id="{{ section.id }}">
                         <i class="fa-solid fa-feather"></i>
@@ -170,6 +177,7 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
                     {% set hasPublications = true %}
                     {% endif %}
 
+{#                    Ici on attribue une classe supplémentaire au post et en fonction de cette classe le style d'affichage css sera différent #}
                     <div class="post
     {% if publication.type_publication_id == 2 %}file
     {% elseif publication.type_publication_id == 3 %}calendar
@@ -181,6 +189,7 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
                         <div class="top_post">
                             <h5 class="title_post">{{ publication.titre }}</h5>
                             <span class="date_post">{{ publication.derniere_modif }}</span>
+{#                            Ici les interactions liées à une publication en particulier : editer le post | supprimer le post#}
                             {% if 'ROLE_ELEVE' not in roles %}
 
                                 <div class="interactions_post">
@@ -201,6 +210,7 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
 
                                 {% endif %}
 
+{#                                    Si la publication n'est pas épinglée alors le bouton pour l'épingler s'affiche#}
                                 {% if publication.id not in publicationsEpinglesIds %}
                                     <button class="epingle_post" data-publication-id="{{ publication.id }}">
                                         <i class="fa-solid fa-thumbtack"></i>
@@ -219,6 +229,7 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
                             </div>
                             {% endif %}
                         </div>
+{#                        Si la publication est un fichier (type_publication_id = 2) alors on affiche le fichier à télécharger, sinon le texte #}
                         {% if publication.type_publication_id == 2 %}
                             <div class="download">
                                 <i class="fa-solid fa-file-pdf"></i>
@@ -236,6 +247,7 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
 
                     {% if hasPublications %}
                 </div>
+{#                Si une section n'a pas de publication qui lui est associée#}
             {% else %}
                 <p>Aucune publication dans cette section.</p>
                 {% endif %}
@@ -243,6 +255,8 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
         {% endfor %}
     </div>
 
+{#    Liste des popups cachées qui apparaissent en fonction des interactions avec la page#}
+{#    Popup qui apparait pour afficher la liste des étudiants / Professeurs#}
     <div class="popUpListe popup hidden">
         <div class="boutonsSwitchListes">
             <div class="switch-background-liste"></div>
@@ -258,6 +272,7 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
         </div>
     </div>
 
+{#    Popup cachée qui apparait quand on clique sur un bouton pour ajouter une publication#}
     <div class="popupPublication popup hidden">
         <h3>Ecrire une nouvelle publication</h3>
         <div class="boutonsSwitch">
@@ -267,20 +282,24 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
         </div>
 
         <div class="formulaireContainer">
-            <!-- Le contenu du formulaire s'affichera ici dynamiquement -->
+            <!-- contenu du formulaire de la template create_publication.html.twig -->
         </div>
 
 
     </div>
 
+    {#    Popup cachée qui apparait quand on clique sur un bouton pour editer une section #}
+
     <div class="popupEditSectionContainer popup hidden">
-        {#        Ici on mettra le tempalte du formulaire edit #}
+        {#        Ici on appel en ajax le tempalte du formulaire edit de section#}
     </div>
 
+    {#    Popup cachée qui apparait quand on clique sur un bouton pour ajouter une section #}
     <div class="popup popupAddSection hidden">
-        {#       ici on mettra le tempalte du formulaire create #}
+        {#       ici on appelle en ajax le template du formulaire create_section.html.twig #}
     </div>
 
+    {#    Popup cachée de validation qui apparait quand on clique sur un bouton pour supprimer une section #}
     <div class="custom-modal hidden popup-delete-section">
         <div class="modal-content">
             <p>Es-tu sûr(e) de vouloir supprimer cette section ?</p>
@@ -291,6 +310,7 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
         </div>
     </div>
 
+    {#    Popup cachée de validation qui apparait quand on clique sur un bouton pour supprimer une publication #}
     <div class="custom-modal-post hidden popup-delete-publication">
         <div class="modal-content">
             <p>Es-tu sûr(e) de vouloir supprimer cette publication ?</p>
@@ -301,18 +321,21 @@ dedans il me faut un slider pour switch entre les deux eleves/professeurs
         </div>
     </div>
 
+    {#    Popup cachée qui apparait quand on clique sur un bouton pour editer une publication #}
+
     <div id="editPublicationModal" class="modal" style="display: none;">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
             <div id="edit-publication-form-container">
-                <!-- Le formulaire AJAX va arriver ici -->
+                <!-- Le formulaire AJAX edit_publication.html.twig apparait ici -->
             </div>
         </div>
     </div>
 
+{#    fond noir pour derriere la popup pour assombrir le reste de la page et nous permettre de nous concentrer sur la popup au milieu de l'écran#}
     <div class="modal-backdrop hidden"></div>
 
-
+    {#    fond noir pour derriere la popup pour assombrir le reste de la page et nous permettre de nous concentrer sur la popup au milieu de l'écran pour des popup différentes#}
     <div class="darkBackground hidden"></div>
 
     {% block javascripts %}

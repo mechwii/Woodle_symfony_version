@@ -1,5 +1,6 @@
 <h2>Editer une publication</h2>
-
+{# Formulaire de modification d'une publication #}
+{# Ajout de l'attribut pour pouvoir envoyer un fichier dans formulaire #}
 <form method="post" id="edit-publication-form">
     {{ form_start(form, {
         'attr': {
@@ -7,6 +8,7 @@
         }
     }) }}
 
+{#    on lui ajoute la class editHelp pour pouvoir le recuperer dans le js pour afficher le select de type de publication ssi c'est un message et le cacher si c'est un fichier#}
     {{ form_row(form.type_publication_id, {'attr': {'id': 'type_publication_id', 'class' : 'editHelp'}}) }}
 
     {{ form_row(form.titre) }}

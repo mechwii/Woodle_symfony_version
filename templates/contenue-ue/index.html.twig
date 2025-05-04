@@ -1,7 +1,8 @@
 {% extends '../base_eleve_professeur.html.twig' %}
 
-{% block title %}Choix des UE | Professeur{% endblock %}
+{% block title %}Choix des UE{% endblock %}
 
+{# Appel des feuilles de style CSS#}
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('css/choix_ue/choix_ue.css') }}">
@@ -27,6 +28,7 @@
         </ul>
         <button id="afficherPlus">Afficher plus</button>
     </div>
+
     {# Section cours de la page #}
     <div class="cours">
         <h2>Mes cours</h2>
@@ -51,7 +53,7 @@
                             <i class="lni lni-notebook-1"></i>
                             <span>12 Lessons</span>
                         </div>
-                        <i class="lni lni-heart"></i>
+                        <i class="fa-solid fa-heart"></i>
                     </div>
                 </div>
             </div>

@@ -24,6 +24,7 @@
     </div>
 
     {# Section Actualité de la page #}
+{#    Ici seront affichées les notifications que la personne recevra#}
     {% if notifications|length > 0 %}
     <div class="actualites">
         <h3>Actualités</h3>
@@ -94,13 +95,14 @@
                                     <i class="lni lni-notebook-1"></i>
                                     <span>12 Lessons</span>
                                 </div>
-                                <i class="lni lni-heart"></i>
+                                <i class="fa-solid fa-heart"></i>
                             </div>
                         </div>
             </a>
 
             {% endfor %}
         </div>
+{#        Numéro de page par défaut lorsque l'on arrive sur la page, mais ils sont changés en js en fonction du nombre d'UE associée à la personne#}
         <div class="carousel-dots">
             <div class="dot active-dot" data-page="0">1</div>
             <div class="dot" data-page="1">2</div>
