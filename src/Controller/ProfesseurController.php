@@ -596,9 +596,16 @@ final class ProfesseurController extends AbstractController
         return new JsonResponse(['status' => 'success']);
     }
 
+    /**
+     * Rend sur la page profil de professeur
+     * @param EntityManagerInterface $BDDManager
+     * @param Request $request
+     * @return Response
+     */
     #[Route('/professeur/profil', name: 'professeur_profil')]
     public function profile(EntityManagerInterface $BDDManager, Request $request): Response
     {
+        // Mêem fonctionnement qu'admin et étudiant on prend les informations et on affiche la page
         $utilisateur = $BDDManager->getRepository(Utilisateur::class)->findOneBy(["email" => $this->getUser()->getUserIdentifier()]);
         $roles = $utilisateur->getRoles();
 
@@ -615,6 +622,12 @@ final class ProfesseurController extends AbstractController
         ]);
     }
 
+    /**
+     * Cete fonction permet d'actualiser la position après qu'une publication ait été déplacé
+     * @param EntityManagerInterface $BDDManager
+     * @param Request $request
+     * @return JsonResponse
+     */
     #[Route('/api/publication/update-position', name: 'update_publication_position', methods: ['POST'])]
     public function updatePublicationPosition(EntityManagerInterface $BDDManager,Request $request): JsonResponse
     {
@@ -665,12 +678,19 @@ final class ProfesseurController extends AbstractController
         // Mettre à jour l'ordre de la publication
         $publication->setOrdre($newOrdre);
 
-        // Enregistrer les nouvelles positions
         $BDDManager->flush();
 
         return new JsonResponse(['success' => true, 'message' => 'Ordre de la publication mis à jour']);
     }
 
+    /**
+     * Permet de réarranger l'odre dans une secion
+     * @param EntityManagerInterface $BDDManager
+     * @param Publication $publication
+     * @param int $originalOrdre
+     * @param int $newOrdre
+     * @return void
+     */
     private function updatePublicationOrderInSection(EntityManagerInterface $BDDManager, Publication $publication, int $originalOrdre, int $newOrdre)
     {
         $section = $publication->getSectionId();
@@ -706,6 +726,12 @@ final class ProfesseurController extends AbstractController
     }
 
 
+    /**
+     * Cette fonction permet de réarranger l'odre dans la section, donc de 1 jusqu'a le nomrbe maximum
+     * @param EntityManagerInterface $BDDManager
+     * @param int $sectionId
+     * @return void
+     */
     private function recalculateOrdreInSection(EntityManagerInterface $BDDManager, int $sectionId)
     {
         // Récupérer toutes les publications de la section d'origine, triées par ordre

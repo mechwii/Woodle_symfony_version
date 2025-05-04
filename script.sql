@@ -181,9 +181,9 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_maj_affectation
-    BEFORE INSERT OR UPDATE ON Est_Affecte
-            FOR EACH ROW
-                    EXECUTE FUNCTION maj_date_affection();
+BEFORE INSERT  ON Est_Affecte
+FOR EACH ROW
+EXECUTE FUNCTION maj_date_affection();
 
 
 
@@ -390,7 +390,7 @@ VALUES
 INSERT INTO publication (titre, description, contenu_texte, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id)
 VALUES
     ('Salut la team zer', 'Une analyse des ...', 'Contenu détaillé de la publication...', '2025-04-19 10:00:00', 1, TRUE, 1, 2, 1, 'IA41'),
-    ('Apaya', 'Une étude approfondie des.', 'Contenu détaillé de la publication...', '2025-04-19 11:00:00', 2, TRUE, 2, 3, 2, 'IA41'),
+    ('Apaya', 'Une étude approfondie des.', 'Contenu détaillé de la publication...', '2025-04-19 11:00:00', 2, TRUE, 2, 3, 1, 'IA41'),
     ('Quoicoubeh', 'Un regard sur l’évolution de.', 'Contenu détaillé de la publication...', '2025-04-19 12:00:00', 3, TRUE, 3, 5, 1, 'IA41');
 
 
