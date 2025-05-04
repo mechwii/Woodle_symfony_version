@@ -489,7 +489,7 @@ VALUES
 -- Publications Fichier pour ML6I
 INSERT INTO publication (titre, description, contenu_fichier, derniere_modif, visible, section_id, utilisateur_id, type_publication_id, code_id)
 VALUES
-    ('Fichier important', 'Fichier à télécharger', 'learning.zip', '2025-04-20 09:10:00', TRUE, 4, 2, 2, 'ML6I');
+    ('Fichier important', 'Fichier à télécharger', 'learning.zip', '2025-04-20 09:10:00', TRUE, 7, 2, 2, 'ML6I');
 
 
 -- Publications pour GD2H
@@ -497,12 +497,12 @@ INSERT INTO publication (titre, description, contenu_texte, derniere_modif, visi
 VALUES
     ('Principes de gestion', 'Fondamentaux de la gestion.', 'Contenu détaillé...', '2025-04-22 09:00:00', TRUE, 10, 2, 3, 'GD2H'),
     ('Gestion des risques', 'Gérer les risques en entreprise.', 'Contenu détaillé...', '2025-04-22 10:00:00', TRUE, 11, 2, 5, 'GD2H'),
-    ('Leadership et motivation', 'Encourager les équipes.', 'Contenu détaillé...', '2025-04-22 11:00:00', TRUE, 3, 2, 1, 'GD2H');
+    ('Leadership et motivation', 'Encourager les équipes.', 'Contenu détaillé...', '2025-04-22 11:00:00', TRUE, 12, 2, 1, 'GD2H');
 
 -- Publications Fichier pour GD2H
 INSERT INTO publication (titre, description, contenu_fichier, derniere_modif, visible, section_id, utilisateur_id, type_publication_id, code_id)
 VALUES
-    ('Fichier important', 'Fichier à télécharger', 'gestion.zip', '2025-04-20 09:10:00',  TRUE, 4, 2, 2, 'GD2H');
+    ('Fichier important', 'Fichier à télécharger', 'gestion.zip', '2025-04-20 09:10:00',  TRUE, 10, 2, 2, 'GD2H');
 
 
 -- Publications pour RE4E
@@ -515,4 +515,4 @@ VALUES
 -- Publications Fichier pour RE4E
 INSERT INTO publication (titre, description, contenu_fichier, derniere_modif, visible, section_id, utilisateur_id, type_publication_id, code_id)
 VALUES
-    ('Fichier important', 'Fichier à télécharger', 'reseau.zip', '2025-04-20 09:10:00', TRUE, 4, 2, 2, 'GD2H');
+    ('Fichier important', 'Fichier à télécharger', 'reseau.zip', '2025-04-20 09:10:00', TRUE, 13, 2, 2, 'GD2H');
