@@ -435,3 +435,84 @@ VALUES
 
 INSERT INTO Priorite(nom) VALUES
     ('normale'),('élevé');
+
+
+-- Sections pour BD4J
+INSERT INTO section (nom, code_id)
+VALUES
+    ('Cours Magistraux', 'BD4J'),
+    ('TP', 'BD4J'),
+    ('TD', 'BD4J');
+
+-- Sections pour ML6I
+INSERT INTO section (nom, code_id)
+VALUES
+    ('Cours Magistraux', 'ML6I'),
+    ('TP', 'ML6I'),
+    ('TD', 'ML6I');
+
+-- Sections pour GD2H
+INSERT INTO section (nom, code_id)
+VALUES
+    ('Cours Magistraux', 'GD2H'),
+    ('TP', 'GD2H'),
+    ('TD', 'GD2H');
+
+-- Sections pour RE4E
+INSERT INTO section (nom, code_id)
+VALUES
+    ('Cours Magistraux', 'RE4E'),
+    ('TP', 'RE4E'),
+    ('TD', 'RE4E');
+
+
+-- Publications Texte pour BD4J
+INSERT INTO publication (titre, description, contenu_texte, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id)
+VALUES
+    ('Architecture BD', 'Présentation de l’architecture.', 'Contenu détaillé...', '2025-04-20 09:00:00', 1, TRUE, 4, 2, 1, 'BD4J'),
+    ('Indexation efficace', 'Accélérer les requêtes SQL.', 'Contenu détaillé...', '2025-04-20 10:00:00', 2, TRUE, 5, 2, 3, 'BD4J'),
+    ('Sécurité des données', 'Sécuriser l’accès aux données.', 'Contenu détaillé...', '2025-04-20 11:00:00', 3, TRUE, 6, 2, 4, 'BD4J');
+
+-- Publications Fichier pour BD4J
+INSERT INTO publication (titre, description, contenu_fichier, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id)
+VALUES
+    ('Fichier important', 'Fichier à télécharger', 'crypto.zip', '2025-04-20 09:10:00', 1, TRUE, 4, 2, 2, 'BD4J');
+
+
+-- Publications pour ML6I
+INSERT INTO publication (titre, description, contenu_texte, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id)
+VALUES
+    ('Introduction au Machine Learning', 'Notions de base en apprentissage automatique.', 'Contenu détaillé...', '2025-04-21 09:00:00', 1, TRUE, 7, 2, 1, 'ML6I'),
+    ('Régression linéaire', 'Comprendre les modèles de régression.', 'Contenu détaillé...', '2025-04-21 10:00:00', 2, TRUE, 8, 2, 4, 'ML6I'),
+    ('Arbres de décision', 'Utilisation des arbres pour la classification.', 'Contenu détaillé...', '2025-04-21 11:00:00', 3, TRUE, 9, 2, 5, 'ML6I');
+
+-- Publications Fichier pour ML6I
+INSERT INTO publication (titre, description, contenu_fichier, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id)
+VALUES
+    ('Fichier important', 'Fichier à télécharger', 'learning.zip', '2025-04-20 09:10:00', 1, TRUE, 4, 2, 2, 'ML6I');
+
+
+-- Publications pour GD2H
+INSERT INTO publication (titre, description, contenu_texte, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id)
+VALUES
+    ('Principes de gestion', 'Fondamentaux de la gestion.', 'Contenu détaillé...', '2025-04-22 09:00:00', 1, TRUE, 10, 2, 3, 'GD2H'),
+    ('Gestion des risques', 'Gérer les risques en entreprise.', 'Contenu détaillé...', '2025-04-22 10:00:00', 2, TRUE, 11, 2, 5, 'GD2H'),
+    ('Leadership et motivation', 'Encourager les équipes.', 'Contenu détaillé...', '2025-04-22 11:00:00', 12, TRUE, 3, 2, 1, 'GD2H');
+
+-- Publications Fichier pour GD2H
+INSERT INTO publication (titre, description, contenu_fichier, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id)
+VALUES
+    ('Fichier important', 'Fichier à télécharger', 'gestion.zip', '2025-04-20 09:10:00', 1, TRUE, 4, 2, 2, 'GD2H');
+
+
+-- Publications pour RE4E
+INSERT INTO publication (titre, description, contenu_texte, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id)
+VALUES
+    ('Réseaux informatiques', 'Les bases des réseaux et de l’interconnexion.', 'Contenu détaillé...', '2025-04-23 09:00:00', 1, TRUE, 13, 2, 4, 'RE4E'),
+    ('Protocoles de communication', 'Exploration des protocoles réseau.', 'Contenu détaillé...', '2025-04-23 10:00:00', 2, TRUE, 14, 2, 3, 'RE4E'),
+    ('Cybersécurité', 'Introduction à la sécurité des systèmes.', 'Contenu détaillé...', '2025-04-23 11:00:00', 3, TRUE, 15, 2, 1, 'RE4E');
+
+-- Publications Fichier pour RE4E
+INSERT INTO publication (titre, description, contenu_fichier, derniere_modif, ordre, visible, section_id, utilisateur_id, type_publication_id, code_id)
+VALUES
+    ('Fichier important', 'Fichier à télécharger', 'reseau.zip', '2025-04-20 09:10:00', 1, TRUE, 4, 2, 2, 'GD2H');
